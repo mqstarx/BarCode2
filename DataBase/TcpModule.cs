@@ -218,7 +218,7 @@ namespace DataBase
 
 
         //public string SendFileName = null;
-        public void SendData(object obj)
+        public void SendData(object obj,string message)
         {
             // Состав отсылаемого универсального сообщения
             // 1. Заголовок о следующим объектом класса подробной информации дальнейших байтов
@@ -226,15 +226,15 @@ namespace DataBase
             // 3. Байты непосредственно готовых к записи в файл или для чего-то иного.
 
             SendInfo si = new SendInfo();
-           // si.message = Parent.textBoxSend.Text;
+            si.message = message;
 
 
             //  Если нет сообщения и отсылаемого файла продолжать процедуру отправки нет смысла.
             if (String.IsNullOrEmpty(si.message) == true && obj==null) return;
 
-            byte[] _obj_arr;
-           // if (obj != null)
-           // {
+            byte[] _obj_arr;// = new byte[10];
+            if (obj != null)
+            {
                 BinaryFormatter _bf = new BinaryFormatter();
                 MemoryStream _ms = new MemoryStream();
                 _bf.Serialize(_ms, obj);
@@ -242,7 +242,13 @@ namespace DataBase
                 _obj_arr = _ms.ToArray();
                 _ms.Close();
                 
-           // }
+           }
+            else
+            {
+                si.datasize = 0;
+                _obj_arr = null;
+
+            }
 
             BinaryFormatter bf = new BinaryFormatter();
             MemoryStream ms = new MemoryStream();

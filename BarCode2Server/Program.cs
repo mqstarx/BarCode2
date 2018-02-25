@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataBase;
 
 namespace BarCode2Server
 {
     class Program
     {
-        
+        static TcpModule _tcpMod;
         static void Main(string[] args)
         {
-            DataBase.TcpModule _tcpMod = new DataBase.TcpModule();
+             _tcpMod = new DataBase.TcpModule();
             _tcpMod.Receive += _tcpMod_Receive;
             _tcpMod.Accept += _tcpMod_Accept;
             _tcpMod.Connected += _tcpMod_Connected;
@@ -35,8 +36,14 @@ namespace BarCode2Server
 
         private static void _tcpMod_Receive(object sender, DataBase.ReceiveEventArgs e)
         {
-            DataBase.SerialItem si = (DataBase.SerialItem)e.Object;
-            Console.WriteLine("Data Recieved: " + si.Stest.Count );
+            if (e.sendInfo.message == "ASKDICT")
+            {
+                // TcpModule tcp = (TcpModule)sender;
+                Dictionary di = new Dictionary();
+                di.ReadFromIni();
+                _tcpMod.SendData(di, "ASKDICTOK");
+            }
+            
         }
 
         private static void _tcpMod_Accept(object sender)
