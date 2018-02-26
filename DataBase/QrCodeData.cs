@@ -68,6 +68,7 @@ namespace DataBase
                 if(!String.IsNullOrEmpty(m_ListQrItems[i].Type)&&!String.IsNullOrEmpty((m_ListQrItems[i].Value)))
                     packet_data += m_ListQrItems[i].Type + m_ListQrItems[i].Value;
             }
+            //добавление входящих пакетов
             if (m_ListInPackets != null && !header)
             {
                 for (int j = 0; j < m_ListInPackets.Count; j++)
