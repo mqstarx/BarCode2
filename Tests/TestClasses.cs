@@ -40,7 +40,46 @@ namespace Tests
             Dictionary di = new Dictionary();
             di.ReadFromIni();
             //assert
-            Assert.AreEqual(test_count, di.DictionaryDataBase.Count);
+            Assert.AreEqual(test_count>0, di.DictionaryDataBase.Count>0);
+        }
+        [TestMethod]
+        public void GenerateQrCodeTest()
+        {
+            //arrange
+            QrCodeData qr = new QrCodeData();
+            qr.AddQritem(new QrItem("P", "01"));
+            qr.AddQritem(new QrItem("N", "02"));
+            QrCodeData qr1 = new QrCodeData();
+            qr1.AddQritem(new QrItem("P", "01"));
+            qr1.AddQritem(new QrItem("N", "02"));
+            qr.AddQrInPacket(qr1);
+            string expected = "FFX021P01N02FFY006P01N02FYYFXX";
+            //act
+
+            string tested = qr.GenerateQrCode(false);
+
+            //assert
+            Assert.AreEqual(expected, tested);
+        }
+       
+        [TestMethod]
+        public void GenerateQrCodeTestNullEmptyString()
+        {
+            //arrange
+            QrCodeData qr = new QrCodeData();
+            qr.AddQritem(new QrItem("P", "01"));
+            qr.AddQritem(new QrItem("N", "02"));
+            QrCodeData qr1 = new QrCodeData();
+            qr1.AddQritem(new QrItem("P", "01"));
+            qr1.AddQritem(new QrItem(null, ""));
+            qr.AddQrInPacket(qr1);
+            string expected = "FFX018P01N02FFY003P01FYYFXX";
+            //act
+
+            string tested = qr.GenerateQrCode(false);
+
+            //assert
+            Assert.AreEqual(expected, tested);
         }
     }
 }

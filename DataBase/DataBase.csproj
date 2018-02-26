@@ -42,7 +42,8 @@
   <ItemGroup>
     <Compile Include="Dictionary.cs" />
     <Compile Include="IniFile.cs" />
-    <Compile Include="SerialItem.cs" />
+    <Compile Include="QrCodeData.cs" />
+    <Compile Include="QrItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TcpModule.cs" />
   </ItemGroup>

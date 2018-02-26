@@ -13,13 +13,13 @@ namespace BarCode2
 {
     public partial class MainForm : Form
     {
-        SerialItem si;
+        QrItem si;
         Dictionary m_DbDict;
         DataBase.TcpModule tcp;
         public MainForm()
         {
             InitializeComponent();
-             si = new DataBase.SerialItem();
+          
            // for (int i = 0; i < 2; i++)
           //  { si.Stest.Add("qweqweqweqweqweqweqweqwe"); si.Test.Add(i * 78); }
             tcp = new DataBase.TcpModule();

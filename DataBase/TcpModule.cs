@@ -18,14 +18,12 @@ namespace DataBase
     {
         private SendInfo _sendinfo;
         private object _object;
-        public ReceiveEventArgs(SendInfo sendinfo)
+        public ReceiveEventArgs(SendInfo sendinfo,object obj)
         {
             _sendinfo = sendinfo;
-        }
-        public ReceiveEventArgs(object obj)
-        {
             _object = obj;
         }
+       
         public object Object
         {
             get { return _object; }
@@ -453,7 +451,12 @@ namespace DataBase
 
 
                     if (Receive != null)
-                        Receive(this, new ReceiveEventArgs(obj));
+                    {
+                        
+                        Receive(this, new ReceiveEventArgs(sc,obj));
+                       
+
+                    }
 
                     myTcpClient.buffer = new byte[global.LENGTHHEADER];
                     ns.BeginRead(myTcpClient.buffer, 0, myTcpClient.buffer.Length, new AsyncCallback(ReadCallback), myTcpClient);

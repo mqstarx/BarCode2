@@ -41,6 +41,8 @@ namespace BarCode2Server
                 // TcpModule tcp = (TcpModule)sender;
                 Dictionary di = new Dictionary();
                 di.ReadFromIni();
+                TcpModule ccc = (TcpModule)sender;
+                
                 _tcpMod.SendData(di, "ASKDICTOK");
             }
             
