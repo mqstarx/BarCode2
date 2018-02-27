@@ -13,20 +13,26 @@ namespace BarCode2
 {
     public partial class MainForm : Form
     {
-        QrItem si;
+        DataBasesCollection m_DbCollection;
         Dictionary m_DbDict;
-        DataBase.TcpModule tcp;
+        TcpModule m_tcpModule;
+        QrProcessor m_QrProcessor;
+        private List<char> QrPacket;
+
         public MainForm()
         {
             InitializeComponent();
-          
-           // for (int i = 0; i < 2; i++)
-          //  { si.Stest.Add("qweqweqweqweqweqweqweqwe"); si.Test.Add(i * 78); }
-            tcp = new DataBase.TcpModule();
-            tcp.Connected += Tcp_Connected;
-            tcp.Receive += Tcp_Receive;
+
+            QrPacket = new List<char>();
+            m_QrProcessor = new QrProcessor();
+            m_tcpModule = new DataBase.TcpModule();
+            m_tcpModule.Connected += Tcp_Connected;
+            m_tcpModule.Receive += Tcp_Receive;
+            m_DbDict = new Dictionary();
+            m_DbDict.ReadFromIni();
+
+            QrCodeData test = new QrCodeData();
             
-           
             
         }
 
@@ -45,16 +51,24 @@ namespace BarCode2
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //  for (int i = 0; i < 500; i++)
-            // { si.Stest.Add("qweqweqweqweqweqweqweqwe"); si.Test.Add(i * 78); }
-            // tcp.SendData(si);
-            // tcp.DisconnectClient();
-            tcp.SendData(null, "ASKDICT");
+           
+            m_tcpModule.SendData(null, "ASKDICT");
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            tcp.ConnectClient("127.0.0.1");
+            m_tcpModule.ConnectClient("127.0.0.1");
+        }
+
+        private void MainForm_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            QrPacket.Add(e.KeyChar);
+            QrCodeData test = m_QrProcessor.ParseQrPacket(QrPacket.ToArray(),m_DbDict);
+            if(test!=null)
+            {
+                m_QrProcessor.DrawQrCode(test.GenerateQrCode(false), this.CreateGraphics(), 70, new Point(100, 100), QRCoder.QRCodeGenerator.ECCLevel.L);
+                QrPacket.Clear();
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace DataBase
 {
     [Serializable]
-    class DataBasesCollection
+    public class DataBasesCollection
     {
         private List<DataBase> m_DataBasesCollection;
         private string m_DataBaseName;

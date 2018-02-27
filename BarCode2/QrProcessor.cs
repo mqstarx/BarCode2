@@ -30,7 +30,7 @@ namespace BarCode2
         {
             QRCoder.QRCodeData qr_data = qgen.CreateQrCode(data, err_cor);
             qrCode = new QRCoder.QRCode(qr_data);
-            bitmap = qrCode.GetGraphic(25);
+            bitmap = qrCode.GetGraphic(z,Color.Black,Color.White,false);
             g.DrawImage(bitmap, p.X, p.Y, z, z);
 
         }
