@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DataBase;
-
+using BarCode2;
 namespace Tests
 {
     [TestClass]
@@ -80,6 +80,39 @@ namespace Tests
 
             //assert
             Assert.AreEqual(expected, tested);
+        }
+        [TestMethod]
+        public void ParseQrCodeTest()
+        {
+            //arrange
+            QrProcessor qrproc = new QrProcessor();
+            Dictionary di = new Dictionary();
+            di.ReadFromIni();
+            string pac = "sdfsdFFX007N001088FXX2342333423";
+            string pac1 = "sdfsdFFX039N001088FFY007N000001FYYFFY007N000002FYYFXX2342333423";
+            //act
+
+            //  string tested = qr.GenerateQrCode(false);
+
+            //assert
+           // Assert.AreEqual(null, qrproc.ParseQrPacket(pac.ToCharArray(), di));
+            Assert.AreEqual("FFX039N001088FFY007N000001FYYFFY007N000002FYYFXX", qrproc.ParseQrPacket(pac1.ToCharArray(), di).GenerateQrCode(false));
+        }
+        [TestMethod]
+        public void FindPacketDataTest()
+        {
+            //arrange
+            QrProcessor qrproc = new QrProcessor();
+            string pac = "sdfsdFFX030N001FFY004P002FYYFFY004P003FYYFXX2342333423";
+           
+
+            //act
+
+            string expected = "N001FFY004P002FYYFFY004P003FYY";
+            string expected1 = "P002";
+            //assert
+            Assert.AreEqual(expected, qrproc.FindPacketData(pac,"FFX","FXX",3));
+            Assert.AreEqual(expected1, qrproc.FindPacketData(expected, "FFY", "FYY", 3));
         }
     }
 }

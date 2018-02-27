@@ -79,6 +79,18 @@ namespace DataBase
             else
                 return 0;
         }
+
+        public string GetTypeDescription(string type)
+        {
+            foreach(DictionaryItem di in m_DictionaryDataBase)
+            {
+                if(di.TypeId == type)
+                {
+                    return di.DataDescr;
+                }
+            }
+            return "Тип данных отсутствует в справочнике";
+        }
     }
 
     /// <summary>

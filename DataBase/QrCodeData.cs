@@ -43,6 +43,10 @@ namespace DataBase
         {
             m_ListQrItems.Add(qr);
         }
+        public void AddQritem(QrItem[] qr)
+        {
+            m_ListQrItems.AddRange(qr);
+        }
         public void AddQrInPacket(QrCodeData qr)
         {
             if (m_ListInPackets == null)

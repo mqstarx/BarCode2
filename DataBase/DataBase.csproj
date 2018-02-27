@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataBasesCollection.cs" />
     <Compile Include="Dictionary.cs" />
     <Compile Include="IniFile.cs" />
     <Compile Include="QrCodeData.cs" />

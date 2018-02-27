@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataBase;
+using System.Text.RegularExpressions;
 
 namespace BarCode2
 {
@@ -25,7 +26,7 @@ namespace BarCode2
         /// <param name="z">размер квадрата</param>
         /// <param name="p">координаты левого верхнего угла</param>
         ///  <param name="err_cor">уровень коррекции ошибок</param>
-        private void DrawQrCode(string data, Graphics g, int z, Point p, QRCoder.QRCodeGenerator.ECCLevel err_cor)
+        public void DrawQrCode(string data, Graphics g, int z, Point p, QRCoder.QRCodeGenerator.ECCLevel err_cor)
         {
             QRCoder.QRCodeData qr_data = qgen.CreateQrCode(data, err_cor);
             qrCode = new QRCoder.QRCode(qr_data);
@@ -33,7 +34,7 @@ namespace BarCode2
             g.DrawImage(bitmap, p.X, p.Y, z, z);
 
         }
-        private void SaveQrCode(string data, string filename, QRCoder.QRCodeGenerator.ECCLevel err_cor)
+        public void SaveQrCode(string data, string filename, QRCoder.QRCodeGenerator.ECCLevel err_cor)
         {
             QRCoder.QRCodeData qr_data = qgen.CreateQrCode(data, err_cor);
             qrCode = new QRCoder.QRCode(qr_data);
@@ -41,110 +42,133 @@ namespace BarCode2
             bitmap.Save(filename);
 
         }
-        /*     private QrCodeData ParseQrPacket(List<char> QrPacket)
-             {
-                 string res = "";
-                 foreach (char c in QrPacket)
-                 {
-                     res += c;
-                 }
-                 QrCodeData _qrResult;
-                 //проверка наличия пакета
-                 if (res.IndexOf("FFX") != -1 && res.IndexOf("FXX") != -1 && res.Length > 9)
-                 {
-                     _qrResult = new QrCodeData();
+
+        /// <summary>
+        /// убирает заголовки и возвращает чистые данные 
+        /// </summary>
+        /// <param name="qrPacketStr">входная строка</param>
+        /// <param name="packet_flag_start">флаг начала пакета</param>
+        /// <param name="packet_flag_end">флаг конца пакета</param>
+        /// <param name="numSymbolsofLenCounter">колличество знаков длины пакета</param>
+        /// <returns></returns>
+        public string FindPacketData(string qrPacketStr, string packet_flag_start, string packet_flag_end,int numSymbolsofLenCounter )
+        {
+            if (IsPacketExist(qrPacketStr,packet_flag_start,packet_flag_end,numSymbolsofLenCounter))
+            {
+                int _beginPacketIndex = qrPacketStr.IndexOf(packet_flag_start) + packet_flag_start.Length+ numSymbolsofLenCounter;
+                int _packetLen = int.Parse(qrPacketStr.Substring(qrPacketStr.IndexOf(packet_flag_start) + packet_flag_start.Length, numSymbolsofLenCounter));
+                if (_packetLen > qrPacketStr.Length -packet_flag_start.Length+numSymbolsofLenCounter+packet_flag_end.Length)
+                    return null;
+
+                return  qrPacketStr.Substring(_beginPacketIndex, _packetLen);
+            }
+            return null;
+        }
+
+        private bool IsPacketExist(string qrPacketStr, string packet_flag_start, string packet_flag_end, int numSymbolsofLenCounter)
+        {
+            if (qrPacketStr.IndexOf(packet_flag_start) != -1 && qrPacketStr.IndexOf(packet_flag_end) != -1 && Regex.Match(qrPacketStr, packet_flag_start + @"\d{3}(.*)" + packet_flag_end).Success)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// Возвращает объект класса Qr -кода. В случае ошибки чтения null
+        /// </summary>
+        /// <param name="QrPacket"></param>
+        /// <returns></returns>
+        public QrCodeData ParseQrPacket(char[] QrPacket,Dictionary dict)
+        {
+            //преобразуем массив символов в строку
+            string qrPacketStr = new string(QrPacket.ToArray());
+            QrCodeData _qrResult =null;
+            qrPacketStr = FindPacketData(qrPacketStr, "FFX", "FXX", 3);
+            //проверка наличия пакета
+            if (qrPacketStr!=null)
+            {
+
+                _qrResult = new QrCodeData();
+
+                if(IsPacketExist(qrPacketStr,"FFY","FYY",3)) // проверка на наличие входящих пакетов
+                {
+
+                    List<string> _inPacketArray = new List<string>();
+                    string _tmpStr = qrPacketStr;
+                    while(IsPacketExist(_tmpStr,"FFY","FYY",3))
+                    {
+                        _inPacketArray.Add(FindPacketData(_tmpStr, "FFY", "FYY", 3));
+                        _tmpStr = _tmpStr.Substring(_tmpStr.IndexOf("FYY")+3);
+                    }
+                   
+                    if(_inPacketArray.Count>0)
+                    {
+                       //добавляем входные пакеты
+                        foreach (string s in _inPacketArray)
+                        {
+                            QrCodeData _inQrData = new QrCodeData();
+                            QrItem[] _qrItem = DictionarySearch(dict, s);
+                            if (_qrItem != null)
+                                _inQrData.AddQritem(_qrItem);
+                            if (_inQrData.ListQrItems.Count > 0)
+                                _qrResult.AddQrInPacket(_inQrData);
+                        }
+                        
+                    }
 
 
-                    //получаем строку без заголовка
-                     string _packetWithoutHeader = res.Substring(res.IndexOf("FFX") + 6, int.Parse(res.Substring(res.IndexOf("FFX") + 3, 3)));
+                    // получаем данные основного пакета
+                    qrPacketStr = qrPacketStr.Substring(0, qrPacketStr.IndexOf("FFY"));
 
-                     string t_packet = datapacket;
-                     List<string> in_pac = new List<string>();
+                }
 
-                     // парсинг входящих пакетов в состав основного пакета
+                 //прогоняем через справочник
+                    QrItem[] _qrItemArr = DictionarySearch(dict, qrPacketStr);
+                    if (_qrItemArr != null)
+                        _qrResult.AddQritem(_qrItemArr);
 
-                     while (t_packet.IndexOf("FFY") != -1 && t_packet.IndexOf("FYY") != -1)
-                     {
-                         in_pac.Add(t_packet.Substring(t_packet.IndexOf("FFY") + 6, int.Parse(res.Substring(res.IndexOf("FFY") + 3, 3))));
-                         t_packet = t_packet.Substring(t_packet.IndexOf("FYY") + 3, t_packet.Length - t_packet.IndexOf("FYY") - 3);
-                     }
-                     if (in_pac.Count == 0)
-                     {
-                         foreach (PacketDataType p in DbList)
-                         {
-                             if (datapacket.IndexOf(p.TypeId) != -1)
-                             {
-                                 string d = datapacket.Substring(datapacket.IndexOf(p.TypeId) + 1, p.DataLen);
-                                 if (p.KeyValue.Count > 0)
-                                 {
-                                     foreach (KeyValuePair<string, string> kv in p.KeyValue)
-                                     {
-                                         if (kv.Key == d)
-                                             list_ident_data.Items.Add(p.DataDescr + ": " + kv.Value);
-                                     }
-                                 }
-                                 else
-                                 {
-                                     list_ident_data.Items.Add(p.DataDescr + ": " + d);
-                                 }
 
-                             }
-                         }
-                         QrPacket.Clear();
-                     }
-                     else
-                     {
-                         string main_packet = datapacket.Substring(0, datapacket.IndexOf("FFY"));
-                         foreach (PacketDataType p in DbList)
-                         {
-                             if (main_packet.IndexOf(p.TypeId) != -1)
-                             {
-                                 string d = main_packet.Substring(main_packet.IndexOf(p.TypeId) + 1, p.DataLen);
-                                 if (p.KeyValue.Count > 0)
-                                 {
-                                     foreach (KeyValuePair<string, string> kv in p.KeyValue)
-                                     {
-                                         if (kv.Key == d)
-                                             list_ident_data.Items.Add(p.DataDescr + ": " + kv.Value);
-                                     }
-                                 }
-                                 else
-                                 {
-                                     list_ident_data.Items.Add(p.DataDescr + ": " + d);
-                                 }
 
-                             }
-                         }
-                         foreach (string s in in_pac)
-                         {
 
-                             foreach (PacketDataType p in DbList)
-                             {
-                                 if (s.IndexOf(p.TypeId) != -1)
-                                 {
-                                     string d = s.Substring(s.IndexOf(p.TypeId) + 1, p.DataLen);
-                                     if (p.KeyValue.Count > 0)
-                                     {
-                                         foreach (KeyValuePair<string, string> kv in p.KeyValue)
-                                         {
-                                             if (kv.Key == d)
-                                                 list_ident_data.Items.Add(p.DataDescr + ": " + kv.Value);
-                                         }
-                                     }
-                                     else
-                                     {
-                                         list_ident_data.Items.Add(p.DataDescr + ": " + d);
-                                     }
 
-                                 }
-                             }
-                         }
+                    if (_qrResult.ListQrItems.Count == 0)
+                    {
+                        _qrResult = null;
+                    }
+              
 
-                         QrPacket.Clear();
-                     }
 
-                 }
-             }
-         */
+            }
+            return _qrResult;
+        }
+
+        private  QrItem[]  DictionarySearch(Dictionary dict, string qrPacketStr)
+        {
+            List<QrItem> _qrList = new List<QrItem>();
+            foreach (DictionaryItem d in dict.DictionaryDataBase)
+            {
+                if (qrPacketStr.IndexOf(d.TypeId) != -1)
+                {
+                    if (qrPacketStr.Length - qrPacketStr.IndexOf(d.TypeId) > d.DataLen) // если остаток пакета больше заявленной длинны
+                    {
+                        string pac_data = qrPacketStr.Substring(qrPacketStr.IndexOf(d.TypeId) + d.TypeLen, d.DataLen); //вычленяем данные записываем в класс
+                                                                                                                    
+                        _qrList.Add(new QrItem(d.TypeId, pac_data));
+
+                    }
+                }
+            }
+            if (_qrList.Count > 0)
+                return _qrList.ToArray();
+            else
+                return null;
+        }
+
+       
+
+
     }
 }
