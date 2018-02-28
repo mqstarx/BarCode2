@@ -10,7 +10,7 @@ namespace DataBase
     public class DataBasesCollection
     {
         private List<DataBase> m_DataBasesCollection;
-        private string m_DataBaseName;
+        
 
         public List<DataBase> DataBaseCollection
         {
@@ -21,21 +21,14 @@ namespace DataBase
             
         }
 
-        public string DataBaseName
-        {
-            get
-            {
-                return m_DataBaseName;
-            }
+       
 
-           
-        }
-
-        public DataBasesCollection(string name)
+        public DataBasesCollection()
         {
-            m_DataBaseName = name;
+          
             m_DataBasesCollection = new List<DataBase>();
         }
+       
     }
     [Serializable]
     public class DataBase
@@ -44,6 +37,7 @@ namespace DataBase
         private List<DataBaseItem> m_DataBaseItems;
         private DataBase m_DataBaseNode;
         private DateTime m_CreationDate;
+        private string m_DataBaseName;
 
         public string TypeOfData
         {
@@ -80,7 +74,7 @@ namespace DataBase
                 m_DataBaseNode = value;
             }
         }
-        public DataBase(string typeofdata)
+        public DataBase(string typeofdata,string strname)
         {
             m_TypeOfData = typeofdata;
             m_CreationDate = DateTime.Now;

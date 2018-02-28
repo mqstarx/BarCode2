@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataBase;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace BarCode2
 {
@@ -30,7 +31,7 @@ namespace BarCode2
         {
             QRCoder.QRCodeData qr_data = qgen.CreateQrCode(data, err_cor);
             qrCode = new QRCoder.QRCode(qr_data);
-            bitmap = qrCode.GetGraphic(z,Color.Black,Color.White,false);
+            bitmap = qrCode.GetGraphic(10,Color.Black,Color.White,false);
             g.DrawImage(bitmap, p.X, p.Y, z, z);
 
         }
@@ -38,7 +39,7 @@ namespace BarCode2
         {
             QRCoder.QRCodeData qr_data = qgen.CreateQrCode(data, err_cor);
             qrCode = new QRCoder.QRCode(qr_data);
-            bitmap = qrCode.GetGraphic(25);
+            bitmap = qrCode.GetGraphic(100, Color.Black, Color.White, false);
             bitmap.Save(filename);
 
         }
@@ -85,6 +86,7 @@ namespace BarCode2
         {
             //преобразуем массив символов в строку
             string qrPacketStr = new string(QrPacket.ToArray());
+            qrPacketStr = Functions.ConvertEngl(qrPacketStr);
             QrCodeData _qrResult =null;
             qrPacketStr = FindPacketData(qrPacketStr, "FFX", "FXX", 3);
             //проверка наличия пакета
@@ -168,7 +170,71 @@ namespace BarCode2
         }
 
        
+        public List<string> IdentificateQrData(QrCodeData qr,Dictionary dict)
+        {
+            List<string> m_result = new List<string>();
+            if (qr != null && dict != null)
+            {
+                if (qr.ListQrItems.Count > 0 && dict.DictionaryDataBase.Count > 0)
+                {
+                    foreach(QrItem q in qr.ListQrItems)
+                    {
+                        foreach(DictionaryItem d in dict.DictionaryDataBase)
+                        {
+                            if(q.Type == d.TypeId)
+                            {
+                                if (d.KeyValues == null)
+                                {
+                                    if(!d.Is_date)
+                                        m_result.Add(d.DataDescr + ":" + q.Value);
+                                    else
+                                        m_result.Add(d.DataDescr + ":" + ParseDate(q.Value).ToString("dd:MM:yyyy"));
+                                }
+                                else
+                                {
+                                    foreach (ArrayItem ar in d.KeyValues)
+                                    {
+                                        if (ar.Key == q.Value)
+                                        {
+                                            m_result.Add(d.DataDescr + ":" + ar.Value);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                    return null;
+            }
+            else
+                return null;
 
+            return m_result;
+        }
 
+        private DateTime ParseDate(string s)
+        {
+            if (s.Length != 6)
+                return DateTime.MaxValue;
+            else
+            {
+                try
+                {
+                    int.Parse(s);
+                    int year = int.Parse(s.Substring(4, 2));
+                    if (year > 70)
+                        year += 1900;
+                    else
+                        year += 2000;
+                    DateTime d = new DateTime(year, int.Parse(s.Substring(2, 2)), int.Parse(s.Substring(0, 2)));
+                    return d;
+                    
+
+                }
+                catch { return DateTime.MaxValue; }
+            }
+        }
+         
     }
 }
