@@ -122,5 +122,19 @@ namespace Tests
             DataBase.DataBase ddd1 = new DataBase.DataBase("P1", "test1", "1234");
             Assert.AreNotEqual(ddd.BaseUniqId, ddd1.BaseUniqId);
         }
+        [TestMethod]
+        public void IsQrItemInBaseTest()
+        {
+            //arrange
+            DataBasesCollection dbCollection = new DataBasesCollection();
+            dbCollection.AddDataBase(new DataBase.DataBase("P", "typeDescr", "Test1"));
+            dbCollection.AddDataBaseToNode(new DataBase.DataBase("D", "typeDescrwww", "Test2"), dbCollection.DataBaseCollection[0].BaseUniqId);
+            dbCollection.DataBaseCollection[0].DataBaseNode.DataBaseCollection[0].DataBaseItems.Add(new DataBaseItem(new QrItem("D", "1234"),"FFSSDASDASSSSDAS"));
+            dbCollection.DataBaseCollection[0].DataBaseNode.DataBaseCollection[0].DataBaseItems.Add(new DataBaseItem(new QrItem("D", "12345"), "FFSSDASDASSSSDAS"));
+
+            Assert.AreEqual(true,dbCollection.IsQrItemInBase(new QrItem("D", "1234"), dbCollection));
+            Assert.AreNotEqual(true, dbCollection.IsQrItemInBase(new QrItem("P", "1234"), dbCollection));
+
+        }
     }
 }

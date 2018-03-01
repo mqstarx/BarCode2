@@ -51,7 +51,7 @@ namespace DataBase
                     return true;
                 }
                
-                    DataBase dbNode = SearchDb(d, dbId);
+                    DataBase dbNode = SearchDbNodeInDb(d, dbId);
                 if(dbNode!=null)
                 {
                     if (dbNode.DataBaseNode == null)
@@ -66,7 +66,13 @@ namespace DataBase
             return true;
 
         }
-        private DataBase SearchDb(DataBase db,string id)
+        /// <summary>
+        /// поиск 
+        /// </summary>
+        /// <param name="db">База данных в ветке которой ведется поиск</param>
+        /// <param name="id">Уникальный ид базы</param>
+        /// <returns>Возвращает найденную базу</returns>
+        private DataBase SearchDbNodeInDb(DataBase db,string id)
         {
             if(db.DataBaseNode!=null)
             {
@@ -74,7 +80,7 @@ namespace DataBase
                 {
                     if (d.BaseUniqId == id)
                         return d;
-                    DataBase dbNode = SearchDb(d, id);
+                    DataBase dbNode = SearchDbNodeInDb(d, id);
                     if (dbNode != null)
                         return dbNode;
 
@@ -83,6 +89,23 @@ namespace DataBase
             }
             return null;
                 
+        }
+
+        public bool IsQrItemInBase(QrItem qrItem, DataBasesCollection dbCollection)
+        {
+            foreach(DataBase db in dbCollection.DataBaseCollection)
+            {
+                foreach(DataBaseItem di in db.DataBaseItems)
+                {
+                    if (di.QrItem.Type == qrItem.Type && di.QrItem.Value == qrItem.Value)
+                        return true;
+                }
+                if(db.DataBaseNode!=null)
+                {
+                    return IsQrItemInBase(qrItem, db.DataBaseNode);
+                }
+            }
+            return false;
         }
 
     }
@@ -117,8 +140,11 @@ namespace DataBase
             {
                 return m_DataBaseItems;
             }
+            set
+            {
+                 m_DataBaseItems =value;
+            }
 
-          
         }
 
         public DataBasesCollection DataBaseNode
