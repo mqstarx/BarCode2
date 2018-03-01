@@ -114,5 +114,13 @@ namespace Tests
             Assert.AreEqual(expected, qrproc.FindPacketData(pac,"FFX","FXX",3));
             Assert.AreEqual(expected1, qrproc.FindPacketData(expected, "FFY", "FYY", 3));
         }
+        [TestMethod]
+        public void DataBaseTestConstruktor()
+        {
+            //arrange
+            DataBase.DataBase ddd = new DataBase.DataBase("P", "test", "1235");
+            DataBase.DataBase ddd1 = new DataBase.DataBase("P1", "test1", "1234");
+            Assert.AreNotEqual(ddd.BaseUniqId, ddd1.BaseUniqId);
+        }
     }
 }

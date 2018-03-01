@@ -179,26 +179,68 @@ namespace BarCode2
 
         private void addDabaseBtn_Click(object sender, EventArgs e)
         {
-            if (m_DbCollection == null)
+            AddEditDataBase add = new AddEditDataBase();
+            add.DictDb = m_DbDict;
+            if(add.ShowDialog()== DialogResult.OK)
             {
-                if (NewDataBaseNameTxb.Text.Length > 0)
+                if (m_DbCollection == null)
                 {
-                    //m_DbCollection.DataBaseCollection.Add(new DataBase.DataBase())
-                 //   DataBaseCollectionListBox.Items.Add(new DataBasesCollection(NewDataBaseNameTxb.Text));
+                    m_DbCollection = new DataBasesCollection();
                 }
+                    m_DbCollection.AddDataBase(new DataBase.DataBase(((DictionaryItem)add.typeDataCmbx.SelectedItem).TypeId, ((DictionaryItem)add.typeDataCmbx.SelectedItem).DataDescr, add.db_nameTxb.Text));
+                    RefreshDbBtn_Click(null, null);
+
+
             }
+
+            
         }
 
         private void RefreshDbBtn_Click(object sender, EventArgs e)
         {
-           // if (m_DbCollection != null)
-            //{
-              //  DataBaseCollectionListBox.Items.Clear();
-              //  foreach (DataBase.DataBase d in m_DbCollection.DataBaseCollection)
-               /// {
-               //     DataBaseCollectionListBox.Items.Add(d);
-               // }
-          //  }
+            if (m_DbCollection != null)
+            {
+                DataBasesCollectionTree.Nodes.Clear();
+               foreach (DataBase.DataBase d in m_DbCollection.DataBaseCollection)
+                {
+                    TreeNode node = new TreeNode(d.ToString());
+                    node.Tag = d;
+                    addNodeToTree(d, node);
+                    DataBasesCollectionTree.Nodes.Add(node);
+                }
+            }
+        }
+
+        private void addNodeToTree(DataBase.DataBase d, TreeNode node)
+        {
+            if (d.DataBaseNode != null)
+            {
+                foreach (DataBase.DataBase dn in d.DataBaseNode.DataBaseCollection)
+                {
+                    TreeNode node1 = new TreeNode(dn.ToString());
+                    node1.Tag = dn;
+                    addNodeToTree(dn, node1);
+                    node.Nodes.Add(node1);
+                   
+                }
+            }
+        }
+
+        private void добавитьВложеннуюБДToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (DataBasesCollectionTree.SelectedNode != null)
+            {
+               if(m_DbCollection!=null)
+                {
+                    AddEditDataBase add = new AddEditDataBase();
+                    add.DictDb = m_DbDict;
+                    if (add.ShowDialog() == DialogResult.OK)
+                    {
+                        m_DbCollection.AddDataBaseToNode(new DataBase.DataBase(((DictionaryItem)add.typeDataCmbx.SelectedItem).TypeId, ((DictionaryItem)add.typeDataCmbx.SelectedItem).DataDescr, add.db_nameTxb.Text), ((DataBase.DataBase)DataBasesCollectionTree.SelectedNode.Tag).BaseUniqId);
+                        RefreshDbBtn_Click(null, null);
+                    }
+                }
+            }
         }
     }
 }

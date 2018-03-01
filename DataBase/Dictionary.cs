@@ -230,6 +230,11 @@ namespace DataBase
                 m_sortIndex = value;
             }
         }
+
+        public override string ToString()
+        {
+            return m_dataDescr + " (" + m_typeId + ")";
+        }
     }
     /// <summary>
     /// 

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.statusStripBar = new System.Windows.Forms.StatusStrip();
             this.connectionStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.mainTabControl = new System.Windows.Forms.TabControl();
@@ -41,17 +42,19 @@
             this.label2 = new System.Windows.Forms.Label();
             this.dictionaryTreeOnPrintTab = new System.Windows.Forms.TreeView();
             this.DataBasePageTab = new System.Windows.Forms.TabPage();
-            this.label3 = new System.Windows.Forms.Label();
-            this.DataBaseCollectionListBox = new System.Windows.Forms.ListBox();
-            this.addDabaseBtn = new System.Windows.Forms.Button();
             this.RefreshDbBtn = new System.Windows.Forms.Button();
-            this.NewDataBaseNameTxb = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
+            this.addDabaseBtn = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.DataBasItemCollectionListBox = new System.Windows.Forms.ListBox();
+            this.DataBasesCollectionTree = new System.Windows.Forms.TreeView();
+            this.contextMenuDataBaseTree = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.добавитьВложеннуюБДToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStripBar.SuspendLayout();
             this.mainTabControl.SuspendLayout();
             this.identificationTab.SuspendLayout();
             this.PrintPageTab.SuspendLayout();
             this.DataBasePageTab.SuspendLayout();
+            this.contextMenuDataBaseTree.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStripBar
@@ -161,7 +164,7 @@
             // 
             // RefreshDictionary
             // 
-            this.RefreshDictionary.Location = new System.Drawing.Point(85, 7);
+            this.RefreshDictionary.Location = new System.Drawing.Point(174, 7);
             this.RefreshDictionary.Name = "RefreshDictionary";
             this.RefreshDictionary.Size = new System.Drawing.Size(95, 23);
             this.RefreshDictionary.TabIndex = 2;
@@ -184,53 +187,22 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.dictionaryTreeOnPrintTab.Location = new System.Drawing.Point(8, 36);
             this.dictionaryTreeOnPrintTab.Name = "dictionaryTreeOnPrintTab";
-            this.dictionaryTreeOnPrintTab.Size = new System.Drawing.Size(172, 446);
+            this.dictionaryTreeOnPrintTab.Size = new System.Drawing.Size(261, 446);
             this.dictionaryTreeOnPrintTab.TabIndex = 0;
             // 
             // DataBasePageTab
             // 
-            this.DataBasePageTab.Controls.Add(this.label4);
-            this.DataBasePageTab.Controls.Add(this.NewDataBaseNameTxb);
+            this.DataBasePageTab.Controls.Add(this.DataBasesCollectionTree);
             this.DataBasePageTab.Controls.Add(this.RefreshDbBtn);
             this.DataBasePageTab.Controls.Add(this.addDabaseBtn);
             this.DataBasePageTab.Controls.Add(this.label3);
-            this.DataBasePageTab.Controls.Add(this.DataBaseCollectionListBox);
+            this.DataBasePageTab.Controls.Add(this.DataBasItemCollectionListBox);
             this.DataBasePageTab.Location = new System.Drawing.Point(4, 22);
             this.DataBasePageTab.Name = "DataBasePageTab";
             this.DataBasePageTab.Size = new System.Drawing.Size(943, 488);
             this.DataBasePageTab.TabIndex = 2;
             this.DataBasePageTab.Text = "БазаДанных";
             this.DataBasePageTab.UseVisualStyleBackColor = true;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 14);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(108, 13);
-            this.label3.TabIndex = 1;
-            this.label3.Text = "Список баз данных:";
-            // 
-            // DataBaseCollectionListBox
-            // 
-            this.DataBaseCollectionListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.DataBaseCollectionListBox.FormattingEnabled = true;
-            this.DataBaseCollectionListBox.Location = new System.Drawing.Point(8, 35);
-            this.DataBaseCollectionListBox.Name = "DataBaseCollectionListBox";
-            this.DataBaseCollectionListBox.Size = new System.Drawing.Size(172, 381);
-            this.DataBaseCollectionListBox.TabIndex = 0;
-            // 
-            // addDabaseBtn
-            // 
-            this.addDabaseBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.addDabaseBtn.Location = new System.Drawing.Point(8, 453);
-            this.addDabaseBtn.Name = "addDabaseBtn";
-            this.addDabaseBtn.Size = new System.Drawing.Size(172, 23);
-            this.addDabaseBtn.TabIndex = 2;
-            this.addDabaseBtn.Text = "Добавить базу";
-            this.addDabaseBtn.UseVisualStyleBackColor = true;
-            this.addDabaseBtn.Click += new System.EventHandler(this.addDabaseBtn_Click);
             // 
             // RefreshDbBtn
             // 
@@ -242,23 +214,59 @@
             this.RefreshDbBtn.UseVisualStyleBackColor = true;
             this.RefreshDbBtn.Click += new System.EventHandler(this.RefreshDbBtn_Click);
             // 
-            // NewDataBaseNameTxb
+            // addDabaseBtn
             // 
-            this.NewDataBaseNameTxb.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.NewDataBaseNameTxb.Location = new System.Drawing.Point(75, 427);
-            this.NewDataBaseNameTxb.Name = "NewDataBaseNameTxb";
-            this.NewDataBaseNameTxb.Size = new System.Drawing.Size(105, 20);
-            this.NewDataBaseNameTxb.TabIndex = 4;
+            this.addDabaseBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.addDabaseBtn.Location = new System.Drawing.Point(8, 462);
+            this.addDabaseBtn.Name = "addDabaseBtn";
+            this.addDabaseBtn.Size = new System.Drawing.Size(261, 23);
+            this.addDabaseBtn.TabIndex = 2;
+            this.addDabaseBtn.Text = "Добавить базу";
+            this.addDabaseBtn.UseVisualStyleBackColor = true;
+            this.addDabaseBtn.Click += new System.EventHandler(this.addDabaseBtn_Click);
             // 
-            // label4
+            // label3
             // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 430);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(61, 13);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "Имя базы:";
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 14);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(108, 13);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "Список баз данных:";
+            // 
+            // DataBasItemCollectionListBox
+            // 
+            this.DataBasItemCollectionListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.DataBasItemCollectionListBox.FormattingEnabled = true;
+            this.DataBasItemCollectionListBox.Location = new System.Drawing.Point(477, 52);
+            this.DataBasItemCollectionListBox.Name = "DataBasItemCollectionListBox";
+            this.DataBasItemCollectionListBox.Size = new System.Drawing.Size(179, 407);
+            this.DataBasItemCollectionListBox.TabIndex = 0;
+            // 
+            // DataBasesCollectionTree
+            // 
+            this.DataBasesCollectionTree.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.DataBasesCollectionTree.ContextMenuStrip = this.contextMenuDataBaseTree;
+            this.DataBasesCollectionTree.Location = new System.Drawing.Point(23, 52);
+            this.DataBasesCollectionTree.Name = "DataBasesCollectionTree";
+            this.DataBasesCollectionTree.Size = new System.Drawing.Size(448, 404);
+            this.DataBasesCollectionTree.TabIndex = 4;
+            // 
+            // contextMenuDataBaseTree
+            // 
+            this.contextMenuDataBaseTree.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.добавитьВложеннуюБДToolStripMenuItem});
+            this.contextMenuDataBaseTree.Name = "contextMenuDataBaseTree";
+            this.contextMenuDataBaseTree.Size = new System.Drawing.Size(213, 26);
+            // 
+            // добавитьВложеннуюБДToolStripMenuItem
+            // 
+            this.добавитьВложеннуюБДToolStripMenuItem.Name = "добавитьВложеннуюБДToolStripMenuItem";
+            this.добавитьВложеннуюБДToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.добавитьВложеннуюБДToolStripMenuItem.Text = "Добавить вложенную БД";
+            this.добавитьВложеннуюБДToolStripMenuItem.Click += new System.EventHandler(this.добавитьВложеннуюБДToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -280,6 +288,7 @@
             this.PrintPageTab.PerformLayout();
             this.DataBasePageTab.ResumeLayout(false);
             this.DataBasePageTab.PerformLayout();
+            this.contextMenuDataBaseTree.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -301,11 +310,12 @@
         private System.Windows.Forms.Button RefreshDictionary;
         private System.Windows.Forms.TabPage DataBasePageTab;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ListBox DataBaseCollectionListBox;
+        private System.Windows.Forms.ListBox DataBasItemCollectionListBox;
         private System.Windows.Forms.Button addDabaseBtn;
         private System.Windows.Forms.Button RefreshDbBtn;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox NewDataBaseNameTxb;
+        private System.Windows.Forms.TreeView DataBasesCollectionTree;
+        private System.Windows.Forms.ContextMenuStrip contextMenuDataBaseTree;
+        private System.Windows.Forms.ToolStripMenuItem добавитьВложеннуюБДToolStripMenuItem;
     }
 }
 

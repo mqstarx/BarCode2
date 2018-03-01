@@ -28,17 +28,76 @@ namespace DataBase
           
             m_DataBasesCollection = new List<DataBase>();
         }
-       
+        public bool AddDataBase(DataBase newDb)
+        {
+            foreach(DataBase d in m_DataBasesCollection)
+            {
+                if (d.Equals(newDb))
+                    return false;
+            }
+            m_DataBasesCollection.Add(newDb);
+            return true;
+
+        }
+        public bool AddDataBaseToNode(DataBase newDb,string dbId)
+        {
+            foreach (DataBase d in m_DataBasesCollection)
+            {
+                if(d.BaseUniqId==dbId)
+                {
+                    if (d.DataBaseNode == null)
+                        d.DataBaseNode = new DataBasesCollection();
+                    d.DataBaseNode.AddDataBase(newDb);
+                    return true;
+                }
+               
+                    DataBase dbNode = SearchDb(d, dbId);
+                if(dbNode!=null)
+                {
+                    if (dbNode.DataBaseNode == null)
+                        dbNode.DataBaseNode = new DataBasesCollection();
+                    dbNode.DataBaseNode.AddDataBase(newDb);
+                    return true;
+                }
+
+               
+            }
+            m_DataBasesCollection.Add(newDb);
+            return true;
+
+        }
+        private DataBase SearchDb(DataBase db,string id)
+        {
+            if(db.DataBaseNode!=null)
+            {
+                foreach(DataBase d in db.DataBaseNode.DataBaseCollection)
+                {
+                    if (d.BaseUniqId == id)
+                        return d;
+                    DataBase dbNode = SearchDb(d, id);
+                    if (dbNode != null)
+                        return dbNode;
+
+                }
+                return null;
+            }
+            return null;
+                
+        }
+
     }
     [Serializable]
     public class DataBase
     {
         private string m_TypeOfData;
+        private string m_TypeDescr;
         private List<DataBaseItem> m_DataBaseItems;
-        private DataBase m_DataBaseNode;
+        private DataBasesCollection m_DataBaseNode;
         private DateTime m_CreationDate;
         private string m_DataBaseName;
+        private string m_BaseUniqId;
 
+        //из справочника
         public string TypeOfData
         {
             get
@@ -62,7 +121,7 @@ namespace DataBase
           
         }
 
-        public DataBase DataBaseNode
+        public DataBasesCollection DataBaseNode
         {
             get
             {
@@ -74,13 +133,62 @@ namespace DataBase
                 m_DataBaseNode = value;
             }
         }
-        public DataBase(string typeofdata,string strname)
+
+        public string TypeDescr
+        {
+            get
+            {
+                return m_TypeDescr;
+            }
+
+            set
+            {
+                m_TypeDescr = value;
+            }
+        }
+
+        public string BaseUniqId
+        {
+            get
+            {
+                return m_BaseUniqId;
+            }
+
+           
+        }
+
+        public string DataBaseName
+        {
+            get
+            {
+                return m_DataBaseName;
+            }
+
+           
+        }
+
+        public DataBase(string typeofdata,string typedescr,string strname)
         {
             m_TypeOfData = typeofdata;
             m_CreationDate = DateTime.Now;
             m_DataBaseItems = new List<DataBaseItem>();
             m_DataBaseNode = null;
-
+            m_DataBaseName = strname;
+            m_TypeDescr = typedescr;
+            Random rnd = new Random((int)m_CreationDate.Ticks+DataBaseName.GetHashCode());
+            m_BaseUniqId = rnd.Next().ToString();
+        }
+        public override string ToString()
+        {
+            return DataBaseName + " (Тип: "+ m_TypeDescr + "[" + m_TypeOfData + "]" + " Дата создания:" + m_CreationDate.ToString("dd.MM.yyyy") + ")";
+        }
+        public override bool Equals(object obj)
+        {
+            DataBase _db = (DataBase)obj;
+            if (_db.BaseUniqId == m_BaseUniqId && _db.DataBaseName ==m_DataBaseName)
+                return true;
+            else
+                return false;
         }
     }
     [Serializable]
