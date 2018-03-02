@@ -52,6 +52,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddEditQrCodeData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddEditQrCodeData.Designer.cs">
+      <DependentUpon>AddEditQrCodeData.cs</DependentUpon>
+    </Compile>
     <Compile Include="AddEditDataBase.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -68,6 +74,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QrProcessor.cs" />
+    <EmbeddedResource Include="AddEditQrCodeData.resx">
+      <DependentUpon>AddEditQrCodeData.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AddEditDataBase.resx">
       <DependentUpon>AddEditDataBase.cs</DependentUpon>
     </EmbeddedResource>
@@ -82,6 +91,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\DataSources\DataBase.DataBase.datasource" />
     <None Include="Properties\DataSources\DataBase.DataBasesCollection.datasource" />
@@ -103,6 +113,9 @@
       <Project>{c67da57c-1652-484e-919a-941d85267f87}</Project>
       <Name>DataBase</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icon1.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

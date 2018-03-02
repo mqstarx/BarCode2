@@ -50,7 +50,7 @@ namespace DataBase
                         string[] arrayvalues = ini.ReadINI(datatypesarray[i], "array").Split(';');
                         for (int j = 0; j < arrayvalues.Length; j++)
                         {
-                            di.KeyValues.Add(new ArrayItem(arrayvalues[j].Split(':')[0], arrayvalues[j].Split(':')[1]));
+                            di.KeyValues.Add(new ArrayItem(arrayvalues[j].Split(':')[0], arrayvalues[j].Split(':')[1],di.TypeId));
                         }
                     }
                     m_DictionaryDataBase.Add(di);
@@ -246,12 +246,13 @@ namespace DataBase
     {
         private string m_Key;
         private string m_Value;
+        private string m_Type;
 
-
-        public ArrayItem(string key, string val)
+        public ArrayItem(string key, string val,string type)
         {
             m_Key = key;
             m_Value = val;
+            m_Type = type;
         }
 
 
@@ -280,6 +281,20 @@ namespace DataBase
                 m_Value = value;
             }
         }
+
+        public string Type
+        {
+            get
+            {
+                return m_Type;
+            }
+
+            set
+            {
+                m_Type = value;
+            }
+        }
+
         public override string ToString()
         {
             return m_Key + ":" + m_Value;

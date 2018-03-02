@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DataBase;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.Windows.Forms;
 
 namespace BarCode2
 {
@@ -32,7 +33,8 @@ namespace BarCode2
             QRCoder.QRCodeData qr_data = qgen.CreateQrCode(data, err_cor);
             qrCode = new QRCoder.QRCode(qr_data);
             bitmap = qrCode.GetGraphic(10,Color.Black,Color.White,false);
-            g.DrawImage(bitmap, p.X, p.Y, z, z);
+            float h = z * (float)3.779527559055;
+            g.DrawImage(bitmap, p.X, p.Y, h,h);
 
         }
         public void SaveQrCode(string data, string filename, QRCoder.QRCodeGenerator.ECCLevel err_cor)
@@ -145,6 +147,17 @@ namespace BarCode2
 
             }
             return _qrResult;
+        }
+
+
+        public QrCodeData CreateQrCodeFromList(ListBox.ObjectCollection arr)
+        {
+            QrCodeData _result = new QrCodeData();
+            foreach(QrItemDictionary qr in arr)
+            {
+                _result.AddQritem(qr.QrItem);
+            }
+            return _result;
         }
 
         private  QrItem[]  DictionarySearch(Dictionary dict, string qrPacketStr)

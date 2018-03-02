@@ -18,8 +18,8 @@ namespace BarCode2
         Dictionary m_DbDict;
         TcpModule m_tcpModule;
         QrProcessor m_QrProcessor;
-
         QrCodeData m_CurrentIdentificationQrCode;
+        QrCodeData m_CurrentPrintQrCode;
         string m_ServerIP = "127.0.0.1";
         
         private List<char> QrPacket;
@@ -105,13 +105,14 @@ namespace BarCode2
         {
             m_tcpModule.ConnectClient("127.0.0.1");
         }
-
-       
-
+      
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             SaveFormParametrs();
         }
+
+
+        #region работа с вкладкой "идентификация"
 
         private void CheckQrManualBtm_Click(object sender, EventArgs e)
         {
@@ -129,7 +130,7 @@ namespace BarCode2
         {
             if (m_CurrentIdentificationQrCode != null)
             {
-                m_QrProcessor.DrawQrCode(m_CurrentIdentificationQrCode.GenerateQrCode(false), e.Graphics, 150, new Point(15, 10), QRCoder.QRCodeGenerator.ECCLevel.L);
+                m_QrProcessor.DrawQrCode(m_CurrentIdentificationQrCode.GenerateQrCode(false), e.Graphics, 40, new Point(15, 10), QRCoder.QRCodeGenerator.ECCLevel.L);
 
             }
         }
@@ -153,6 +154,10 @@ namespace BarCode2
             }
         }
 
+        #endregion
+
+
+        #region Работа с вкладкой "печать этикеток" 
         private void RefreshDictionary_Click(object sender, EventArgs e)
         {
             //запрос из сети
@@ -176,7 +181,95 @@ namespace BarCode2
             }
            
         }
+        private void saveqrFileBtn_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sf = new SaveFileDialog();
+            sf.Filter = "Файл рисунка (*.jpg)|*.jpg";
+            if (sf.ShowDialog() == DialogResult.OK)
+            {
+                if (m_CurrentPrintQrCode != null)
+                {
+                    m_QrProcessor.SaveQrCode(m_CurrentPrintQrCode.GenerateQrCode(false),sf.FileName, QRCoder.QRCodeGenerator.ECCLevel.L);
+                }
+            }
+        }
+        private void DrawPrintQrcode(Graphics g) 
+        {
+            if (m_CurrentPrintQrCode != null)
+            {
+                m_QrProcessor.DrawQrCode(m_CurrentPrintQrCode.GenerateQrCode(false), g, QrSizetrackBar.Value, new Point(15, 15), QRCoder.QRCodeGenerator.ECCLevel.L);
+            }
+        }
+        private void копироватьВБуферToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (m_CurrentPrintQrCode != null)
+            {
+                Clipboard.SetText(m_CurrentPrintQrCode.GenerateQrCode(false));
+            }
+        }
+        private void printPanelBox_Paint(object sender, PaintEventArgs e)
+        {
+            DrawPrintQrcode(e.Graphics);
+        }
+        private void QrSizetrackBar_Scroll(object sender, EventArgs e)
+        {
+            QrSizeLbl.Text = QrSizetrackBar.Value.ToString();
+            printPanelBox.Invalidate();
+        }
+        private void dictionaryTreeOnPrintTab_DoubleClick(object sender, EventArgs e)
+        {
+            if(dictionaryTreeOnPrintTab.SelectedNode!=null)
+            {
+                Type typeOfSelected = dictionaryTreeOnPrintTab.SelectedNode.Tag.GetType();
+                QrItemDictionary qr = null;
+                if(typeOfSelected == typeof(DictionaryItem))
+                {
+                    DictionaryItem di = (DictionaryItem)dictionaryTreeOnPrintTab.SelectedNode.Tag;
+                    if (di.KeyValues != null)
+                        return;
 
+                   
+
+                    AddEditQrCodeData qrDialog = new AddEditQrCodeData();
+                    if (di.Is_date)
+                    {
+                        qrDialog.dateTimePicker.Enabled = true;
+                        qrDialog.ValueTxb.Enabled = false;
+                    }
+                    qrDialog.groupBoxLabel.Text = di.DataDescr;
+                    qrDialog.DictionaryItem = di;
+                    if (qrDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        if (qrDialog.dateTimePicker.Enabled)
+                            qr = new QrItemDictionary(new QrItem(di.TypeId, qrDialog.dateTimePicker.Value.ToString("ddMMyy") ), di.DataDescr);
+                        else
+                            qr = new QrItemDictionary(new QrItem(di.TypeId, qrDialog.ValueTxb.Text), di.DataDescr);
+                        currentQrCodeListBox.Items.Add(qr);
+                        m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items);
+                        printPanelBox.Invalidate();
+                    }
+
+                }
+                if(typeOfSelected == typeof(ArrayItem))
+                {
+                    ArrayItem ar = (ArrayItem)dictionaryTreeOnPrintTab.SelectedNode.Tag;
+                    qr = new QrItemDictionary(new QrItem(ar.Type, ar.Key), m_DbDict.GetTypeDescription(ar.Type));
+                    qr.ArrayItem = ar;
+                    currentQrCodeListBox.Items.Add(qr);
+                    m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items);
+                    printPanelBox.Invalidate();
+                }
+               // DictionaryItem di = (DictionaryItem)dictionaryTreeOnPrintTab.SelectedNode.Tag;
+                
+            }
+        }
+
+
+
+        #endregion
+
+
+        #region работа с бд
         private void addDabaseBtn_Click(object sender, EventArgs e)
         {
             AddEditDataBase add = new AddEditDataBase();
@@ -242,5 +335,12 @@ namespace BarCode2
                 }
             }
         }
+
+
+
+
+        #endregion
+
+       
     }
 }

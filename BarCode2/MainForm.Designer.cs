@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.statusStripBar = new System.Windows.Forms.StatusStrip();
             this.connectionStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.mainTabControl = new System.Windows.Forms.TabControl();
@@ -42,19 +43,30 @@
             this.label2 = new System.Windows.Forms.Label();
             this.dictionaryTreeOnPrintTab = new System.Windows.Forms.TreeView();
             this.DataBasePageTab = new System.Windows.Forms.TabPage();
+            this.DataBasesCollectionTree = new System.Windows.Forms.TreeView();
+            this.contextMenuDataBaseTree = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.добавитьВложеннуюБДToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.RefreshDbBtn = new System.Windows.Forms.Button();
             this.addDabaseBtn = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.DataBasItemCollectionListBox = new System.Windows.Forms.ListBox();
-            this.DataBasesCollectionTree = new System.Windows.Forms.TreeView();
-            this.contextMenuDataBaseTree = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.добавитьВложеннуюБДToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.currentQrCodeListBox = new System.Windows.Forms.ListBox();
+            this.printPanelBox = new System.Windows.Forms.GroupBox();
+            this.contextMenuQrCodeListBox = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.saveqrFileBtn = new System.Windows.Forms.Button();
+            this.contextMenuStripPrintPanel = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.копироватьВБуферToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.QrSizetrackBar = new System.Windows.Forms.TrackBar();
+            this.label4 = new System.Windows.Forms.Label();
+            this.QrSizeLbl = new System.Windows.Forms.Label();
             this.statusStripBar.SuspendLayout();
             this.mainTabControl.SuspendLayout();
             this.identificationTab.SuspendLayout();
             this.PrintPageTab.SuspendLayout();
             this.DataBasePageTab.SuspendLayout();
             this.contextMenuDataBaseTree.SuspendLayout();
+            this.contextMenuStripPrintPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.QrSizetrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // statusStripBar
@@ -151,6 +163,12 @@
             // 
             // PrintPageTab
             // 
+            this.PrintPageTab.Controls.Add(this.QrSizeLbl);
+            this.PrintPageTab.Controls.Add(this.label4);
+            this.PrintPageTab.Controls.Add(this.QrSizetrackBar);
+            this.PrintPageTab.Controls.Add(this.saveqrFileBtn);
+            this.PrintPageTab.Controls.Add(this.printPanelBox);
+            this.PrintPageTab.Controls.Add(this.currentQrCodeListBox);
             this.PrintPageTab.Controls.Add(this.RefreshDictionary);
             this.PrintPageTab.Controls.Add(this.label2);
             this.PrintPageTab.Controls.Add(this.dictionaryTreeOnPrintTab);
@@ -189,6 +207,7 @@
             this.dictionaryTreeOnPrintTab.Name = "dictionaryTreeOnPrintTab";
             this.dictionaryTreeOnPrintTab.Size = new System.Drawing.Size(261, 446);
             this.dictionaryTreeOnPrintTab.TabIndex = 0;
+            this.dictionaryTreeOnPrintTab.DoubleClick += new System.EventHandler(this.dictionaryTreeOnPrintTab_DoubleClick);
             // 
             // DataBasePageTab
             // 
@@ -203,6 +222,30 @@
             this.DataBasePageTab.TabIndex = 2;
             this.DataBasePageTab.Text = "БазаДанных";
             this.DataBasePageTab.UseVisualStyleBackColor = true;
+            // 
+            // DataBasesCollectionTree
+            // 
+            this.DataBasesCollectionTree.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.DataBasesCollectionTree.ContextMenuStrip = this.contextMenuDataBaseTree;
+            this.DataBasesCollectionTree.Location = new System.Drawing.Point(23, 52);
+            this.DataBasesCollectionTree.Name = "DataBasesCollectionTree";
+            this.DataBasesCollectionTree.Size = new System.Drawing.Size(448, 404);
+            this.DataBasesCollectionTree.TabIndex = 4;
+            // 
+            // contextMenuDataBaseTree
+            // 
+            this.contextMenuDataBaseTree.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.добавитьВложеннуюБДToolStripMenuItem});
+            this.contextMenuDataBaseTree.Name = "contextMenuDataBaseTree";
+            this.contextMenuDataBaseTree.Size = new System.Drawing.Size(213, 26);
+            // 
+            // добавитьВложеннуюБДToolStripMenuItem
+            // 
+            this.добавитьВложеннуюБДToolStripMenuItem.Name = "добавитьВложеннуюБДToolStripMenuItem";
+            this.добавитьВложеннуюБДToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.добавитьВложеннуюБДToolStripMenuItem.Text = "Добавить вложенную БД";
+            this.добавитьВложеннуюБДToolStripMenuItem.Click += new System.EventHandler(this.добавитьВложеннуюБДToolStripMenuItem_Click);
             // 
             // RefreshDbBtn
             // 
@@ -244,29 +287,91 @@
             this.DataBasItemCollectionListBox.Size = new System.Drawing.Size(179, 407);
             this.DataBasItemCollectionListBox.TabIndex = 0;
             // 
-            // DataBasesCollectionTree
+            // currentQrCodeListBox
             // 
-            this.DataBasesCollectionTree.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.currentQrCodeListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.DataBasesCollectionTree.ContextMenuStrip = this.contextMenuDataBaseTree;
-            this.DataBasesCollectionTree.Location = new System.Drawing.Point(23, 52);
-            this.DataBasesCollectionTree.Name = "DataBasesCollectionTree";
-            this.DataBasesCollectionTree.Size = new System.Drawing.Size(448, 404);
-            this.DataBasesCollectionTree.TabIndex = 4;
+            this.currentQrCodeListBox.FormattingEnabled = true;
+            this.currentQrCodeListBox.Location = new System.Drawing.Point(275, 36);
+            this.currentQrCodeListBox.Name = "currentQrCodeListBox";
+            this.currentQrCodeListBox.Size = new System.Drawing.Size(242, 446);
+            this.currentQrCodeListBox.TabIndex = 3;
             // 
-            // contextMenuDataBaseTree
+            // printPanelBox
             // 
-            this.contextMenuDataBaseTree.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.добавитьВложеннуюБДToolStripMenuItem});
-            this.contextMenuDataBaseTree.Name = "contextMenuDataBaseTree";
-            this.contextMenuDataBaseTree.Size = new System.Drawing.Size(213, 26);
+            this.printPanelBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.printPanelBox.ContextMenuStrip = this.contextMenuStripPrintPanel;
+            this.printPanelBox.Location = new System.Drawing.Point(524, 36);
+            this.printPanelBox.Name = "printPanelBox";
+            this.printPanelBox.Size = new System.Drawing.Size(411, 252);
+            this.printPanelBox.TabIndex = 4;
+            this.printPanelBox.TabStop = false;
+            this.printPanelBox.Text = "Настройка печати";
+            this.printPanelBox.Paint += new System.Windows.Forms.PaintEventHandler(this.printPanelBox_Paint);
             // 
-            // добавитьВложеннуюБДToolStripMenuItem
+            // contextMenuQrCodeListBox
             // 
-            this.добавитьВложеннуюБДToolStripMenuItem.Name = "добавитьВложеннуюБДToolStripMenuItem";
-            this.добавитьВложеннуюБДToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
-            this.добавитьВложеннуюБДToolStripMenuItem.Text = "Добавить вложенную БД";
-            this.добавитьВложеннуюБДToolStripMenuItem.Click += new System.EventHandler(this.добавитьВложеннуюБДToolStripMenuItem_Click);
+            this.contextMenuQrCodeListBox.Name = "contextMenuQrCodeListBox";
+            this.contextMenuQrCodeListBox.Size = new System.Drawing.Size(61, 4);
+            // 
+            // saveqrFileBtn
+            // 
+            this.saveqrFileBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.saveqrFileBtn.Location = new System.Drawing.Point(524, 459);
+            this.saveqrFileBtn.Name = "saveqrFileBtn";
+            this.saveqrFileBtn.Size = new System.Drawing.Size(121, 23);
+            this.saveqrFileBtn.TabIndex = 5;
+            this.saveqrFileBtn.Text = "Сохранить рисунок";
+            this.saveqrFileBtn.UseVisualStyleBackColor = true;
+            this.saveqrFileBtn.Click += new System.EventHandler(this.saveqrFileBtn_Click);
+            // 
+            // contextMenuStripPrintPanel
+            // 
+            this.contextMenuStripPrintPanel.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.копироватьВБуферToolStripMenuItem});
+            this.contextMenuStripPrintPanel.Name = "contextMenuStripPrintPanel";
+            this.contextMenuStripPrintPanel.Size = new System.Drawing.Size(187, 26);
+            // 
+            // копироватьВБуферToolStripMenuItem
+            // 
+            this.копироватьВБуферToolStripMenuItem.Name = "копироватьВБуферToolStripMenuItem";
+            this.копироватьВБуферToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.копироватьВБуферToolStripMenuItem.Text = "Копировать в буфер";
+            this.копироватьВБуферToolStripMenuItem.Click += new System.EventHandler(this.копироватьВБуферToolStripMenuItem_Click);
+            // 
+            // QrSizetrackBar
+            // 
+            this.QrSizetrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.QrSizetrackBar.Location = new System.Drawing.Point(576, 294);
+            this.QrSizetrackBar.Maximum = 40;
+            this.QrSizetrackBar.Minimum = 1;
+            this.QrSizetrackBar.Name = "QrSizetrackBar";
+            this.QrSizetrackBar.Size = new System.Drawing.Size(304, 45);
+            this.QrSizetrackBar.TabIndex = 6;
+            this.QrSizetrackBar.TickStyle = System.Windows.Forms.TickStyle.Both;
+            this.QrSizetrackBar.Value = 1;
+            this.QrSizetrackBar.Scroll += new System.EventHandler(this.QrSizetrackBar_Scroll);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(523, 300);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(50, 39);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "Размер\r\nQR-кода\r\nв мм";
+            // 
+            // QrSizeLbl
+            // 
+            this.QrSizeLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.QrSizeLbl.AutoSize = true;
+            this.QrSizeLbl.Location = new System.Drawing.Point(901, 310);
+            this.QrSizeLbl.Name = "QrSizeLbl";
+            this.QrSizeLbl.Size = new System.Drawing.Size(13, 13);
+            this.QrSizeLbl.TabIndex = 8;
+            this.QrSizeLbl.Text = "0";
             // 
             // MainForm
             // 
@@ -275,6 +380,7 @@
             this.ClientSize = new System.Drawing.Size(951, 536);
             this.Controls.Add(this.mainTabControl);
             this.Controls.Add(this.statusStripBar);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(960, 570);
             this.Name = "MainForm";
             this.Text = "QR кодер";
@@ -289,6 +395,8 @@
             this.DataBasePageTab.ResumeLayout(false);
             this.DataBasePageTab.PerformLayout();
             this.contextMenuDataBaseTree.ResumeLayout(false);
+            this.contextMenuStripPrintPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.QrSizetrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -316,6 +424,15 @@
         private System.Windows.Forms.TreeView DataBasesCollectionTree;
         private System.Windows.Forms.ContextMenuStrip contextMenuDataBaseTree;
         private System.Windows.Forms.ToolStripMenuItem добавитьВложеннуюБДToolStripMenuItem;
+        private System.Windows.Forms.GroupBox printPanelBox;
+        private System.Windows.Forms.ListBox currentQrCodeListBox;
+        private System.Windows.Forms.ContextMenuStrip contextMenuQrCodeListBox;
+        private System.Windows.Forms.Button saveqrFileBtn;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripPrintPanel;
+        private System.Windows.Forms.ToolStripMenuItem копироватьВБуферToolStripMenuItem;
+        private System.Windows.Forms.Label QrSizeLbl;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TrackBar QrSizetrackBar;
     }
 }
 
