@@ -138,11 +138,11 @@ namespace BarCode2
         private void mainTabControl_KeyPress(object sender, KeyPressEventArgs e)
         {
             //ОЖИДАНИЕ СЧИТЫВАНИЯ 
-            if(mainTabControl.SelectedTab.Name== "identificationTab")
+            if (mainTabControl.SelectedTab.Name == "identificationTab")
             {
                 QrPacket.Add(e.KeyChar);
                 QrCodeData tmpQr = m_QrProcessor.ParseQrPacket(QrPacket.ToArray(), m_DbDict);
-                if (tmpQr!=null)
+                if (tmpQr != null)
                 {
                     m_CurrentIdentificationQrCode = tmpQr;
                     qr_dataList.Items.Clear();
@@ -150,6 +150,29 @@ namespace BarCode2
                     identificationTab.Invalidate();
                     QrPacket.Clear();
                     Console.Beep(500, 500);
+                }
+            }
+            //PrintPageTab
+            if (mainTabControl.SelectedTab.Name == "PrintPageTab")
+            {
+                QrPacket.Add(e.KeyChar);
+                QrCodeData tmpQr = m_QrProcessor.ParseQrPacket(QrPacket.ToArray(), m_DbDict);
+                if (tmpQr != null)
+                {
+                   
+                    TreeNode node = new TreeNode(tmpQr.ToString());
+                    List<string> qrItemDataStrs = m_QrProcessor.IdentificateQrData(tmpQr, m_DbDict);
+                    foreach(string qr in qrItemDataStrs)
+                    {
+                        node.Nodes.Add(qr);
+                    }
+                    node.Tag = tmpQr;
+                    AddInPacketTreeView.Nodes.Add(node);
+
+                   
+                    QrPacket.Clear();
+                    m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items, AddInPacketTreeView.Nodes);
+                    printPanelBox.Invalidate();
                 }
             }
         }
@@ -181,25 +204,27 @@ namespace BarCode2
             }
            
         }
-        private void saveqrFileBtn_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog sf = new SaveFileDialog();
-            sf.Filter = "Файл рисунка (*.jpg)|*.jpg";
-            if (sf.ShowDialog() == DialogResult.OK)
-            {
-                if (m_CurrentPrintQrCode != null)
-                {
-                    m_QrProcessor.SaveQrCode(m_CurrentPrintQrCode.GenerateQrCode(false),sf.FileName, QRCoder.QRCodeGenerator.ECCLevel.L);
-                }
-            }
-        }
+       
         private void DrawPrintQrcode(Graphics g) 
         {
             if (m_CurrentPrintQrCode != null)
             {
-                m_QrProcessor.DrawQrCode(m_CurrentPrintQrCode.GenerateQrCode(false), g, QrSizetrackBar.Value, new Point(15, 15), QRCoder.QRCodeGenerator.ECCLevel.L);
+                float h = ((QrSizetrackBar.Value) * (float)3.779527559055);
+                float z = ((SizeBeetweenQrTrack.Value) * (float)3.779527559055);
+                for (int i = 0; i < QrPrintColumsTrack.Value; i++)
+                {
+                    m_QrProcessor.DrawQrCode(m_CurrentPrintQrCode.GenerateQrCode(false), g, QrSizetrackBar.Value, new PointF(15+(i*(h+z)), 15), QRCoder.QRCodeGenerator.ECCLevel.L);
+                }
             }
         }
+        private void DrawPrintPaper(Graphics g)
+        {
+            float h = ((QrSizetrackBar.Value) * (float)3.779527559055);
+            float w = ((PaperWightTrack.Value) * (float)3.779527559055);
+            g.DrawRectangle(new Pen(new SolidBrush(Color.DarkSlateBlue)), 13, 13,w+4, h+4);
+        }
+
+
         private void копироватьВБуферToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (m_CurrentPrintQrCode != null)
@@ -209,11 +234,84 @@ namespace BarCode2
         }
         private void printPanelBox_Paint(object sender, PaintEventArgs e)
         {
+            DrawPrintPaper(e.Graphics);
             DrawPrintQrcode(e.Graphics);
+        }
+        private void сохранитьРисунокToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sf = new SaveFileDialog();
+            sf.Filter = "Файл рисунка (*.jpg)|*.jpg";
+            if (sf.ShowDialog() == DialogResult.OK)
+            {
+                if (m_CurrentPrintQrCode != null)
+                {
+                    m_QrProcessor.SaveQrCode(m_CurrentPrintQrCode.GenerateQrCode(false), sf.FileName, QRCoder.QRCodeGenerator.ECCLevel.L);
+                }
+            }
         }
         private void QrSizetrackBar_Scroll(object sender, EventArgs e)
         {
             QrSizeLbl.Text = QrSizetrackBar.Value.ToString();
+            printPanelBox.Invalidate();
+        }
+        private void PaperWightTrack_Scroll(object sender, EventArgs e)
+        {
+            printPanelBox.Invalidate();
+        }
+        private void QrPrintColumsTrack_Scroll(object sender, EventArgs e)
+        {
+            printPanelBox.Invalidate();
+        }
+        private void SizeBeetweenQrTrack_Scroll(object sender, EventArgs e)
+        {
+            printPanelBox.Invalidate();
+        }
+        private void снятьВыделениеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            currentQrCodeListBox.SelectedIndex = -1;
+        }
+        private void поднятьВверхToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentQrCodeListBox.SelectedIndex != -1 && currentQrCodeListBox.SelectedIndex > 0)
+            {
+                QrItemDictionary qr_tmp = ((QrItemDictionary)currentQrCodeListBox.SelectedItem);
+                QrItemDictionary qr_tmp0 = ((QrItemDictionary)currentQrCodeListBox.Items[currentQrCodeListBox.SelectedIndex - 1]);
+
+                currentQrCodeListBox.Items[currentQrCodeListBox.SelectedIndex] = qr_tmp0;
+                currentQrCodeListBox.Items[currentQrCodeListBox.SelectedIndex - 1] = qr_tmp;
+                m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items,AddInPacketTreeView.Nodes);
+                printPanelBox.Invalidate();
+
+            }
+        }
+        private void опуститьВнизToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentQrCodeListBox.SelectedIndex != -1 && currentQrCodeListBox.SelectedIndex < currentQrCodeListBox.Items.Count - 1)
+            {
+                QrItemDictionary qr_tmp = ((QrItemDictionary)currentQrCodeListBox.SelectedItem);
+                QrItemDictionary qr_tmp0 = ((QrItemDictionary)currentQrCodeListBox.Items[currentQrCodeListBox.SelectedIndex + 1]);
+
+                currentQrCodeListBox.Items[currentQrCodeListBox.SelectedIndex] = qr_tmp0;
+                currentQrCodeListBox.Items[currentQrCodeListBox.SelectedIndex + 1] = qr_tmp;
+                m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items, AddInPacketTreeView.Nodes);
+                printPanelBox.Invalidate();
+
+            }
+           
+        }
+        private void удалитьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(currentQrCodeListBox.SelectedIndex != -1)
+            {
+                currentQrCodeListBox.Items.RemoveAt(currentQrCodeListBox.SelectedIndex);
+                m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items, AddInPacketTreeView.Nodes);
+                printPanelBox.Invalidate();
+            }
+        }
+        private void удалитьВсеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            currentQrCodeListBox.Items.Clear();
+            m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items, AddInPacketTreeView.Nodes);
             printPanelBox.Invalidate();
         }
         private void dictionaryTreeOnPrintTab_DoubleClick(object sender, EventArgs e)
@@ -244,8 +342,11 @@ namespace BarCode2
                             qr = new QrItemDictionary(new QrItem(di.TypeId, qrDialog.dateTimePicker.Value.ToString("ddMMyy") ), di.DataDescr);
                         else
                             qr = new QrItemDictionary(new QrItem(di.TypeId, qrDialog.ValueTxb.Text), di.DataDescr);
-                        currentQrCodeListBox.Items.Add(qr);
-                        m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items);
+                        if (currentQrCodeListBox.SelectedItem != null)
+                            currentQrCodeListBox.Items[currentQrCodeListBox.SelectedIndex] = qr;
+                        else
+                            currentQrCodeListBox.Items.Add(qr);
+                        m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items, AddInPacketTreeView.Nodes);
                         printPanelBox.Invalidate();
                     }
 
@@ -255,15 +356,29 @@ namespace BarCode2
                     ArrayItem ar = (ArrayItem)dictionaryTreeOnPrintTab.SelectedNode.Tag;
                     qr = new QrItemDictionary(new QrItem(ar.Type, ar.Key), m_DbDict.GetTypeDescription(ar.Type));
                     qr.ArrayItem = ar;
-                    currentQrCodeListBox.Items.Add(qr);
-                    m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items);
+                    if (currentQrCodeListBox.SelectedItem != null)                    
+                        currentQrCodeListBox.Items[currentQrCodeListBox.SelectedIndex] = qr;                    
+                    else                    
+                        currentQrCodeListBox.Items.Add(qr);                    
+                    m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items, AddInPacketTreeView.Nodes);
                     printPanelBox.Invalidate();
                 }
                // DictionaryItem di = (DictionaryItem)dictionaryTreeOnPrintTab.SelectedNode.Tag;
                 
             }
         }
-
+        private void удалитьToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (AddInPacketTreeView.SelectedNode != null)
+            {
+                if(AddInPacketTreeView.SelectedNode.Tag!=null)
+                {
+                    AddInPacketTreeView.Nodes.RemoveAt(AddInPacketTreeView.SelectedNode.Index);
+                    m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items, AddInPacketTreeView.Nodes);
+                    printPanelBox.Invalidate();
+                }
+            }
+        }
 
 
         #endregion
@@ -335,6 +450,16 @@ namespace BarCode2
                 }
             }
         }
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -40,10 +40,13 @@ namespace DataBase
                     bool is_date = false;
                     if (ini.KeyExists("is_date", datatypesarray[i]) && ini.ReadINI(datatypesarray[i], "is_date") == "true")
                         is_date = true;
+                    bool is_serialDb = false;
+                    if (ini.KeyExists("is_db_serial", datatypesarray[i]) && ini.ReadINI(datatypesarray[i], "is_db_serial") == "true")
+                        is_serialDb = true;
                     int sort_index = 0;
                     if ((ini.KeyExists("sort_index", datatypesarray[i])))
                        sort_index = int.Parse( ini.ReadINI(datatypesarray[i], "sort_index"));
-                    DictionaryItem di = new DictionaryItem(datatypesarray[i], int.Parse(ini.ReadINI(datatypesarray[i], "len")), ini.ReadINI(datatypesarray[i], "name"),is_date,null,sort_index);
+                    DictionaryItem di = new DictionaryItem(datatypesarray[i], int.Parse(ini.ReadINI(datatypesarray[i], "len")), ini.ReadINI(datatypesarray[i], "name"),is_date,is_serialDb,null,sort_index);
                     if (ini.KeyExists("array", datatypesarray[i]))
                     {
                         di.KeyValues = new List<ArrayItem>();
@@ -105,6 +108,7 @@ namespace DataBase
         string m_dataDescr;
         bool m_is_date;
         int m_sortIndex;
+        bool m_IsSerialDb;
         List<ArrayItem> m_keyValues;
 
         /// <summary>
@@ -115,7 +119,7 @@ namespace DataBase
         /// <param name="datadescr"></param>
         /// <param name="isdate"></param>
         /// <param name="array_item"></param>
-        public DictionaryItem(string typeid,int datalen, string datadescr,bool isdate,ArrayItem[] array_item,int sort_index)
+        public DictionaryItem(string typeid,int datalen, string datadescr,bool isdate,bool is_serialdb,ArrayItem[] array_item,int sort_index)
         {
             m_typeId = typeid;
             m_dataLen = datalen;
@@ -126,6 +130,7 @@ namespace DataBase
                     isdate = false; 
             }
             m_is_date = isdate;
+            m_IsSerialDb = is_serialdb;
 
             if (array_item == null)
                 m_keyValues = null;
@@ -229,6 +234,16 @@ namespace DataBase
             {
                 m_sortIndex = value;
             }
+        }
+
+        public bool IsSerialDb
+        {
+            get
+            {
+                return m_IsSerialDb;
+            }
+
+           
         }
 
         public override string ToString()

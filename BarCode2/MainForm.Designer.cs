@@ -39,6 +39,21 @@
             this.CheckQrManualTxb = new System.Windows.Forms.TextBox();
             this.qr_dataList = new System.Windows.Forms.ListBox();
             this.PrintPageTab = new System.Windows.Forms.TabPage();
+            this.AddInPacketTreeView = new System.Windows.Forms.TreeView();
+            this.QrSizeLbl = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.QrSizetrackBar = new System.Windows.Forms.TrackBar();
+            this.printPanelBox = new System.Windows.Forms.GroupBox();
+            this.contextMenuStripPrintPanel = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.копироватьВБуферToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.сохранитьРисунокToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.currentQrCodeListBox = new System.Windows.Forms.ListBox();
+            this.contextMenuStripQrCodeListBox = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.поднятьВверхToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.опуститьВнизToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.удалитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.удалитьВсеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.снятьВыделениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.RefreshDictionary = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.dictionaryTreeOnPrintTab = new System.Windows.Forms.TreeView();
@@ -50,23 +65,24 @@
             this.addDabaseBtn = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.DataBasItemCollectionListBox = new System.Windows.Forms.ListBox();
-            this.currentQrCodeListBox = new System.Windows.Forms.ListBox();
-            this.printPanelBox = new System.Windows.Forms.GroupBox();
-            this.contextMenuQrCodeListBox = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.saveqrFileBtn = new System.Windows.Forms.Button();
-            this.contextMenuStripPrintPanel = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.копироватьВБуферToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.QrSizetrackBar = new System.Windows.Forms.TrackBar();
-            this.label4 = new System.Windows.Forms.Label();
-            this.QrSizeLbl = new System.Windows.Forms.Label();
+            this.contextMenuStripAddInTree = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.удалитьToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.QrPrintColumsTrack = new System.Windows.Forms.TrackBar();
+            this.PaperWightTrack = new System.Windows.Forms.TrackBar();
+            this.SizeBeetweenQrTrack = new System.Windows.Forms.TrackBar();
             this.statusStripBar.SuspendLayout();
             this.mainTabControl.SuspendLayout();
             this.identificationTab.SuspendLayout();
             this.PrintPageTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.QrSizetrackBar)).BeginInit();
+            this.contextMenuStripPrintPanel.SuspendLayout();
+            this.contextMenuStripQrCodeListBox.SuspendLayout();
             this.DataBasePageTab.SuspendLayout();
             this.contextMenuDataBaseTree.SuspendLayout();
-            this.contextMenuStripPrintPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.QrSizetrackBar)).BeginInit();
+            this.contextMenuStripAddInTree.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.QrPrintColumsTrack)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PaperWightTrack)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SizeBeetweenQrTrack)).BeginInit();
             this.SuspendLayout();
             // 
             // statusStripBar
@@ -163,10 +179,13 @@
             // 
             // PrintPageTab
             // 
+            this.PrintPageTab.Controls.Add(this.SizeBeetweenQrTrack);
+            this.PrintPageTab.Controls.Add(this.PaperWightTrack);
+            this.PrintPageTab.Controls.Add(this.QrPrintColumsTrack);
+            this.PrintPageTab.Controls.Add(this.AddInPacketTreeView);
             this.PrintPageTab.Controls.Add(this.QrSizeLbl);
             this.PrintPageTab.Controls.Add(this.label4);
             this.PrintPageTab.Controls.Add(this.QrSizetrackBar);
-            this.PrintPageTab.Controls.Add(this.saveqrFileBtn);
             this.PrintPageTab.Controls.Add(this.printPanelBox);
             this.PrintPageTab.Controls.Add(this.currentQrCodeListBox);
             this.PrintPageTab.Controls.Add(this.RefreshDictionary);
@@ -179,6 +198,140 @@
             this.PrintPageTab.TabIndex = 1;
             this.PrintPageTab.Text = "Печать этикеток";
             this.PrintPageTab.UseVisualStyleBackColor = true;
+            // 
+            // AddInPacketTreeView
+            // 
+            this.AddInPacketTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddInPacketTreeView.ContextMenuStrip = this.contextMenuStripAddInTree;
+            this.AddInPacketTreeView.Location = new System.Drawing.Point(275, 280);
+            this.AddInPacketTreeView.Name = "AddInPacketTreeView";
+            this.AddInPacketTreeView.Size = new System.Drawing.Size(242, 199);
+            this.AddInPacketTreeView.TabIndex = 9;
+            // 
+            // QrSizeLbl
+            // 
+            this.QrSizeLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.QrSizeLbl.AutoSize = true;
+            this.QrSizeLbl.Location = new System.Drawing.Point(901, 239);
+            this.QrSizeLbl.Name = "QrSizeLbl";
+            this.QrSizeLbl.Size = new System.Drawing.Size(13, 13);
+            this.QrSizeLbl.TabIndex = 8;
+            this.QrSizeLbl.Text = "0";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(523, 223);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(50, 39);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "Размер\r\nQR-кода\r\nв мм";
+            // 
+            // QrSizetrackBar
+            // 
+            this.QrSizetrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.QrSizetrackBar.Location = new System.Drawing.Point(579, 223);
+            this.QrSizetrackBar.Maximum = 40;
+            this.QrSizetrackBar.Minimum = 1;
+            this.QrSizetrackBar.Name = "QrSizetrackBar";
+            this.QrSizetrackBar.Size = new System.Drawing.Size(304, 45);
+            this.QrSizetrackBar.TabIndex = 6;
+            this.QrSizetrackBar.TickStyle = System.Windows.Forms.TickStyle.Both;
+            this.QrSizetrackBar.Value = 1;
+            this.QrSizetrackBar.Scroll += new System.EventHandler(this.QrSizetrackBar_Scroll);
+            // 
+            // printPanelBox
+            // 
+            this.printPanelBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.printPanelBox.ContextMenuStrip = this.contextMenuStripPrintPanel;
+            this.printPanelBox.Location = new System.Drawing.Point(524, 36);
+            this.printPanelBox.Name = "printPanelBox";
+            this.printPanelBox.Size = new System.Drawing.Size(411, 175);
+            this.printPanelBox.TabIndex = 4;
+            this.printPanelBox.TabStop = false;
+            this.printPanelBox.Text = "Настройка печати";
+            this.printPanelBox.Paint += new System.Windows.Forms.PaintEventHandler(this.printPanelBox_Paint);
+            // 
+            // contextMenuStripPrintPanel
+            // 
+            this.contextMenuStripPrintPanel.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.копироватьВБуферToolStripMenuItem,
+            this.сохранитьРисунокToolStripMenuItem});
+            this.contextMenuStripPrintPanel.Name = "contextMenuStripPrintPanel";
+            this.contextMenuStripPrintPanel.Size = new System.Drawing.Size(187, 48);
+            // 
+            // копироватьВБуферToolStripMenuItem
+            // 
+            this.копироватьВБуферToolStripMenuItem.Name = "копироватьВБуферToolStripMenuItem";
+            this.копироватьВБуферToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.копироватьВБуферToolStripMenuItem.Text = "Копировать в буфер";
+            this.копироватьВБуферToolStripMenuItem.Click += new System.EventHandler(this.копироватьВБуферToolStripMenuItem_Click);
+            // 
+            // сохранитьРисунокToolStripMenuItem
+            // 
+            this.сохранитьРисунокToolStripMenuItem.Name = "сохранитьРисунокToolStripMenuItem";
+            this.сохранитьРисунокToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.сохранитьРисунокToolStripMenuItem.Text = "Сохранить рисунок";
+            this.сохранитьРисунокToolStripMenuItem.Click += new System.EventHandler(this.сохранитьРисунокToolStripMenuItem_Click);
+            // 
+            // currentQrCodeListBox
+            // 
+            this.currentQrCodeListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.currentQrCodeListBox.ContextMenuStrip = this.contextMenuStripQrCodeListBox;
+            this.currentQrCodeListBox.FormattingEnabled = true;
+            this.currentQrCodeListBox.Location = new System.Drawing.Point(275, 36);
+            this.currentQrCodeListBox.Name = "currentQrCodeListBox";
+            this.currentQrCodeListBox.Size = new System.Drawing.Size(242, 238);
+            this.currentQrCodeListBox.TabIndex = 3;
+            // 
+            // contextMenuStripQrCodeListBox
+            // 
+            this.contextMenuStripQrCodeListBox.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.поднятьВверхToolStripMenuItem,
+            this.опуститьВнизToolStripMenuItem,
+            this.удалитьToolStripMenuItem,
+            this.удалитьВсеToolStripMenuItem,
+            this.снятьВыделениеToolStripMenuItem});
+            this.contextMenuStripQrCodeListBox.Name = "contextMenuStripQrCodeListBox";
+            this.contextMenuStripQrCodeListBox.Size = new System.Drawing.Size(170, 114);
+            // 
+            // поднятьВверхToolStripMenuItem
+            // 
+            this.поднятьВверхToolStripMenuItem.Name = "поднятьВверхToolStripMenuItem";
+            this.поднятьВверхToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.поднятьВверхToolStripMenuItem.Text = "Поднять вверх";
+            this.поднятьВверхToolStripMenuItem.Click += new System.EventHandler(this.поднятьВверхToolStripMenuItem_Click);
+            // 
+            // опуститьВнизToolStripMenuItem
+            // 
+            this.опуститьВнизToolStripMenuItem.Name = "опуститьВнизToolStripMenuItem";
+            this.опуститьВнизToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.опуститьВнизToolStripMenuItem.Text = "Опустить вниз";
+            this.опуститьВнизToolStripMenuItem.Click += new System.EventHandler(this.опуститьВнизToolStripMenuItem_Click);
+            // 
+            // удалитьToolStripMenuItem
+            // 
+            this.удалитьToolStripMenuItem.Name = "удалитьToolStripMenuItem";
+            this.удалитьToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.удалитьToolStripMenuItem.Text = "Удалить";
+            this.удалитьToolStripMenuItem.Click += new System.EventHandler(this.удалитьToolStripMenuItem_Click);
+            // 
+            // удалитьВсеToolStripMenuItem
+            // 
+            this.удалитьВсеToolStripMenuItem.Name = "удалитьВсеToolStripMenuItem";
+            this.удалитьВсеToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.удалитьВсеToolStripMenuItem.Text = "Удалить все";
+            this.удалитьВсеToolStripMenuItem.Click += new System.EventHandler(this.удалитьВсеToolStripMenuItem_Click);
+            // 
+            // снятьВыделениеToolStripMenuItem
+            // 
+            this.снятьВыделениеToolStripMenuItem.Name = "снятьВыделениеToolStripMenuItem";
+            this.снятьВыделениеToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.снятьВыделениеToolStripMenuItem.Text = "Снять выделение";
+            this.снятьВыделениеToolStripMenuItem.Click += new System.EventHandler(this.снятьВыделениеToolStripMenuItem_Click);
             // 
             // RefreshDictionary
             // 
@@ -205,7 +358,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.dictionaryTreeOnPrintTab.Location = new System.Drawing.Point(8, 36);
             this.dictionaryTreeOnPrintTab.Name = "dictionaryTreeOnPrintTab";
-            this.dictionaryTreeOnPrintTab.Size = new System.Drawing.Size(261, 446);
+            this.dictionaryTreeOnPrintTab.Size = new System.Drawing.Size(261, 443);
             this.dictionaryTreeOnPrintTab.TabIndex = 0;
             this.dictionaryTreeOnPrintTab.DoubleClick += new System.EventHandler(this.dictionaryTreeOnPrintTab_DoubleClick);
             // 
@@ -287,91 +440,61 @@
             this.DataBasItemCollectionListBox.Size = new System.Drawing.Size(179, 407);
             this.DataBasItemCollectionListBox.TabIndex = 0;
             // 
-            // currentQrCodeListBox
+            // contextMenuStripAddInTree
             // 
-            this.currentQrCodeListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.currentQrCodeListBox.FormattingEnabled = true;
-            this.currentQrCodeListBox.Location = new System.Drawing.Point(275, 36);
-            this.currentQrCodeListBox.Name = "currentQrCodeListBox";
-            this.currentQrCodeListBox.Size = new System.Drawing.Size(242, 446);
-            this.currentQrCodeListBox.TabIndex = 3;
+            this.contextMenuStripAddInTree.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.удалитьToolStripMenuItem1});
+            this.contextMenuStripAddInTree.Name = "contextMenuStripAddInTree";
+            this.contextMenuStripAddInTree.Size = new System.Drawing.Size(119, 26);
             // 
-            // printPanelBox
+            // удалитьToolStripMenuItem1
             // 
-            this.printPanelBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.удалитьToolStripMenuItem1.Name = "удалитьToolStripMenuItem1";
+            this.удалитьToolStripMenuItem1.Size = new System.Drawing.Size(118, 22);
+            this.удалитьToolStripMenuItem1.Text = "Удалить";
+            this.удалитьToolStripMenuItem1.Click += new System.EventHandler(this.удалитьToolStripMenuItem1_Click);
+            // 
+            // QrPrintColumsTrack
+            // 
+            this.QrPrintColumsTrack.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.printPanelBox.ContextMenuStrip = this.contextMenuStripPrintPanel;
-            this.printPanelBox.Location = new System.Drawing.Point(524, 36);
-            this.printPanelBox.Name = "printPanelBox";
-            this.printPanelBox.Size = new System.Drawing.Size(411, 252);
-            this.printPanelBox.TabIndex = 4;
-            this.printPanelBox.TabStop = false;
-            this.printPanelBox.Text = "Настройка печати";
-            this.printPanelBox.Paint += new System.Windows.Forms.PaintEventHandler(this.printPanelBox_Paint);
+            this.QrPrintColumsTrack.Location = new System.Drawing.Point(579, 274);
+            this.QrPrintColumsTrack.Maximum = 5;
+            this.QrPrintColumsTrack.Minimum = 1;
+            this.QrPrintColumsTrack.Name = "QrPrintColumsTrack";
+            this.QrPrintColumsTrack.Size = new System.Drawing.Size(304, 45);
+            this.QrPrintColumsTrack.TabIndex = 10;
+            this.QrPrintColumsTrack.TickStyle = System.Windows.Forms.TickStyle.Both;
+            this.QrPrintColumsTrack.Value = 1;
+            this.QrPrintColumsTrack.Scroll += new System.EventHandler(this.QrPrintColumsTrack_Scroll);
             // 
-            // contextMenuQrCodeListBox
+            // PaperWightTrack
             // 
-            this.contextMenuQrCodeListBox.Name = "contextMenuQrCodeListBox";
-            this.contextMenuQrCodeListBox.Size = new System.Drawing.Size(61, 4);
-            // 
-            // saveqrFileBtn
-            // 
-            this.saveqrFileBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.saveqrFileBtn.Location = new System.Drawing.Point(524, 459);
-            this.saveqrFileBtn.Name = "saveqrFileBtn";
-            this.saveqrFileBtn.Size = new System.Drawing.Size(121, 23);
-            this.saveqrFileBtn.TabIndex = 5;
-            this.saveqrFileBtn.Text = "Сохранить рисунок";
-            this.saveqrFileBtn.UseVisualStyleBackColor = true;
-            this.saveqrFileBtn.Click += new System.EventHandler(this.saveqrFileBtn_Click);
-            // 
-            // contextMenuStripPrintPanel
-            // 
-            this.contextMenuStripPrintPanel.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.копироватьВБуферToolStripMenuItem});
-            this.contextMenuStripPrintPanel.Name = "contextMenuStripPrintPanel";
-            this.contextMenuStripPrintPanel.Size = new System.Drawing.Size(187, 26);
-            // 
-            // копироватьВБуферToolStripMenuItem
-            // 
-            this.копироватьВБуферToolStripMenuItem.Name = "копироватьВБуферToolStripMenuItem";
-            this.копироватьВБуферToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.копироватьВБуферToolStripMenuItem.Text = "Копировать в буфер";
-            this.копироватьВБуферToolStripMenuItem.Click += new System.EventHandler(this.копироватьВБуферToolStripMenuItem_Click);
-            // 
-            // QrSizetrackBar
-            // 
-            this.QrSizetrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.PaperWightTrack.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.QrSizetrackBar.Location = new System.Drawing.Point(576, 294);
-            this.QrSizetrackBar.Maximum = 40;
-            this.QrSizetrackBar.Minimum = 1;
-            this.QrSizetrackBar.Name = "QrSizetrackBar";
-            this.QrSizetrackBar.Size = new System.Drawing.Size(304, 45);
-            this.QrSizetrackBar.TabIndex = 6;
-            this.QrSizetrackBar.TickStyle = System.Windows.Forms.TickStyle.Both;
-            this.QrSizetrackBar.Value = 1;
-            this.QrSizetrackBar.Scroll += new System.EventHandler(this.QrSizetrackBar_Scroll);
+            this.PaperWightTrack.Location = new System.Drawing.Point(579, 325);
+            this.PaperWightTrack.Maximum = 100;
+            this.PaperWightTrack.Minimum = 1;
+            this.PaperWightTrack.Name = "PaperWightTrack";
+            this.PaperWightTrack.Size = new System.Drawing.Size(304, 45);
+            this.PaperWightTrack.TabIndex = 11;
+            this.PaperWightTrack.TickStyle = System.Windows.Forms.TickStyle.Both;
+            this.PaperWightTrack.Value = 1;
+            this.PaperWightTrack.Scroll += new System.EventHandler(this.PaperWightTrack_Scroll);
             // 
-            // label4
+            // SizeBeetweenQrTrack
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(523, 300);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(50, 39);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "Размер\r\nQR-кода\r\nв мм";
-            // 
-            // QrSizeLbl
-            // 
-            this.QrSizeLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.QrSizeLbl.AutoSize = true;
-            this.QrSizeLbl.Location = new System.Drawing.Point(901, 310);
-            this.QrSizeLbl.Name = "QrSizeLbl";
-            this.QrSizeLbl.Size = new System.Drawing.Size(13, 13);
-            this.QrSizeLbl.TabIndex = 8;
-            this.QrSizeLbl.Text = "0";
+            this.SizeBeetweenQrTrack.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.SizeBeetweenQrTrack.Location = new System.Drawing.Point(579, 376);
+            this.SizeBeetweenQrTrack.Maximum = 100;
+            this.SizeBeetweenQrTrack.Minimum = 1;
+            this.SizeBeetweenQrTrack.Name = "SizeBeetweenQrTrack";
+            this.SizeBeetweenQrTrack.Size = new System.Drawing.Size(304, 45);
+            this.SizeBeetweenQrTrack.TabIndex = 12;
+            this.SizeBeetweenQrTrack.TickStyle = System.Windows.Forms.TickStyle.Both;
+            this.SizeBeetweenQrTrack.Value = 1;
+            this.SizeBeetweenQrTrack.Scroll += new System.EventHandler(this.SizeBeetweenQrTrack_Scroll);
             // 
             // MainForm
             // 
@@ -392,11 +515,16 @@
             this.identificationTab.PerformLayout();
             this.PrintPageTab.ResumeLayout(false);
             this.PrintPageTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.QrSizetrackBar)).EndInit();
+            this.contextMenuStripPrintPanel.ResumeLayout(false);
+            this.contextMenuStripQrCodeListBox.ResumeLayout(false);
             this.DataBasePageTab.ResumeLayout(false);
             this.DataBasePageTab.PerformLayout();
             this.contextMenuDataBaseTree.ResumeLayout(false);
-            this.contextMenuStripPrintPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.QrSizetrackBar)).EndInit();
+            this.contextMenuStripAddInTree.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.QrPrintColumsTrack)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PaperWightTrack)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SizeBeetweenQrTrack)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -426,13 +554,24 @@
         private System.Windows.Forms.ToolStripMenuItem добавитьВложеннуюБДToolStripMenuItem;
         private System.Windows.Forms.GroupBox printPanelBox;
         private System.Windows.Forms.ListBox currentQrCodeListBox;
-        private System.Windows.Forms.ContextMenuStrip contextMenuQrCodeListBox;
-        private System.Windows.Forms.Button saveqrFileBtn;
         private System.Windows.Forms.ContextMenuStrip contextMenuStripPrintPanel;
         private System.Windows.Forms.ToolStripMenuItem копироватьВБуферToolStripMenuItem;
         private System.Windows.Forms.Label QrSizeLbl;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TrackBar QrSizetrackBar;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripQrCodeListBox;
+        private System.Windows.Forms.ToolStripMenuItem поднятьВверхToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem опуститьВнизToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem удалитьToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem удалитьВсеToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem снятьВыделениеToolStripMenuItem;
+        private System.Windows.Forms.TreeView AddInPacketTreeView;
+        private System.Windows.Forms.ToolStripMenuItem сохранитьРисунокToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripAddInTree;
+        private System.Windows.Forms.ToolStripMenuItem удалитьToolStripMenuItem1;
+        private System.Windows.Forms.TrackBar QrPrintColumsTrack;
+        private System.Windows.Forms.TrackBar PaperWightTrack;
+        private System.Windows.Forms.TrackBar SizeBeetweenQrTrack;
     }
 }
 

@@ -86,5 +86,10 @@ namespace DataBase
             else
                 return "FFY" + packet_data.Length.ToString("000") + packet_data + "FYY";
         }
+
+        public override string ToString()
+        {
+            return "Qr-Код: " + m_ListQrItems.Count.ToString(); 
+        }
     }
 }

@@ -27,7 +27,7 @@ namespace BarCode2
                 foreach(DictionaryItem di in m_DictDb.DictionaryDataBase)
                 {
                     //если значение вводимое и не является датой
-                    if (di.KeyValues == null && !di.Is_date)
+                    if (di.KeyValues == null && !di.Is_date && di.IsSerialDb)
                         typeDataCmbx.Items.Add(di);
                 }
             }

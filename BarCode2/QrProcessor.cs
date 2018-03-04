@@ -28,7 +28,7 @@ namespace BarCode2
         /// <param name="z">размер квадрата</param>
         /// <param name="p">координаты левого верхнего угла</param>
         ///  <param name="err_cor">уровень коррекции ошибок</param>
-        public void DrawQrCode(string data, Graphics g, int z, Point p, QRCoder.QRCodeGenerator.ECCLevel err_cor)
+        public void DrawQrCode(string data, Graphics g, int z, PointF p, QRCoder.QRCodeGenerator.ECCLevel err_cor)
         {
             QRCoder.QRCodeData qr_data = qgen.CreateQrCode(data, err_cor);
             qrCode = new QRCoder.QRCode(qr_data);
@@ -150,12 +150,16 @@ namespace BarCode2
         }
 
 
-        public QrCodeData CreateQrCodeFromList(ListBox.ObjectCollection arr)
+        public QrCodeData CreateQrCodeFromList(ListBox.ObjectCollection arr,TreeNodeCollection nodes)
         {
             QrCodeData _result = new QrCodeData();
             foreach(QrItemDictionary qr in arr)
             {
                 _result.AddQritem(qr.QrItem);
+            }
+            foreach(TreeNode trNode in nodes)
+            {
+                _result.AddQrInPacket((QrCodeData)trNode.Tag);
             }
             return _result;
         }
@@ -210,6 +214,43 @@ namespace BarCode2
                                         if (ar.Key == q.Value)
                                         {
                                             m_result.Add(d.DataDescr + ":" + ar.Value);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if(qr.ListInPackets!=null )
+                    {
+                        if (qr.ListInPackets.Count > 0)
+                        {
+                           
+                            foreach (QrCodeData qrIn in qr.ListInPackets)
+                            {
+                                m_result.Add("Входящий узел:");
+                                foreach (QrItem q in qrIn.ListQrItems)
+                                {
+                                    foreach (DictionaryItem d in dict.DictionaryDataBase)
+                                    {
+                                        if (q.Type == d.TypeId)
+                                        {
+                                            if (d.KeyValues == null)
+                                            {
+                                                if (!d.Is_date)
+                                                    m_result.Add(d.DataDescr + ":" + q.Value);
+                                                else
+                                                    m_result.Add(d.DataDescr + ":" + ParseDate(q.Value).ToString("dd:MM:yyyy"));
+                                            }
+                                            else
+                                            {
+                                                foreach (ArrayItem ar in d.KeyValues)
+                                                {
+                                                    if (ar.Key == q.Value)
+                                                    {
+                                                        m_result.Add(d.DataDescr + ":" + ar.Value);
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
