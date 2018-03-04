@@ -21,8 +21,8 @@ namespace Tests
 
 
             //act
-            DictionaryItem di6 = new DictionaryItem(type, datalen6, datadescr, true, null, 0);
-            DictionaryItem di = new DictionaryItem(type, datalen, datadescr, true, null, 0);
+            DictionaryItem di6 = new DictionaryItem(type, datalen6, datadescr, true,false, null, 0);
+            DictionaryItem di = new DictionaryItem(type, datalen, datadescr, true,false, null, 0);
             //assert
 
             Assert.AreEqual(expected_isDate6, di6.Is_date);
