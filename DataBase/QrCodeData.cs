@@ -39,6 +39,33 @@ namespace DataBase
             m_ListQrItems = new List<QrItem>();
             m_ListInPackets = null;
         }
+        /// <summary>
+        /// Копирует объект в аргументе
+        /// </summary>
+        /// <param name="qr"></param>
+        public QrCodeData(QrCodeData qr)
+        {
+            QrItem[] arr = new QrItem[qr.m_ListQrItems.Count];
+            qr.ListQrItems.CopyTo(arr);
+            m_ListQrItems = new List<QrItem>();
+            m_ListQrItems.AddRange(arr);
+
+            if (qr.ListInPackets != null)
+            {
+                if (qr.ListInPackets.Count > 0)
+                {
+                    QrCodeData[] arr_qr = new QrCodeData[qr.ListInPackets.Count];
+                    qr.ListInPackets.CopyTo(arr_qr);
+
+                    m_ListInPackets = new List<QrCodeData>();
+                    m_ListInPackets.AddRange(arr_qr);
+                }
+            }
+        }
+        public void ChangeQrItemInList(int index,string type,string val)
+        {
+            m_ListQrItems[index] = new QrItem(type, val);
+        }
         public void AddQritem(QrItem qr)
         {
             m_ListQrItems.Add(qr);

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DataBase;
+using System.Drawing.Printing;
 
 namespace BarCode2
 {
@@ -21,8 +22,9 @@ namespace BarCode2
         QrCodeData m_CurrentIdentificationQrCode;
         QrCodeData m_CurrentPrintQrCode;
         string m_ServerIP = "127.0.0.1";
-        
+        QrCodeData[] m_SerialQrDataArray;
         private List<char> QrPacket;
+        private int cur_page_packet_counter;
 
         public MainForm()
         {
@@ -36,8 +38,8 @@ namespace BarCode2
             m_tcpModule.Receive += Tcp_Receive;
             m_DbDict = new Dictionary();
             m_DbDict.ReadFromIni();
-
-            QrCodeData test = new QrCodeData();
+          
+           
             
             
         }
@@ -205,7 +207,7 @@ namespace BarCode2
            
         }
        
-        private void DrawPrintQrcode(Graphics g) 
+        private void DrawPrintQrcode(Graphics g,int x,int y) 
         {
             if (m_CurrentPrintQrCode != null)
             {
@@ -213,14 +215,48 @@ namespace BarCode2
                 float z = ((SizeBeetweenQrTrack.Value) * (float)3.779527559055);
                 for (int i = 0; i < QrPrintColumsTrack.Value; i++)
                 {
-                    m_QrProcessor.DrawQrCode(m_CurrentPrintQrCode.GenerateQrCode(false), g, QrSizetrackBar.Value, new PointF(15+(i*(h+z)), 15), QRCoder.QRCodeGenerator.ECCLevel.L);
+                    m_QrProcessor.DrawQrCode(m_CurrentPrintQrCode.GenerateQrCode(false), g, QrSizetrackBar.Value, new PointF(x+(i*(h+z)), y), QRCoder.QRCodeGenerator.ECCLevel.L);
+                }
+            }
+        }
+        /// <summary>
+        /// Функция печати серии номеров
+        /// </summary>
+        /// <param name="g"></param>
+        /// <param name="x">начальная точка х</param>
+        /// <param name="y">начальная точка у</param>
+        /// <param name="printingQr">печатаемый в данный момент код</param>
+       
+        private void DrawPrintQrcodeSerial(Graphics g, int x, int y,QrCodeData printingQr)
+        {
+            if (printingQr != null)
+            {
+                float h = ((QrSizetrackBar.Value) * (float)3.779527559055);
+                float z = ((SizeBeetweenQrTrack.Value) * (float)3.779527559055);
+                for (int i = 0; i < QrPrintColumsTrack.Value; i++)
+                {
+                    m_QrProcessor.DrawQrCode(printingQr.GenerateQrCode(false), g, QrSizetrackBar.Value, new PointF(x + (i * (h + z)), y), QRCoder.QRCodeGenerator.ECCLevel.L);
+                }
+            }
+        }
+        //в случае если многоколонок печатать номера последовательно
+        private void DrawPrintQrcodeSerial(Graphics g, int x, int y, QrCodeData[] printingQr)
+        {
+            if (printingQr != null && QrPrintColumsTrack.Value==printingQr.Length)
+            {
+                float h = ((QrSizetrackBar.Value) * (float)3.779527559055);
+                float z = ((SizeBeetweenQrTrack.Value) * (float)3.779527559055);
+                for (int i = 0; i < QrPrintColumsTrack.Value; i++)
+                {
+                    m_QrProcessor.DrawQrCode(printingQr[i].GenerateQrCode(false), g, QrSizetrackBar.Value, new PointF(x + (i * (h + z)), y), QRCoder.QRCodeGenerator.ECCLevel.L);
                 }
             }
         }
         private void DrawPrintPaper(Graphics g)
         {
             float h = ((QrSizetrackBar.Value) * (float)3.779527559055);
-            float w = ((PaperWightTrack.Value) * (float)3.779527559055);
+            float w = (((QrPrintColumsTrack.Value* QrSizetrackBar.Value) + ((QrPrintColumsTrack.Value-1)*SizeBeetweenQrTrack.Value)) * (float)3.779527559055);
+            PaperWidthLbl.Text = (((QrPrintColumsTrack.Value * QrSizetrackBar.Value) + ((QrPrintColumsTrack.Value - 1) * SizeBeetweenQrTrack.Value))).ToString();
             g.DrawRectangle(new Pen(new SolidBrush(Color.DarkSlateBlue)), 13, 13,w+4, h+4);
         }
 
@@ -235,7 +271,7 @@ namespace BarCode2
         private void printPanelBox_Paint(object sender, PaintEventArgs e)
         {
             DrawPrintPaper(e.Graphics);
-            DrawPrintQrcode(e.Graphics);
+            DrawPrintQrcode(e.Graphics,15,15);
         }
         private void сохранитьРисунокToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -254,21 +290,28 @@ namespace BarCode2
             QrSizeLbl.Text = QrSizetrackBar.Value.ToString();
             printPanelBox.Invalidate();
         }
-        private void PaperWightTrack_Scroll(object sender, EventArgs e)
-        {
-            printPanelBox.Invalidate();
-        }
+    
         private void QrPrintColumsTrack_Scroll(object sender, EventArgs e)
         {
+            ColumnsCountLbl.Text = QrPrintColumsTrack.Value.ToString();
             printPanelBox.Invalidate();
+
         }
         private void SizeBeetweenQrTrack_Scroll(object sender, EventArgs e)
         {
+            SizeBeetweenColumnsLbl.Text = SizeBeetweenQrTrack.Value.ToString();
             printPanelBox.Invalidate();
         }
         private void снятьВыделениеToolStripMenuItem_Click(object sender, EventArgs e)
         {
             currentQrCodeListBox.SelectedIndex = -1;
+        }
+        private void OncePrintingRadioBtn_CheckedChanged(object sender, EventArgs e)
+        {
+            if (OncePrintingRadioBtn.Checked)
+                SerialCopyNumericUpDown.Enabled = false;
+            else
+                SerialCopyNumericUpDown.Enabled = true;
         }
         private void поднятьВверхToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -381,6 +424,105 @@ namespace BarCode2
         }
 
 
+        private void PrintBtn_Click(object sender, EventArgs e)
+        {
+            if(OncePrintingRadioBtn.Checked)
+            {
+                PrintDocument printDocument = new PrintDocument();
+                float h = ((QrSizetrackBar.Value) * (float)3.779527559055);
+                float w = (((QrPrintColumsTrack.Value * QrSizetrackBar.Value) + ((QrPrintColumsTrack.Value - 1) * SizeBeetweenQrTrack.Value)) * (float)3.779527559055);
+                printDocument.DefaultPageSettings.PaperSize = new PaperSize("Other", (int)w+4, (int)h+4);
+                printDocument.PrintPage += PrintDocument_PrintPage;
+                printDocument.Print();
+            }
+            if(CopyOfPagesRadioBtn.Checked)
+            {
+                PrintDocument printDocument = new PrintDocument();
+                float h = ((QrSizetrackBar.Value) * (float)3.779527559055);
+                float w = (((QrPrintColumsTrack.Value * QrSizetrackBar.Value) + ((QrPrintColumsTrack.Value - 1) * SizeBeetweenQrTrack.Value)) * (float)3.779527559055);
+                printDocument.DefaultPageSettings.PaperSize = new PaperSize("Other", (int)w + 4, (int)h + 4);
+                printDocument.PrintPage += PrintDocument_PrintPageCopy;
+                printDocument.Print();
+            }
+            if(SerialPrintingRadioBtn.Checked)
+            {
+                m_SerialQrDataArray = m_QrProcessor.GenerateQrDataArrayForSerialPrint(m_CurrentPrintQrCode, m_DbDict, (int)SerialCopyNumericUpDown.Value);
+                if (m_SerialQrDataArray != null)
+                {
+                    PrintDocument printDocument = new PrintDocument();
+                    float h = ((QrSizetrackBar.Value) * (float)3.779527559055);
+                    float w = (((QrPrintColumsTrack.Value * QrSizetrackBar.Value) + ((QrPrintColumsTrack.Value - 1) * SizeBeetweenQrTrack.Value)) * (float)3.779527559055);
+                    printDocument.DefaultPageSettings.PaperSize = new PaperSize("Other", (int)w + 4, (int)h + 4);
+                    printDocument.PrintPage += PrintDocument_PrintPageSerial;
+
+                    printDocument.Print();
+                }
+            }
+            if(SerialPrintingSerialRadioBtn.Checked)
+            {
+
+            }
+
+        }
+
+        private void PrintDocument_PrintPageSerial(object sender, PrintPageEventArgs e)
+        {
+            if (cur_page_packet_counter >= SerialCopyNumericUpDown.Value)
+            {
+                e.HasMorePages = false;
+
+                return;
+            }
+            else
+            {
+                if (cur_page_packet_counter != SerialCopyNumericUpDown.Value - 1)
+                    e.HasMorePages = true;
+                //  string[] arr = GenerateQrPacketArray();
+
+
+
+
+                DrawPrintQrcodeSerial(e.Graphics, 1, 1,m_SerialQrDataArray[cur_page_packet_counter]);
+
+                cur_page_packet_counter++;
+
+                if (e.HasMorePages == false)
+                    cur_page_packet_counter = 0;
+            }
+        }
+
+        private void PrintDocument_PrintPageCopy(object sender, PrintPageEventArgs e)
+        {
+            if (cur_page_packet_counter >= SerialCopyNumericUpDown.Value)
+            {
+                e.HasMorePages = false;
+
+                return;
+            }
+            else
+            {
+                if (cur_page_packet_counter != SerialCopyNumericUpDown.Value - 1)
+                    e.HasMorePages = true;
+                //  string[] arr = GenerateQrPacketArray();
+
+
+
+
+                DrawPrintQrcode(e.Graphics, 1, 1);
+
+                cur_page_packet_counter++;
+
+                if (e.HasMorePages == false)
+                    cur_page_packet_counter = 0;
+            }
+        }
+
+        private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)
+        {
+            DrawPrintQrcode(e.Graphics, 1, 1);
+        }
+
+
         #endregion
 
 
@@ -450,6 +592,8 @@ namespace BarCode2
                 }
             }
         }
+
+
 
 
 
