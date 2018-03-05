@@ -217,7 +217,7 @@ namespace BarCode2
                 float dx = x * (float)3.779527559055;
                 for (int i = 0; i < QrPrintColumsTrack.Value; i++)
                 {
-                    m_QrProcessor.DrawQrCode(m_CurrentPrintQrCode.GenerateQrCode(false), g, QrSizetrackBar.Value, new PointF(dx+(i*(h+z)), dy), QRCoder.QRCodeGenerator.ECCLevel.L);
+                    m_QrProcessor.DrawQrCode(m_CurrentPrintQrCode.GenerateQrCode(false), g, QrSizetrackBar.Value, new PointF(dx+(i*(h+z)), dy), QRCoder.QRCodeGenerator.ECCLevel.H);
                 }
             }
         }
