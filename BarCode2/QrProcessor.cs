@@ -271,14 +271,15 @@ namespace BarCode2
         {
             if (current != null && dict != null)
             {
-                QrCodeData[] qr_result_arr = new QrCodeData[ammount];
+                QrCodeData[] qr_result_arr = null;
                 foreach (DictionaryItem di in dict.DictionaryDataBase)
                 {
                     for(int j=0;j<current.ListQrItems.Count;j++)
                     {
                         if(current.ListQrItems[j].Type == di.TypeId && di.IsSerialDb)
                         {
-                            for(int i=0;i<ammount;i++)
+                            qr_result_arr = new QrCodeData[ammount];
+                            for (int i=0;i<ammount;i++)
                             {
                                 QrCodeData qr_add = new QrCodeData(current);
                                 string str_format = "";
