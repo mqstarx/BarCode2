@@ -267,6 +267,13 @@ namespace BarCode2
             return m_result;
         }
 
+        /// <summary>
+        /// генерирует массив печати серии номеров к копированием по колонкам
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="dict"></param>
+        /// <param name="ammount"></param>
+        /// <returns></returns>
         public QrCodeData[] GenerateQrDataArrayForSerialPrint(QrCodeData current,Dictionary dict,int ammount)
         {
             if (current != null && dict != null)
@@ -294,6 +301,45 @@ namespace BarCode2
                         }
                     }
                     
+                }
+                return qr_result_arr;
+            }
+            else return null;
+        }
+        /// <summary>
+        /// генерирует массив печати серии номеров последовательно
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="dict"></param>
+        /// <param name="ammount"></param>
+        /// <returns></returns>
+        public QrCodeData[] GenerateQrDataArrayForSerialPrintSerial(QrCodeData current, Dictionary dict, int ammount)
+        {
+            if (current != null && dict != null)
+            {
+                QrCodeData[] qr_result_arr = null;
+                foreach (DictionaryItem di in dict.DictionaryDataBase)
+                {
+                    for (int j = 0; j < current.ListQrItems.Count; j++)
+                    {
+                        if (current.ListQrItems[j].Type == di.TypeId && di.IsSerialDb)
+                        {
+                            qr_result_arr = new QrCodeData[ammount];
+                            for (int i = 0; i < ammount; i++)
+                            {
+                                QrCodeData qr_add = new QrCodeData(current);
+                                string str_format = "";
+                                for (int v = 0; v < di.DataLen; v++)
+                                {
+                                    str_format += "0";
+                                }
+                                qr_add.ChangeQrItemInList(j, di.TypeId, (int.Parse(current.ListQrItems[j].Value) + i).ToString(str_format));
+                                qr_result_arr[i] = qr_add;
+                            }
+
+                        }
+                    }
+
                 }
                 return qr_result_arr;
             }

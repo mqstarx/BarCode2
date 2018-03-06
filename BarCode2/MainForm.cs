@@ -254,6 +254,7 @@ namespace BarCode2
                 float dx = x * (float)3.779527559055;
                 for (int i = 0; i < QrPrintColumsTrack.Value; i++)
                 {
+                    if(printingQr[i]!=null)
                     m_QrProcessor.DrawQrCode(printingQr[i].GenerateQrCode(false), g, QrSizetrackBar.Value, new PointF(dx + (i * (h + z)), dy), QRCoder.QRCodeGenerator.ECCLevel.L);
                 }
             }
@@ -440,6 +441,7 @@ namespace BarCode2
                // printDocument.DefaultPageSettings.PaperSize = new PaperSize("Other", (int)w+4, (int)h+4);
                
                 printDocument.PrintPage += PrintDocument_PrintPage;
+                cur_page_packet_counter = 0;
                 printDocument.Print();
             }
             if(CopyOfPagesRadioBtn.Checked)
@@ -449,6 +451,7 @@ namespace BarCode2
                 float w = (((QrPrintColumsTrack.Value * QrSizetrackBar.Value) + ((QrPrintColumsTrack.Value - 1) * SizeBeetweenQrTrack.Value)) * (float)3.779527559055);
               //  printDocument.DefaultPageSettings.PaperSize = new PaperSize("Other", (int)w + 4, (int)h + 4);
                 printDocument.PrintPage += PrintDocument_PrintPageCopy;
+                cur_page_packet_counter = 0;
                 printDocument.Print();
             }
             if(SerialPrintingRadioBtn.Checked)
@@ -461,15 +464,77 @@ namespace BarCode2
                     float w = (((QrPrintColumsTrack.Value * QrSizetrackBar.Value) + ((QrPrintColumsTrack.Value - 1) * SizeBeetweenQrTrack.Value)) * (float)3.779527559055);
                    // printDocument.DefaultPageSettings.PaperSize = new PaperSize("Other", (int)w + 4, (int)h + 4);
                     printDocument.PrintPage += PrintDocument_PrintPageSerial;
-
+                    cur_page_packet_counter = 0;
                     printDocument.Print();
                 }
             }
             if(SerialPrintingSerialRadioBtn.Checked)
             {
-
+                m_SerialQrDataArray = m_QrProcessor.GenerateQrDataArrayForSerialPrint(m_CurrentPrintQrCode, m_DbDict, (int)SerialCopyNumericUpDown.Value);
+                if (m_SerialQrDataArray != null)
+                {
+                    PrintDocument printDocument = new PrintDocument();
+                    float h = ((QrSizetrackBar.Value) * (float)3.779527559055);
+                    float w = (((QrPrintColumsTrack.Value * QrSizetrackBar.Value) + ((QrPrintColumsTrack.Value - 1) * SizeBeetweenQrTrack.Value)) * (float)3.779527559055);
+                    // printDocument.DefaultPageSettings.PaperSize = new PaperSize("Other", (int)w + 4, (int)h + 4);
+                    printDocument.PrintPage += PrintDocument_PrintPageSerialSerial;
+                    cur_page_packet_counter = 0;
+                    printDocument.Print();
+                }
             }
 
+        }
+
+        private void PrintDocument_PrintPageSerialSerial(object sender, PrintPageEventArgs e)
+        {
+            int pages_count = (int)SerialCopyNumericUpDown.Value / (int)QrPrintColumsTrack.Value;
+            if (SerialCopyNumericUpDown.Value % QrPrintColumsTrack.Value != 0)
+                pages_count += 1;
+
+
+        
+           
+               
+
+
+                QrCodeData[] m_tmpQrrArr = new QrCodeData[QrPrintColumsTrack.Value];
+                if (m_SerialQrDataArray.Length - cur_page_packet_counter * QrPrintColumsTrack.Value < QrPrintColumsTrack.Value)
+                    Array.Copy(m_SerialQrDataArray, cur_page_packet_counter* QrPrintColumsTrack.Value, m_tmpQrrArr, 0, m_SerialQrDataArray.Length - cur_page_packet_counter * QrPrintColumsTrack.Value);
+                else
+                    Array.Copy(m_SerialQrDataArray, cur_page_packet_counter * QrPrintColumsTrack.Value, m_tmpQrrArr, 0, QrPrintColumsTrack.Value);
+                DrawPrintQrcodeSerial(e.Graphics, (int)LeftOffsetNumeric.Value, (int)UpOffsetNumeric.Value, m_tmpQrrArr);
+
+            if ((cur_page_packet_counter < pages_count-1) && (SerialCopyNumericUpDown.Value > QrPrintColumsTrack.Value))
+                e.HasMorePages = true;
+
+            cur_page_packet_counter++;
+
+             
+            
+
+            /* if (cur_page_packet_counter >= SerialCopyNumericUpDown.Value)
+             {
+                 e.HasMorePages = false;
+
+                 return;
+             }
+             else
+             {
+
+                 QrCodeData[] m_tmpQrrArr = new QrCodeData[QrPrintColumsTrack.Value];
+                 if(m_SerialQrDataArray.Length-cur_page_packet_counter< QrPrintColumsTrack.Value)
+                     Array.Copy(m_SerialQrDataArray, cur_page_packet_counter, m_tmpQrrArr, 0, m_SerialQrDataArray.Length - cur_page_packet_counter);
+                 else
+                     Array.Copy(m_SerialQrDataArray, cur_page_packet_counter, m_tmpQrrArr, 0, QrPrintColumsTrack.Value);
+                 DrawPrintQrcodeSerial(e.Graphics, (int)LeftOffsetNumeric.Value, (int)UpOffsetNumeric.Value, m_tmpQrrArr);
+
+                 cur_page_packet_counter+= QrPrintColumsTrack.Value;
+                 if ((cur_page_packet_counter < SerialCopyNumericUpDown.Value - 1) && (SerialCopyNumericUpDown.Value > QrPrintColumsTrack.Value))
+                     e.HasMorePages = true;
+
+                 if (e.HasMorePages == false)
+                     cur_page_packet_counter = 0;
+             }*/
         }
 
         private void PrintDocument_PrintPageSerial(object sender, PrintPageEventArgs e)
