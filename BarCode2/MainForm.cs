@@ -24,13 +24,14 @@ namespace BarCode2
         string m_ServerIP = "127.0.0.1";
         QrCodeData[] m_SerialQrDataArray;
         private List<char> QrPacket;
+        PrintSession m_PrintSession;
         private int cur_page_packet_counter;
 
         public MainForm()
         {
            
             InitializeComponent();
-            InitConfiguration();
+           
             QrPacket = new List<char>();
             m_QrProcessor = new QrProcessor();
             m_tcpModule = new DataBase.TcpModule();
@@ -38,17 +39,20 @@ namespace BarCode2
             m_tcpModule.Receive += Tcp_Receive;
             m_DbDict = new Dictionary();
             m_DbDict.ReadFromIni();
-          
-           
-            
-            
+            InitConfiguration();
+
         }
+
+        #region Работа с конфигурацией приложения
         /// <summary>
         /// инициализация конфигурации
         /// </summary>
         private void InitConfiguration()
         {
              m_AppConfig = (AppConfig)Functions.LoadConfig();
+            m_PrintSession = (PrintSession)Functions.LoadConfig("printsession.qrc");
+            if (m_PrintSession != null)
+                LoadPrintSession();
              if(m_AppConfig == null)
             {
                 m_AppConfig = new AppConfig();
@@ -73,7 +77,33 @@ namespace BarCode2
 
         }
 
-        //сохранение параметров
+        //загрузка параметров сессии
+        private void LoadPrintSession()
+        {
+            m_CurrentPrintQrCode = m_PrintSession.CurrentQrCode;
+            QrPrintColumsTrack.Value = m_PrintSession.CollumnsCount;
+            QrSizetrackBar.Value = m_PrintSession.QrCodeSize;
+            SizeBeetweenQrTrack.Value = m_PrintSession.SizeBeetweenCollumns;
+            SerialCopyNumericUpDown.Value = m_PrintSession.SerialCopy;
+            LeftOffsetNumeric.Value = m_PrintSession.DX;
+            UpOffsetNumeric.Value = m_PrintSession.DY;
+            if (m_PrintSession.CheckedBox == 0)
+                OncePrintingRadioBtn.Checked = true;
+            if (m_PrintSession.CheckedBox == 1)
+                SerialPrintingRadioBtn.Checked = true;
+
+            if (m_PrintSession.CheckedBox == 2)
+                SerialPrintingSerialRadioBtn.Checked = true;
+
+            if (m_PrintSession.CheckedBox == 3)
+                CopyOfPagesRadioBtn.Checked = true;
+
+            m_QrProcessor.ListFillFromQrObject(currentQrCodeListBox, AddInPacketTreeView, m_CurrentPrintQrCode, m_DbDict);
+            printPanelBox.Invalidate();
+
+        }
+
+        //сохранение параметров формы
         private void SaveFormParametrs()
         {
             m_AppConfig.MainFormSize = this.Size;
@@ -84,6 +114,38 @@ namespace BarCode2
             Functions.SaveConfig(m_AppConfig);
         }
 
+        //сохранение параметров сессии
+        private void SavePrintSession()
+        {
+            m_PrintSession = new PrintSession();
+
+            m_PrintSession.CurrentQrCode = m_CurrentPrintQrCode;
+            m_PrintSession.CollumnsCount = QrPrintColumsTrack.Value;
+            m_PrintSession.QrCodeSize = QrSizetrackBar.Value;
+            m_PrintSession.SizeBeetweenCollumns = SizeBeetweenQrTrack.Value;
+            m_PrintSession.SerialCopy = (int)SerialCopyNumericUpDown.Value;
+            m_PrintSession.DX = (int)LeftOffsetNumeric.Value;
+            m_PrintSession.DY = (int)UpOffsetNumeric.Value;
+            if (OncePrintingRadioBtn.Checked)
+                m_PrintSession.CheckedBox = 0;
+            if (SerialPrintingRadioBtn.Checked)
+                m_PrintSession.CheckedBox = 1;
+            if (SerialPrintingSerialRadioBtn.Checked)
+                m_PrintSession.CheckedBox = 2;
+            if (CopyOfPagesRadioBtn.Checked)
+                m_PrintSession.CheckedBox = 3;
+
+            Functions.SaveConfig(m_PrintSession,"printsession.qrc");
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SaveFormParametrs();
+            SavePrintSession();
+        }
+        #endregion
+
+        #region Работа с сетью
         private void Tcp_Receive(object sender, ReceiveEventArgs e)
         {
             if(e.sendInfo.message == "ASKDICTOK")
@@ -107,13 +169,8 @@ namespace BarCode2
         {
             m_tcpModule.ConnectClient("127.0.0.1");
         }
-      
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            SaveFormParametrs();
-        }
-
-
+        #endregion
+        
         #region работа с вкладкой "идентификация"
 
         private void CheckQrManualBtm_Click(object sender, EventArgs e)
@@ -180,7 +237,6 @@ namespace BarCode2
         }
 
         #endregion
-
 
         #region Работа с вкладкой "печать этикеток" 
         private void RefreshDictionary_Click(object sender, EventArgs e)
@@ -491,12 +547,6 @@ namespace BarCode2
             if (SerialCopyNumericUpDown.Value % QrPrintColumsTrack.Value != 0)
                 pages_count += 1;
 
-
-        
-           
-               
-
-
                 QrCodeData[] m_tmpQrrArr = new QrCodeData[QrPrintColumsTrack.Value];
                 if (m_SerialQrDataArray.Length - cur_page_packet_counter * QrPrintColumsTrack.Value < QrPrintColumsTrack.Value)
                     Array.Copy(m_SerialQrDataArray, cur_page_packet_counter* QrPrintColumsTrack.Value, m_tmpQrrArr, 0, m_SerialQrDataArray.Length - cur_page_packet_counter * QrPrintColumsTrack.Value);
@@ -510,31 +560,6 @@ namespace BarCode2
             cur_page_packet_counter++;
 
              
-            
-
-            /* if (cur_page_packet_counter >= SerialCopyNumericUpDown.Value)
-             {
-                 e.HasMorePages = false;
-
-                 return;
-             }
-             else
-             {
-
-                 QrCodeData[] m_tmpQrrArr = new QrCodeData[QrPrintColumsTrack.Value];
-                 if(m_SerialQrDataArray.Length-cur_page_packet_counter< QrPrintColumsTrack.Value)
-                     Array.Copy(m_SerialQrDataArray, cur_page_packet_counter, m_tmpQrrArr, 0, m_SerialQrDataArray.Length - cur_page_packet_counter);
-                 else
-                     Array.Copy(m_SerialQrDataArray, cur_page_packet_counter, m_tmpQrrArr, 0, QrPrintColumsTrack.Value);
-                 DrawPrintQrcodeSerial(e.Graphics, (int)LeftOffsetNumeric.Value, (int)UpOffsetNumeric.Value, m_tmpQrrArr);
-
-                 cur_page_packet_counter+= QrPrintColumsTrack.Value;
-                 if ((cur_page_packet_counter < SerialCopyNumericUpDown.Value - 1) && (SerialCopyNumericUpDown.Value > QrPrintColumsTrack.Value))
-                     e.HasMorePages = true;
-
-                 if (e.HasMorePages == false)
-                     cur_page_packet_counter = 0;
-             }*/
         }
 
         private void PrintDocument_PrintPageSerial(object sender, PrintPageEventArgs e)
@@ -549,10 +574,6 @@ namespace BarCode2
             {
                 if (cur_page_packet_counter != SerialCopyNumericUpDown.Value - 1)
                     e.HasMorePages = true;
-                //  string[] arr = GenerateQrPacketArray();
-
-
-
 
                 DrawPrintQrcodeSerial(e.Graphics, (int)LeftOffsetNumeric.Value, (int)UpOffsetNumeric.Value, m_SerialQrDataArray[cur_page_packet_counter]);
 
@@ -575,11 +596,7 @@ namespace BarCode2
             {
                 if (cur_page_packet_counter != SerialCopyNumericUpDown.Value - 1)
                     e.HasMorePages = true;
-                //  string[] arr = GenerateQrPacketArray();
-
-
-
-
+ 
                 DrawPrintQrcode(e.Graphics, (int)LeftOffsetNumeric.Value, (int)UpOffsetNumeric.Value);
 
                 cur_page_packet_counter++;
@@ -596,7 +613,6 @@ namespace BarCode2
 
 
         #endregion
-
 
         #region работа с бд
         private void addDabaseBtn_Click(object sender, EventArgs e)
