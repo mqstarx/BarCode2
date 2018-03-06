@@ -94,6 +94,30 @@ namespace DataBase
             }
             return "Тип данных отсутствует в справочнике";
         }
+
+        public ArrayItem GetValueArrayItemFromDictionary(string type,string key)
+        {
+            ArrayItem ar = null;
+            foreach(DictionaryItem di in m_DictionaryDataBase)
+            {
+                if(di.TypeId == type)
+                {
+                    if(di.KeyValues!=null)
+                    {
+                        foreach(ArrayItem a in di.KeyValues)
+                        {
+                            if (a.Key == key)
+                            {
+                                ar = a;
+                                break;
+                            }
+                           
+                        }
+                    }
+                }
+            }
+            return ar;
+        }
     }
 
     /// <summary>

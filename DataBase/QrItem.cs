@@ -75,6 +75,9 @@ namespace DataBase
         private QrItem m_QrItem;
         private string m_DictionaryTypeDescription;
         private ArrayItem m_ArrayItem;
+        private int m_DataLen;
+        
+
         /// <summary>
         /// Объект qr кода
         /// </summary>
@@ -123,10 +126,28 @@ namespace DataBase
             }
         }
 
+        public int DataLen
+        {
+            get
+            {
+                return m_DataLen;
+            }
+
+            set
+            {
+                m_DataLen = value;
+            }
+        }
+
         public QrItemDictionary(QrItem q,string Descr)
         {
             m_QrItem = q;
             m_DictionaryTypeDescription = Descr;
+        }
+        public QrItemDictionary(QrItem q, int len)
+        {
+            m_QrItem = q;
+            m_DataLen = len;
         }
         public override string ToString()
         {

@@ -9,6 +9,7 @@ namespace DataBase
     /// <summary>
     /// класс определяющий один сформированный qr_код
     /// </summary>
+   [Serializable]
     public class QrCodeData
     {
         private List<QrItem> m_ListQrItems;
