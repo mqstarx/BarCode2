@@ -87,6 +87,9 @@ namespace BarCode2
             SerialCopyNumericUpDown.Value = m_PrintSession.SerialCopy;
             LeftOffsetNumeric.Value = m_PrintSession.DX;
             UpOffsetNumeric.Value = m_PrintSession.DY;
+            QrSizeLbl.Text = m_PrintSession.QrCodeSize.ToString();
+            ColumnsCountLbl.Text = m_PrintSession.CollumnsCount.ToString();
+            SizeBeetweenColumnsLbl.Text = m_PrintSession.SizeBeetweenCollumns.ToString();
             if (m_PrintSession.CheckedBox == 0)
                 OncePrintingRadioBtn.Checked = true;
             if (m_PrintSession.CheckedBox == 1)
