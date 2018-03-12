@@ -39,6 +39,8 @@
             this.CheckQrManualTxb = new System.Windows.Forms.TextBox();
             this.qr_dataList = new System.Windows.Forms.ListBox();
             this.PrintPageTab = new System.Windows.Forms.TabPage();
+            this.label9 = new System.Windows.Forms.Label();
+            this.LeftOffsetNumeric = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
             this.UpOffsetNumeric = new System.Windows.Forms.NumericUpDown();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -84,12 +86,12 @@
             this.addDabaseBtn = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.DataBasItemCollectionListBox = new System.Windows.Forms.ListBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.LeftOffsetNumeric = new System.Windows.Forms.NumericUpDown();
+            this.TimeOutTimer = new System.Windows.Forms.Timer(this.components);
             this.statusStripBar.SuspendLayout();
             this.mainTabControl.SuspendLayout();
             this.identificationTab.SuspendLayout();
             this.PrintPageTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LeftOffsetNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.UpOffsetNumeric)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SerialCopyNumericUpDown)).BeginInit();
@@ -101,7 +103,6 @@
             this.contextMenuStripQrCodeListBox.SuspendLayout();
             this.DataBasePageTab.SuspendLayout();
             this.contextMenuDataBaseTree.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.LeftOffsetNumeric)).BeginInit();
             this.SuspendLayout();
             // 
             // statusStripBar
@@ -119,9 +120,11 @@
             // connectionStatusLabel
             // 
             this.connectionStatusLabel.BackColor = System.Drawing.Color.Red;
+            this.connectionStatusLabel.DoubleClickEnabled = true;
             this.connectionStatusLabel.Name = "connectionStatusLabel";
             this.connectionStatusLabel.Size = new System.Drawing.Size(140, 17);
             this.connectionStatusLabel.Text = "Соединение с сервером";
+            this.connectionStatusLabel.DoubleClick += new System.EventHandler(this.connectionStatusLabel_DoubleClick);
             // 
             // mainTabControl
             // 
@@ -147,8 +150,8 @@
             this.identificationTab.Controls.Add(this.qr_dataList);
             this.identificationTab.Location = new System.Drawing.Point(4, 22);
             this.identificationTab.Name = "identificationTab";
-            this.identificationTab.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.identificationTab.Size = new System.Drawing.Size(984, 534);
+            this.identificationTab.Padding = new System.Windows.Forms.Padding(3);
+            this.identificationTab.Size = new System.Drawing.Size(1010, 527);
             this.identificationTab.TabIndex = 0;
             this.identificationTab.Text = "Идентификация";
             this.identificationTab.UseVisualStyleBackColor = true;
@@ -223,11 +226,39 @@
             this.PrintPageTab.Controls.Add(this.dictionaryTreeOnPrintTab);
             this.PrintPageTab.Location = new System.Drawing.Point(4, 22);
             this.PrintPageTab.Name = "PrintPageTab";
-            this.PrintPageTab.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.PrintPageTab.Padding = new System.Windows.Forms.Padding(3);
             this.PrintPageTab.Size = new System.Drawing.Size(1010, 527);
             this.PrintPageTab.TabIndex = 1;
             this.PrintPageTab.Text = "Печать этикеток";
             this.PrintPageTab.UseVisualStyleBackColor = true;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(850, 347);
+            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(94, 13);
+            this.label9.TabIndex = 24;
+            this.label9.Text = "Смещение слева";
+            // 
+            // LeftOffsetNumeric
+            // 
+            this.LeftOffsetNumeric.Location = new System.Drawing.Point(948, 345);
+            this.LeftOffsetNumeric.Margin = new System.Windows.Forms.Padding(2);
+            this.LeftOffsetNumeric.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.LeftOffsetNumeric.Name = "LeftOffsetNumeric";
+            this.LeftOffsetNumeric.Size = new System.Drawing.Size(46, 20);
+            this.LeftOffsetNumeric.TabIndex = 23;
+            this.LeftOffsetNumeric.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // label8
             // 
@@ -242,7 +273,7 @@
             // UpOffsetNumeric
             // 
             this.UpOffsetNumeric.Location = new System.Drawing.Point(800, 345);
-            this.UpOffsetNumeric.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.UpOffsetNumeric.Margin = new System.Windows.Forms.Padding(2);
             this.UpOffsetNumeric.Minimum = new decimal(new int[] {
             1,
             0,
@@ -623,7 +654,7 @@
             this.DataBasePageTab.Controls.Add(this.DataBasItemCollectionListBox);
             this.DataBasePageTab.Location = new System.Drawing.Point(4, 22);
             this.DataBasePageTab.Name = "DataBasePageTab";
-            this.DataBasePageTab.Size = new System.Drawing.Size(644, 507);
+            this.DataBasePageTab.Size = new System.Drawing.Size(1010, 527);
             this.DataBasePageTab.TabIndex = 2;
             this.DataBasePageTab.Text = "БазаДанных";
             this.DataBasePageTab.UseVisualStyleBackColor = true;
@@ -693,33 +724,10 @@
             this.DataBasItemCollectionListBox.Size = new System.Drawing.Size(179, 407);
             this.DataBasItemCollectionListBox.TabIndex = 0;
             // 
-            // label9
+            // TimeOutTimer
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(850, 347);
-            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(94, 13);
-            this.label9.TabIndex = 24;
-            this.label9.Text = "Смещение слева";
-            // 
-            // LeftOffsetNumeric
-            // 
-            this.LeftOffsetNumeric.Location = new System.Drawing.Point(948, 345);
-            this.LeftOffsetNumeric.Margin = new System.Windows.Forms.Padding(2);
-            this.LeftOffsetNumeric.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.LeftOffsetNumeric.Name = "LeftOffsetNumeric";
-            this.LeftOffsetNumeric.Size = new System.Drawing.Size(46, 20);
-            this.LeftOffsetNumeric.TabIndex = 23;
-            this.LeftOffsetNumeric.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.TimeOutTimer.Interval = 2000;
+            this.TimeOutTimer.Tick += new System.EventHandler(this.TimeOutTimer_Tick);
             // 
             // MainForm
             // 
@@ -733,6 +741,7 @@
             this.Name = "MainForm";
             this.Text = "QR кодер";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.statusStripBar.ResumeLayout(false);
             this.statusStripBar.PerformLayout();
             this.mainTabControl.ResumeLayout(false);
@@ -740,6 +749,7 @@
             this.identificationTab.PerformLayout();
             this.PrintPageTab.ResumeLayout(false);
             this.PrintPageTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LeftOffsetNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.UpOffsetNumeric)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -753,7 +763,6 @@
             this.DataBasePageTab.ResumeLayout(false);
             this.DataBasePageTab.PerformLayout();
             this.contextMenuDataBaseTree.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.LeftOffsetNumeric)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -817,6 +826,7 @@
         private System.Windows.Forms.NumericUpDown UpOffsetNumeric;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.NumericUpDown LeftOffsetNumeric;
+        private System.Windows.Forms.Timer TimeOutTimer;
     }
 }
 

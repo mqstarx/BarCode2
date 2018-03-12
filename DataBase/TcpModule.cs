@@ -158,8 +158,8 @@ namespace DataBase
             }
             else
             {
-                SoundError();
-            }
+               // SoundError();
+           }
         }
 
 
@@ -353,7 +353,7 @@ namespace DataBase
         /// </summary>
         public void ConnectCallback(IAsyncResult ar)
         {
-            string result = "Подключение успешно!";
+            string result = "OK";
             try
             {
                 // Получаем подключенного клиента
@@ -372,8 +372,8 @@ namespace DataBase
                 //MessageBox.Show(e.Message);
                 // Обработка ошибок подключения
                 DisconnectClient();
-                result = "Подключение провалено!";
-                SoundError();
+                result = "ERR";
+               // SoundError();
             }
 
             // Активация события успешного или неуспешного подключения к серверу,

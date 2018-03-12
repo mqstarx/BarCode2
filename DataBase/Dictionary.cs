@@ -118,6 +118,16 @@ namespace DataBase
             }
             return ar;
         }
+
+        public bool IsItemIsSerial(QrItem qr)
+        {
+            foreach(DictionaryItem di in m_DictionaryDataBase)
+            {
+                if (di.TypeId == qr.Type && di.IsSerialDb)
+                    return true;
+            }
+            return false;
+        }
     }
 
     /// <summary>

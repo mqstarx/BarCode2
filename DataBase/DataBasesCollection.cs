@@ -107,6 +107,25 @@ namespace DataBase
             }
             return false;
         }
+        public bool IsContainDataBaseWithType(QrItem qr)
+        {
+            foreach(DataBase db in m_DataBasesCollection)
+            {
+                if(db.TypeOfData == qr.Type)
+                {
+                    return true;
+                }
+                if (db.DataBaseNode != null)
+                {
+                    foreach (DataBase dbin in db.DataBaseNode.DataBaseCollection)
+                    {
+                        if (db.DataBaseNode.IsContainDataBaseWithType(qr))
+                            return true;
+                    }
+                }
+            }
+            return false;
+        }
 
     }
     [Serializable]

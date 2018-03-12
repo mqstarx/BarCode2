@@ -46,7 +46,10 @@ namespace BarCode2
         {
             get
             {
-                return m_ServerIp;
+                if (m_ServerIp == null)
+                    return "127.0.0.1";
+                else
+                    return m_ServerIp;
             }
 
             set

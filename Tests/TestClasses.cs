@@ -136,5 +136,19 @@ namespace Tests
             Assert.AreNotEqual(true, dbCollection.IsQrItemInBase(new QrItem("P", "1234"), dbCollection));
 
         }
+        [TestMethod]
+        public void IsContainDataBaseWithTypeTest()
+        {
+            //arrange
+            DataBasesCollection dbCollection = new DataBasesCollection();
+            dbCollection.AddDataBase(new DataBase.DataBase("P", "typeDescr", "Test1"));
+            dbCollection.AddDataBaseToNode(new DataBase.DataBase("D", "typeDescrwww", "Test2"), dbCollection.DataBaseCollection[0].BaseUniqId);
+            dbCollection.DataBaseCollection[0].DataBaseNode.DataBaseCollection[0].DataBaseItems.Add(new DataBaseItem(new QrItem("D", "1234"), "FFSSDASDASSSSDAS"));
+            dbCollection.DataBaseCollection[0].DataBaseNode.DataBaseCollection[0].DataBaseItems.Add(new DataBaseItem(new QrItem("D", "12345"), "FFSSDASDASSSSDAS"));
+
+            Assert.AreEqual(true, dbCollection.IsContainDataBaseWithType(new QrItem("D", "1234")));
+           
+
+        }
     }
 }

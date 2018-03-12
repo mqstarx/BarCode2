@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using DataBase;
 using System.Drawing.Printing;
+using System.Threading;
 
 namespace BarCode2
 {
@@ -26,6 +27,9 @@ namespace BarCode2
         private List<char> QrPacket;
         PrintSession m_PrintSession;
         private int cur_page_packet_counter;
+        private bool m_IsConnectedToServer;
+       // Thread m_FirstStartConnectionWait;
+       // Thread m_ConnectionTimer;
 
         public MainForm()
         {
@@ -33,15 +37,19 @@ namespace BarCode2
             InitializeComponent();
            
             QrPacket = new List<char>();
+            m_DbCollection = new DataBasesCollection();
             m_QrProcessor = new QrProcessor();
-            m_tcpModule = new DataBase.TcpModule();
-            m_tcpModule.Connected += Tcp_Connected;
-            m_tcpModule.Receive += Tcp_Receive;
+           
             m_DbDict = new Dictionary();
             m_DbDict.ReadFromIni();
             InitConfiguration();
-
+            
+           
         }
+
+       
+
+
 
         #region Работа с конфигурацией приложения
         /// <summary>
@@ -145,35 +153,123 @@ namespace BarCode2
         {
             SaveFormParametrs();
             SavePrintSession();
+           // m_FirstStartConnectionWait.Abort();
+          //  m_ConnectionTimer.Abort();
         }
         #endregion
 
         #region Работа с сетью
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            ConnectToServer();
+        
+        }
+        private void connectionStatusLabel_DoubleClick(object sender, EventArgs e)
+        {
+            EditIP edit = new EditIP();
+            edit.IpTxb.Text = m_ServerIP;
+            if(edit.ShowDialog()== DialogResult.OK)
+            {
+                m_ServerIP = edit.IpTxb.Text;
+                SaveFormParametrs();
+                ConnectToServer();
+            }
+        }
+        
+       
+
+
+        private void ConnectToServer()
+        {
+            if (!m_IsConnectedToServer)
+            {
+                m_tcpModule = new DataBase.TcpModule();
+                m_tcpModule.Connected += Tcp_Connected;
+                m_tcpModule.Receive += Tcp_Receive;
+                m_tcpModule.Disconnected += M_tcpModule_Disconnected;
+                m_tcpModule.Accept += M_tcpModule_Accept;
+                m_tcpModule.ConnectClient(m_ServerIP);
+            }
+        }
+
+       
+        private void TimeOutTimer_Tick(object sender, EventArgs e)
+        {
+            ConnectToServer();
+        }
         private void Tcp_Receive(object sender, ReceiveEventArgs e)
         {
-            if(e.sendInfo.message == "ASKDICTOK")
+            if (e.sendInfo.message == "CHECKCONNOK")
+            {
+                m_IsConnectedToServer = true;
+                this.Invoke((new Action(() => connectionStatusLabel.BackColor = Color.Green)));
+                TimeOutTimer.Stop();
+                 SendReqest("ASKDICT",null);
+
+                 SendReqest("ASKDBCOLLECTION", null);
+            }
+            if (e.sendInfo.message == "ASKDICTOK")
             {
                 m_DbDict = (Dictionary)e.Object;
+                this.Invoke((new Action(() => RefreshDictionaryTree())));
+            }
+            if (e.sendInfo.message == "ASKDBCOLLECTIONOK")
+            {
+                m_DbCollection = (DataBasesCollection)e.Object;
+                this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
+               
+            }
+            if (e.sendInfo.message == "ADDBASEOK")
+            {
+                m_DbCollection = (DataBasesCollection)e.Object;
+                this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
+
+            }
+            if (e.sendInfo.message == "ADDINBASEOK")
+            {
+                m_DbCollection = (DataBasesCollection)e.Object;
+                this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
+
             }
         }
 
         private void Tcp_Connected(object sender, string result)
         {
+            if (result == "OK")
+            {
+                              
+                SendReqest("CHECKCONN", null);
+                TimeOutTimer.Start();
            
+            }
+            if(result=="ERR")
+            {
+                ConnectToServer();
+            }
+        }
+        private void M_tcpModule_Accept(object sender)
+        {
+            // throw new NotImplementedException();
+        }
+        private void M_tcpModule_Disconnected(object sender, string result)
+        {
+            this.Invoke((new Action(() => connectionStatusLabel.BackColor = Color.Red)));
+            m_IsConnectedToServer = false;
+            ConnectToServer();
+
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void SendReqest(string req,object obj)
         {
-           
-            m_tcpModule.SendData(null, "ASKDICT");
+            if (m_IsConnectedToServer|| req== "CHECKCONN")
+            {
+               // m_tcpModule.Receive += Tcp_Receive;
+                m_tcpModule.SendData(obj, req);
+            }
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            m_tcpModule.ConnectClient("127.0.0.1");
-        }
         #endregion
-        
+
         #region работа с вкладкой "идентификация"
 
         private void CheckQrManualBtm_Click(object sender, EventArgs e)
@@ -245,27 +341,38 @@ namespace BarCode2
         private void RefreshDictionary_Click(object sender, EventArgs e)
         {
             //запрос из сети
-            TreeNode node;
-            dictionaryTreeOnPrintTab.Nodes.Clear();
-            foreach(DictionaryItem di in m_DbDict.DictionaryDataBase)
+            if (m_IsConnectedToServer)
             {
-                node = new TreeNode(di.DataDescr);
-                node.Tag = di;
-                if(di.KeyValues!=null)
-                {
-                    
-                    foreach(ArrayItem ar in di.KeyValues)
-                    {
-                        TreeNode chNode = new TreeNode(ar.Value);
-                        chNode.Tag = ar;
-                        node.Nodes.Add(chNode);
-                    }
-                }
-                dictionaryTreeOnPrintTab.Nodes.Add(node);
+                m_tcpModule.SendData(null, "ASKDICT");
+               
             }
-           
         }
-       
+
+        private void RefreshDictionaryTree()
+        {
+            if (m_DbDict != null)
+            {
+                TreeNode node;
+                dictionaryTreeOnPrintTab.Nodes.Clear();
+                foreach (DictionaryItem di in m_DbDict.DictionaryDataBase)
+                {
+                    node = new TreeNode(di.DataDescr);
+                    node.Tag = di;
+                    if (di.KeyValues != null)
+                    {
+
+                        foreach (ArrayItem ar in di.KeyValues)
+                        {
+                            TreeNode chNode = new TreeNode(ar.Value);
+                            chNode.Tag = ar;
+                            node.Nodes.Add(chNode);
+                        }
+                    }
+                    dictionaryTreeOnPrintTab.Nodes.Add(node);
+                }
+            }
+        }
+
         private void DrawPrintQrcode(Graphics g,int x,int y) 
         {
             if (m_CurrentPrintQrCode != null)
@@ -492,28 +599,54 @@ namespace BarCode2
 
         private void PrintBtn_Click(object sender, EventArgs e)
         {
-            if(OncePrintingRadioBtn.Checked)
+
+            List<QrItem> is_serialQritemList = new List<QrItem>();
+            foreach (QrItem qri in m_CurrentPrintQrCode.ListQrItems)
+            {
+                if (m_DbDict.IsItemIsSerial(qri))
+                    is_serialQritemList.Add(qri);
+            }
+            List<QrItem> qrToAdd = new List<QrItem>();
+            if (is_serialQritemList.Count > 0)
+            {
+
+                foreach (QrItem qr in is_serialQritemList)
+                {
+                    if (m_DbCollection.IsContainDataBaseWithType(qr))
+                        qrToAdd.Add(qr);
+                }
+
+            }
+            if (qrToAdd.Count > 0)
+            {
+                if (MessageBox.Show("Добавить данные в базу?", "Внимание!", MessageBoxButtons.OKCancel) == DialogResult.OK)
+                {
+
+                }
+            }
+            return;
+            if (OncePrintingRadioBtn.Checked)
             {
                 PrintDocument printDocument = new PrintDocument();
-                float h = ((float)(QrSizetrackBar.Value+UpOffsetNumeric.Value) * (float)3.779527559055);
+                float h = ((float)(QrSizetrackBar.Value + UpOffsetNumeric.Value) * (float)3.779527559055);
                 float w = (((QrPrintColumsTrack.Value * QrSizetrackBar.Value) + ((QrPrintColumsTrack.Value - 1) * SizeBeetweenQrTrack.Value)) * (float)3.779527559055);
-               // printDocument.DefaultPageSettings.PaperSize = new PaperSize("Other", (int)w+4, (int)h+4);
-               
+                // printDocument.DefaultPageSettings.PaperSize = new PaperSize("Other", (int)w+4, (int)h+4);
+
                 printDocument.PrintPage += PrintDocument_PrintPage;
                 cur_page_packet_counter = 0;
                 printDocument.Print();
             }
-            if(CopyOfPagesRadioBtn.Checked)
+            if (CopyOfPagesRadioBtn.Checked)
             {
                 PrintDocument printDocument = new PrintDocument();
                 float h = ((QrSizetrackBar.Value) * (float)3.779527559055);
                 float w = (((QrPrintColumsTrack.Value * QrSizetrackBar.Value) + ((QrPrintColumsTrack.Value - 1) * SizeBeetweenQrTrack.Value)) * (float)3.779527559055);
-              //  printDocument.DefaultPageSettings.PaperSize = new PaperSize("Other", (int)w + 4, (int)h + 4);
+                //  printDocument.DefaultPageSettings.PaperSize = new PaperSize("Other", (int)w + 4, (int)h + 4);
                 printDocument.PrintPage += PrintDocument_PrintPageCopy;
                 cur_page_packet_counter = 0;
                 printDocument.Print();
             }
-            if(SerialPrintingRadioBtn.Checked)
+            if (SerialPrintingRadioBtn.Checked)
             {
                 m_SerialQrDataArray = m_QrProcessor.GenerateQrDataArrayForSerialPrint(m_CurrentPrintQrCode, m_DbDict, (int)SerialCopyNumericUpDown.Value);
                 if (m_SerialQrDataArray != null)
@@ -521,13 +654,13 @@ namespace BarCode2
                     PrintDocument printDocument = new PrintDocument();
                     float h = ((QrSizetrackBar.Value) * (float)3.779527559055);
                     float w = (((QrPrintColumsTrack.Value * QrSizetrackBar.Value) + ((QrPrintColumsTrack.Value - 1) * SizeBeetweenQrTrack.Value)) * (float)3.779527559055);
-                   // printDocument.DefaultPageSettings.PaperSize = new PaperSize("Other", (int)w + 4, (int)h + 4);
+                    // printDocument.DefaultPageSettings.PaperSize = new PaperSize("Other", (int)w + 4, (int)h + 4);
                     printDocument.PrintPage += PrintDocument_PrintPageSerial;
                     cur_page_packet_counter = 0;
                     printDocument.Print();
                 }
             }
-            if(SerialPrintingSerialRadioBtn.Checked)
+            if (SerialPrintingSerialRadioBtn.Checked)
             {
                 m_SerialQrDataArray = m_QrProcessor.GenerateQrDataArrayForSerialPrint(m_CurrentPrintQrCode, m_DbDict, (int)SerialCopyNumericUpDown.Value);
                 if (m_SerialQrDataArray != null)
@@ -624,13 +757,8 @@ namespace BarCode2
             add.DictDb = m_DbDict;
             if(add.ShowDialog()== DialogResult.OK)
             {
-                if (m_DbCollection == null)
-                {
-                    m_DbCollection = new DataBasesCollection();
-                }
-                    m_DbCollection.AddDataBase(new DataBase.DataBase(((DictionaryItem)add.typeDataCmbx.SelectedItem).TypeId, ((DictionaryItem)add.typeDataCmbx.SelectedItem).DataDescr, add.db_nameTxb.Text));
-                    RefreshDbBtn_Click(null, null);
-
+                SendReqest("ADDBASE", new DataBase.DataBase(((DictionaryItem)add.typeDataCmbx.SelectedItem).TypeId, ((DictionaryItem)add.typeDataCmbx.SelectedItem).DataDescr, add.db_nameTxb.Text));
+             
 
             }
 
@@ -639,10 +767,19 @@ namespace BarCode2
 
         private void RefreshDbBtn_Click(object sender, EventArgs e)
         {
+            SendReqest("ASKDBCOLLECTION",null);
+
+        }
+
+       
+
+        //заполнение дерева бд 
+        private void RefreshDataBaseCollectionTree()
+        {
             if (m_DbCollection != null)
             {
                 DataBasesCollectionTree.Nodes.Clear();
-               foreach (DataBase.DataBase d in m_DbCollection.DataBaseCollection)
+                foreach (DataBase.DataBase d in m_DbCollection.DataBaseCollection)
                 {
                     TreeNode node = new TreeNode(d.ToString());
                     node.Tag = d;
@@ -651,7 +788,6 @@ namespace BarCode2
                 }
             }
         }
-
         private void addNodeToTree(DataBase.DataBase d, TreeNode node)
         {
             if (d.DataBaseNode != null)
@@ -677,12 +813,17 @@ namespace BarCode2
                     add.DictDb = m_DbDict;
                     if (add.ShowDialog() == DialogResult.OK)
                     {
-                        m_DbCollection.AddDataBaseToNode(new DataBase.DataBase(((DictionaryItem)add.typeDataCmbx.SelectedItem).TypeId, ((DictionaryItem)add.typeDataCmbx.SelectedItem).DataDescr, add.db_nameTxb.Text), ((DataBase.DataBase)DataBasesCollectionTree.SelectedNode.Tag).BaseUniqId);
-                        RefreshDbBtn_Click(null, null);
+                        SendReqest("ADDINBASE:" + ((DataBase.DataBase)DataBasesCollectionTree.SelectedNode.Tag).BaseUniqId, new DataBase.DataBase(((DictionaryItem)add.typeDataCmbx.SelectedItem).TypeId, ((DictionaryItem)add.typeDataCmbx.SelectedItem).DataDescr, add.db_nameTxb.Text));
+                       //m_DbCollection.AddDataBaseToNode(new DataBase.DataBase(((DictionaryItem)add.typeDataCmbx.SelectedItem).TypeId, ((DictionaryItem)add.typeDataCmbx.SelectedItem).DataDescr, add.db_nameTxb.Text), ((DataBase.DataBase)DataBasesCollectionTree.SelectedNode.Tag).BaseUniqId);
+                        //RefreshDbBtn_Click(null, null);
                     }
                 }
             }
         }
+
+
+
+
 
 
 

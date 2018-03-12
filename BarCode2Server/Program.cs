@@ -10,6 +10,7 @@ namespace BarCode2Server
     class Program
     {
         static TcpModule _tcpMod;
+        static DataBasesCollection m_DbCollection;
         static void Main(string[] args)
         {
              _tcpMod = new DataBase.TcpModule();
@@ -18,6 +19,13 @@ namespace BarCode2Server
             _tcpMod.Connected += _tcpMod_Connected;
             _tcpMod.Disconnected += _tcpMod_Disconnected;
             _tcpMod.StartServer();
+            m_DbCollection = (DataBasesCollection)Functions.LoadConfig("DataBase.qrdb");
+            if (m_DbCollection == null)
+                m_DbCollection = new DataBasesCollection();
+
+
+
+
             Console.Read();
         }
 
@@ -36,18 +44,61 @@ namespace BarCode2Server
 
         private static void _tcpMod_Receive(object sender, DataBase.ReceiveEventArgs e)
         {
+            
+            if (e.sendInfo.message == "CHECKCONN")
+            {
+                // TcpModule tcp = (TcpModule)sender;
+               
+
+                _tcpMod.SendData(null, "CHECKCONNOK");
+            }
             if (e.sendInfo.message == "ASKDICT")
             {
                 // TcpModule tcp = (TcpModule)sender;
                 Dictionary di = new Dictionary();
                 di.ReadFromIni();
                 TcpModule ccc = (TcpModule)sender;
-                
+
                 _tcpMod.SendData(di, "ASKDICTOK");
             }
-            
-        }
+            if (e.sendInfo.message == "ASKDBCOLLECTION")
+            {
+                TcpModule ccc = (TcpModule)sender;
 
+                _tcpMod.SendData(m_DbCollection, "ASKDBCOLLECTIONOK");
+            }
+            if (e.sendInfo.message == "ADDBASE")
+            {
+                DataBase.DataBase addDb = (DataBase.DataBase)e.Object;
+                if(addDb!=null)
+                {
+                    if (m_DbCollection.AddDataBase(addDb))
+                    {
+                        Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
+                        TcpModule ccc = (TcpModule)sender;
+
+                        _tcpMod.SendData(m_DbCollection, "ADDBASEOK");
+                    }
+                    
+                }
+            }
+            if (e.sendInfo.message.Contains("ADDINBASE:"))
+            {
+                DataBase.DataBase addDb = (DataBase.DataBase)e.Object;
+                string uid = e.sendInfo.message.Split(':')[1];
+                if (addDb != null)
+                {
+                    if (m_DbCollection.AddDataBaseToNode(addDb,uid))
+                    {
+                        Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
+                        TcpModule ccc = (TcpModule)sender;
+
+                        _tcpMod.SendData(m_DbCollection, "ADDINBASEOK");
+                    }
+
+                }
+            }
+        }
         private static void _tcpMod_Accept(object sender)
         {
             Console.WriteLine("client accepted");
