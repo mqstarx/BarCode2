@@ -21,8 +21,8 @@ namespace Tests
 
 
             //act
-            DictionaryItem di6 = new DictionaryItem(type, datalen6, datadescr, true,false, null, 0);
-            DictionaryItem di = new DictionaryItem(type, datalen, datadescr, true,false, null, 0);
+            DictionaryItem di6 = new DictionaryItem(type, datalen6, datadescr, true,false,false, null, 0);
+            DictionaryItem di = new DictionaryItem(type, datalen, datadescr, true,false,false, null, 0);
             //assert
 
             Assert.AreEqual(expected_isDate6, di6.Is_date);
@@ -114,41 +114,21 @@ namespace Tests
             Assert.AreEqual(expected, qrproc.FindPacketData(pac,"FFX","FXX",3));
             Assert.AreEqual(expected1, qrproc.FindPacketData(expected, "FFY", "FYY", 3));
         }
-        [TestMethod]
-        public void DataBaseTestConstruktor()
-        {
-            //arrange
-            DataBase.DataBase ddd = new DataBase.DataBase("P", "test", "1235");
-            DataBase.DataBase ddd1 = new DataBase.DataBase("P1", "test1", "1234");
-            Assert.AreNotEqual(ddd.BaseUniqId, ddd1.BaseUniqId);
-        }
+       
         [TestMethod]
         public void IsQrItemInBaseTest()
         {
             //arrange
             DataBasesCollection dbCollection = new DataBasesCollection();
-            dbCollection.AddDataBase(new DataBase.DataBase("P", "typeDescr", "Test1"));
-            dbCollection.AddDataBaseToNode(new DataBase.DataBase("D", "typeDescrwww", "Test2"), dbCollection.DataBaseCollection[0].BaseUniqId);
-            dbCollection.DataBaseCollection[0].DataBaseNode.DataBaseCollection[0].DataBaseItems.Add(new DataBaseItem(new QrItem("D", "1234"),"FFSSDASDASSSSDAS"));
-            dbCollection.DataBaseCollection[0].DataBaseNode.DataBaseCollection[0].DataBaseItems.Add(new DataBaseItem(new QrItem("D", "12345"), "FFSSDASDASSSSDAS"));
+           // dbCollection.AddDataBase(new DataBase.DataBase("P", "typeDescr", "Test1"));
+            
+           // dbCollection.DataBaseCollection[0].DataBaseNode.DataBaseCollection[0].DataBaseItems.Add(new DataBaseItem(new QrItem("D", "1234"),"FFSSDASDASSSSDAS"));
+          //  dbCollection.DataBaseCollection[0].DataBaseNode.DataBaseCollection[0].DataBaseItems.Add(new DataBaseItem(new QrItem("D", "12345"), "FFSSDASDASSSSDAS"));
 
-            Assert.AreEqual(true,dbCollection.IsQrItemInBase(new QrItem("D", "1234"), dbCollection));
-            Assert.AreNotEqual(true, dbCollection.IsQrItemInBase(new QrItem("P", "1234"), dbCollection));
-
-        }
-        [TestMethod]
-        public void IsContainDataBaseWithTypeTest()
-        {
-            //arrange
-            DataBasesCollection dbCollection = new DataBasesCollection();
-            dbCollection.AddDataBase(new DataBase.DataBase("P", "typeDescr", "Test1"));
-            dbCollection.AddDataBaseToNode(new DataBase.DataBase("D", "typeDescrwww", "Test2"), dbCollection.DataBaseCollection[0].BaseUniqId);
-            dbCollection.DataBaseCollection[0].DataBaseNode.DataBaseCollection[0].DataBaseItems.Add(new DataBaseItem(new QrItem("D", "1234"), "FFSSDASDASSSSDAS"));
-            dbCollection.DataBaseCollection[0].DataBaseNode.DataBaseCollection[0].DataBaseItems.Add(new DataBaseItem(new QrItem("D", "12345"), "FFSSDASDASSSSDAS"));
-
-            Assert.AreEqual(true, dbCollection.IsContainDataBaseWithType(new QrItem("D", "1234")));
-           
+            Assert.AreEqual(true,dbCollection.IsQrItemInBase(new QrItem("D", "1234")));
+            Assert.AreNotEqual(true, dbCollection.IsQrItemInBase(new QrItem("P", "1234")));
 
         }
+       
     }
 }

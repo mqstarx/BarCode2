@@ -44,11 +44,11 @@ namespace BarCode2Server
 
         private static void _tcpMod_Receive(object sender, DataBase.ReceiveEventArgs e)
         {
-            
+
             if (e.sendInfo.message == "CHECKCONN")
             {
                 // TcpModule tcp = (TcpModule)sender;
-               
+
 
                 _tcpMod.SendData(null, "CHECKCONNOK");
             }
@@ -70,7 +70,7 @@ namespace BarCode2Server
             if (e.sendInfo.message == "ADDBASE")
             {
                 DataBase.DataBase addDb = (DataBase.DataBase)e.Object;
-                if(addDb!=null)
+                if (addDb != null)
                 {
                     if (m_DbCollection.AddDataBase(addDb))
                     {
@@ -79,23 +79,57 @@ namespace BarCode2Server
 
                         _tcpMod.SendData(m_DbCollection, "ADDBASEOK");
                     }
-                    
+                    else
+                    {
+                        TcpModule ccc = (TcpModule)sender;
+
+                        _tcpMod.SendData(m_DbCollection, "ADDBASEERR");
+                    }
+
                 }
             }
-            if (e.sendInfo.message.Contains("ADDINBASE:"))
+            if (e.sendInfo.message == "DELBASE")
             {
                 DataBase.DataBase addDb = (DataBase.DataBase)e.Object;
-                string uid = e.sendInfo.message.Split(':')[1];
                 if (addDb != null)
                 {
-                    if (m_DbCollection.AddDataBaseToNode(addDb,uid))
+                    if (m_DbCollection.DeleteDataBase(addDb))
                     {
                         Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
                         TcpModule ccc = (TcpModule)sender;
 
-                        _tcpMod.SendData(m_DbCollection, "ADDINBASEOK");
+                        _tcpMod.SendData(m_DbCollection, "DELBASEOK");
                     }
+                }
+            }
+            //ADDQRITEMINBASE
+            if (e.sendInfo.message == "ADDQRITEMINBASE")
+            {
+                QrCodeData qrcode = (QrCodeData)e.Object;
+                if (qrcode != null)
+                {
+                    if (m_DbCollection.AddQrCodeToDataBases(qrcode))
+                    {
+                        Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
+                        TcpModule ccc = (TcpModule)sender;
 
+                        _tcpMod.SendData(m_DbCollection, "ADDQRITEMINBASEОК");
+                    }
+                }
+            }
+            //ADDQRITEMSINBASE
+            if (e.sendInfo.message == "ADDQRITEMSINBASE")
+            {
+                QrCodeData[] qrcode = (QrCodeData[])e.Object;
+                if (qrcode != null)
+                {
+                    if (m_DbCollection.AddQrCodeSerialToDataBases(qrcode))
+                    {
+                        Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
+                        TcpModule ccc = (TcpModule)sender;
+
+                        _tcpMod.SendData(m_DbCollection, "ADDQRITEMSINBASEОК");
+                    }
                 }
             }
         }

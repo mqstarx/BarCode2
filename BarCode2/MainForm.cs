@@ -223,9 +223,29 @@ namespace BarCode2
             {
                 m_DbCollection = (DataBasesCollection)e.Object;
                 this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
-
+            }
+            if (e.sendInfo.message == "DELBASEOK")
+            {
+                m_DbCollection = (DataBasesCollection)e.Object;
+                this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
+            }
+            if (e.sendInfo.message == "ADDBASEERR")
+            {
+                this.Invoke((new Action(() => MessageBox.Show("База с такими параметрами уже существует"))));
             }
             if (e.sendInfo.message == "ADDINBASEOK")
+            {
+                m_DbCollection = (DataBasesCollection)e.Object;
+                this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
+
+            }
+            if (e.sendInfo.message == "ADDQRITEMINBASEОК")
+            {
+                m_DbCollection = (DataBasesCollection)e.Object;
+                this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
+
+            }
+            if (e.sendInfo.message == "ADDQRITEMSINBASEОК")
             {
                 m_DbCollection = (DataBasesCollection)e.Object;
                 this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
@@ -317,20 +337,31 @@ namespace BarCode2
                 QrCodeData tmpQr = m_QrProcessor.ParseQrPacket(QrPacket.ToArray(), m_DbDict);
                 if (tmpQr != null)
                 {
-                   
+
                     TreeNode node = new TreeNode(tmpQr.ToString());
                     List<string> qrItemDataStrs = m_QrProcessor.IdentificateQrData(tmpQr, m_DbDict);
-                    foreach(string qr in qrItemDataStrs)
+                    foreach (string qr in qrItemDataStrs)
                     {
                         node.Nodes.Add(qr);
                     }
                     node.Tag = tmpQr;
                     AddInPacketTreeView.Nodes.Add(node);
 
-                   
+
                     QrPacket.Clear();
                     m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items, AddInPacketTreeView.Nodes);
                     printPanelBox.Invalidate();
+                }
+            }
+            //DataBasePageTab
+            if (mainTabControl.SelectedTab.Name == "DataBasePageTab")
+            {
+                QrPacket.Add(e.KeyChar);
+                string secretcode = new string(QrPacket.ToArray());
+                if(secretcode=="Factor")
+                {
+                    deleteBaseBtn.Enabled = !deleteBaseBtn.Enabled;
+                    QrPacket.Clear();
                 }
             }
         }
@@ -596,35 +627,29 @@ namespace BarCode2
             }
         }
 
-
-        private void PrintBtn_Click(object sender, EventArgs e)
+        private void addToBaseBtn_Click(object sender, EventArgs e)
         {
 
-            List<QrItem> is_serialQritemList = new List<QrItem>();
-            foreach (QrItem qri in m_CurrentPrintQrCode.ListQrItems)
-            {
-                if (m_DbDict.IsItemIsSerial(qri))
-                    is_serialQritemList.Add(qri);
-            }
-            List<QrItem> qrToAdd = new List<QrItem>();
-            if (is_serialQritemList.Count > 0)
-            {
-
-                foreach (QrItem qr in is_serialQritemList)
-                {
-                    if (m_DbCollection.IsContainDataBaseWithType(qr))
-                        qrToAdd.Add(qr);
-                }
-
-            }
-            if (qrToAdd.Count > 0)
+            //находим в текущем qr - коде элемент для определения в какую базу добавлять
+            if (m_DbCollection.IsHaveDbWithQrParametrs(m_CurrentPrintQrCode))
             {
                 if (MessageBox.Show("Добавить данные в базу?", "Внимание!", MessageBoxButtons.OKCancel) == DialogResult.OK)
                 {
-
+                    if (OncePrintingRadioBtn.Checked || CopyOfPagesRadioBtn.Checked)
+                    {
+                        SendReqest("ADDQRITEMINBASE", m_CurrentPrintQrCode);
+                    }
+                    else
+                    {
+                        SendReqest("ADDQRITEMSINBASE", m_QrProcessor.GenerateQrDataArrayForSerialPrint(m_CurrentPrintQrCode,m_DbDict, (int)SerialCopyNumericUpDown.Value));
+                    }
                 }
             }
-            return;
+
+        }
+        private void PrintBtn_Click(object sender, EventArgs e)
+        {
+                           
             if (OncePrintingRadioBtn.Checked)
             {
                 PrintDocument printDocument = new PrintDocument();
@@ -757,12 +782,20 @@ namespace BarCode2
             add.DictDb = m_DbDict;
             if(add.ShowDialog()== DialogResult.OK)
             {
-                SendReqest("ADDBASE", new DataBase.DataBase(((DictionaryItem)add.typeDataCmbx.SelectedItem).TypeId, ((DictionaryItem)add.typeDataCmbx.SelectedItem).DataDescr, add.db_nameTxb.Text));
+                SendReqest("ADDBASE", new DataBase.DataBase(((DictionaryItem)add.typeDataCmbx.SelectedItem).TypeId, ((DictionaryItem)add.typeDataCmbx.SelectedItem).DataDescr, ((DictionaryItem)add.ProduktTypeCmb.SelectedItem).DataDescr,(ArrayItem)add.ProduktValueCmb.SelectedItem));
              
 
             }
 
             
+        }
+        private void deleteBaseBtn_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Действительно удалить базу??", "Предупреждение", MessageBoxButtons.OKCancel) == DialogResult.OK)
+            {
+                if (DataBaseCollectionListBox.SelectedIndex != -1)
+                    SendReqest("DELBASE", DataBaseCollectionListBox.SelectedItem);
+            }
         }
 
         private void RefreshDbBtn_Click(object sender, EventArgs e)
@@ -778,48 +811,41 @@ namespace BarCode2
         {
             if (m_DbCollection != null)
             {
-                DataBasesCollectionTree.Nodes.Clear();
+                DataBaseCollectionListBox.Items.Clear();
+                DataBasItemCollectionListBox.Items.Clear();
                 foreach (DataBase.DataBase d in m_DbCollection.DataBaseCollection)
                 {
-                    TreeNode node = new TreeNode(d.ToString());
-                    node.Tag = d;
-                    addNodeToTree(d, node);
-                    DataBasesCollectionTree.Nodes.Add(node);
-                }
-            }
-        }
-        private void addNodeToTree(DataBase.DataBase d, TreeNode node)
-        {
-            if (d.DataBaseNode != null)
-            {
-                foreach (DataBase.DataBase dn in d.DataBaseNode.DataBaseCollection)
-                {
-                    TreeNode node1 = new TreeNode(dn.ToString());
-                    node1.Tag = dn;
-                    addNodeToTree(dn, node1);
-                    node.Nodes.Add(node1);
-                   
+                                     
+                    DataBaseCollectionListBox.Items.Add(d);
                 }
             }
         }
 
-        private void добавитьВложеннуюБДToolStripMenuItem_Click(object sender, EventArgs e)
+        //отображение элементов выбранной бд
+        private void DataBaseCollectionListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (DataBasesCollectionTree.SelectedNode != null)
+            if(DataBaseCollectionListBox.SelectedIndex!=-1)
             {
-               if(m_DbCollection!=null)
+                DataBase.DataBase db = (DataBase.DataBase)DataBaseCollectionListBox.SelectedItem;
+                DataBasItemCollectionListBox.Items.Clear();
+                foreach (DataBaseItem dbi in db.DataBaseItems)
                 {
-                    AddEditDataBase add = new AddEditDataBase();
-                    add.DictDb = m_DbDict;
-                    if (add.ShowDialog() == DialogResult.OK)
-                    {
-                        SendReqest("ADDINBASE:" + ((DataBase.DataBase)DataBasesCollectionTree.SelectedNode.Tag).BaseUniqId, new DataBase.DataBase(((DictionaryItem)add.typeDataCmbx.SelectedItem).TypeId, ((DictionaryItem)add.typeDataCmbx.SelectedItem).DataDescr, add.db_nameTxb.Text));
-                       //m_DbCollection.AddDataBaseToNode(new DataBase.DataBase(((DictionaryItem)add.typeDataCmbx.SelectedItem).TypeId, ((DictionaryItem)add.typeDataCmbx.SelectedItem).DataDescr, add.db_nameTxb.Text), ((DataBase.DataBase)DataBasesCollectionTree.SelectedNode.Tag).BaseUniqId);
-                        //RefreshDbBtn_Click(null, null);
-                    }
+                    DataBasItemCollectionListBox.Items.Add(dbi);
                 }
             }
         }
+
+        private void DataBasItemCollectionListBox_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if(DataBasItemCollectionListBox.SelectedIndex!=-1)
+            {
+                
+                QrCodeInfo qrinfo = new QrCodeInfo(m_QrProcessor.IdentificateQrData( m_QrProcessor.ParseQrPacket(((DataBaseItem)DataBasItemCollectionListBox.SelectedItem).QrCode.ToCharArray(),m_DbDict),m_DbDict));
+                qrinfo.Show();
+            }
+        }
+
+
 
 
 
@@ -842,6 +868,6 @@ namespace BarCode2
 
         #endregion
 
-       
+
     }
 }

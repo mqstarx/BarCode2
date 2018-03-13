@@ -29,13 +29,15 @@ namespace BarCode2
                     //если значение вводимое и не является датой
                     if (di.KeyValues == null && !di.Is_date && di.IsSerialDb)
                         typeDataCmbx.Items.Add(di);
+                    if (di.KeyValues != null && !di.Is_date && di.IsDbProduct)
+                        ProduktTypeCmb.Items.Add(di);
                 }
             }
         }
 
         private void OkBtn_Click(object sender, EventArgs e)
         {
-            if(db_nameTxb.Text.Length>0 && typeDataCmbx.SelectedIndex!=-1)
+            if( typeDataCmbx.SelectedIndex!=-1 && ProduktTypeCmb.SelectedIndex!=-1 && ProduktValueCmb.SelectedIndex!=-1)
             {
                 this.DialogResult = DialogResult.OK;
                 this.Close();
@@ -46,6 +48,21 @@ namespace BarCode2
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
+        }
+
+        private void ProduktTypeCmb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(ProduktTypeCmb.SelectedIndex!=-1)
+            {
+                DictionaryItem di =(DictionaryItem)ProduktTypeCmb.SelectedItem;
+                if (di.KeyValues != null)
+                {
+                    foreach (ArrayItem ar in di.KeyValues)
+                    {
+                        ProduktValueCmb.Items.Add(ar);
+                    }
+                }
+            }
         }
     }
 }

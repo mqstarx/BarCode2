@@ -29,49 +29,55 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.db_nameTxb = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.typeDataCmbx = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.cancelBtn = new System.Windows.Forms.Button();
             this.OkBtn = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.typeDataCmbx = new System.Windows.Forms.ComboBox();
+            this.ProduktTypeCmb = new System.Windows.Forms.ComboBox();
+            this.ProduktValueCmb = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.ProduktValueCmb);
+            this.groupBox1.Controls.Add(this.ProduktTypeCmb);
             this.groupBox1.Controls.Add(this.typeDataCmbx);
             this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.db_nameTxb);
-            this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.cancelBtn);
             this.groupBox1.Controls.Add(this.OkBtn);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(378, 160);
+            this.groupBox1.Size = new System.Drawing.Size(477, 218);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Данные базы";
             // 
-            // db_nameTxb
+            // typeDataCmbx
             // 
-            this.db_nameTxb.Location = new System.Drawing.Point(88, 45);
-            this.db_nameTxb.Name = "db_nameTxb";
-            this.db_nameTxb.Size = new System.Drawing.Size(284, 20);
-            this.db_nameTxb.TabIndex = 3;
+            this.typeDataCmbx.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.typeDataCmbx.FormattingEnabled = true;
+            this.typeDataCmbx.Location = new System.Drawing.Point(144, 122);
+            this.typeDataCmbx.Name = "typeDataCmbx";
+            this.typeDataCmbx.Size = new System.Drawing.Size(327, 21);
+            this.typeDataCmbx.TabIndex = 5;
             // 
-            // label1
+            // label2
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(21, 48);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(61, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Имя базы:";
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 117);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(104, 26);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Тип данных \r\nсерийного номера:";
             // 
             // cancelBtn
             // 
-            this.cancelBtn.Location = new System.Drawing.Point(297, 131);
+            this.cancelBtn.Location = new System.Drawing.Point(396, 173);
             this.cancelBtn.Name = "cancelBtn";
             this.cancelBtn.Size = new System.Drawing.Size(75, 23);
             this.cancelBtn.TabIndex = 1;
@@ -81,7 +87,7 @@
             // 
             // OkBtn
             // 
-            this.OkBtn.Location = new System.Drawing.Point(191, 131);
+            this.OkBtn.Location = new System.Drawing.Point(306, 173);
             this.OkBtn.Name = "OkBtn";
             this.OkBtn.Size = new System.Drawing.Size(75, 23);
             this.OkBtn.TabIndex = 0;
@@ -89,29 +95,48 @@
             this.OkBtn.UseVisualStyleBackColor = true;
             this.OkBtn.Click += new System.EventHandler(this.OkBtn_Click);
             // 
-            // label2
+            // ProduktTypeCmb
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 93);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(69, 13);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Тип данных:";
+            this.ProduktTypeCmb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ProduktTypeCmb.FormattingEnabled = true;
+            this.ProduktTypeCmb.Location = new System.Drawing.Point(144, 27);
+            this.ProduktTypeCmb.Name = "ProduktTypeCmb";
+            this.ProduktTypeCmb.Size = new System.Drawing.Size(327, 21);
+            this.ProduktTypeCmb.TabIndex = 6;
+            this.ProduktTypeCmb.SelectedIndexChanged += new System.EventHandler(this.ProduktTypeCmb_SelectedIndexChanged);
             // 
-            // typeDataCmbx
+            // ProduktValueCmb
             // 
-            this.typeDataCmbx.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.typeDataCmbx.FormattingEnabled = true;
-            this.typeDataCmbx.Location = new System.Drawing.Point(89, 90);
-            this.typeDataCmbx.Name = "typeDataCmbx";
-            this.typeDataCmbx.Size = new System.Drawing.Size(283, 21);
-            this.typeDataCmbx.TabIndex = 5;
+            this.ProduktValueCmb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ProduktValueCmb.FormattingEnabled = true;
+            this.ProduktValueCmb.Location = new System.Drawing.Point(144, 72);
+            this.ProduktValueCmb.Name = "ProduktValueCmb";
+            this.ProduktValueCmb.Size = new System.Drawing.Size(327, 21);
+            this.ProduktValueCmb.TabIndex = 7;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 22);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(126, 26);
+            this.label1.TabIndex = 8;
+            this.label1.Text = "Тип записи \r\nнаименования изделия";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 67);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(132, 26);
+            this.label3.TabIndex = 9;
+            this.label3.Text = "Значение наименования\r\nизделия";
             // 
             // AddEditDataBase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(402, 180);
+            this.ClientSize = new System.Drawing.Size(501, 237);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;
@@ -128,11 +153,13 @@
         #endregion
 
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button cancelBtn;
         private System.Windows.Forms.Button OkBtn;
-        public System.Windows.Forms.TextBox db_nameTxb;
         public System.Windows.Forms.ComboBox typeDataCmbx;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label1;
+        public System.Windows.Forms.ComboBox ProduktValueCmb;
+        public System.Windows.Forms.ComboBox ProduktTypeCmb;
     }
 }

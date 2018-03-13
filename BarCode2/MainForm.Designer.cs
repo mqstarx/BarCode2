@@ -79,7 +79,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.dictionaryTreeOnPrintTab = new System.Windows.Forms.TreeView();
             this.DataBasePageTab = new System.Windows.Forms.TabPage();
-            this.DataBasesCollectionTree = new System.Windows.Forms.TreeView();
             this.contextMenuDataBaseTree = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.добавитьВложеннуюБДToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.RefreshDbBtn = new System.Windows.Forms.Button();
@@ -87,6 +86,9 @@
             this.label3 = new System.Windows.Forms.Label();
             this.DataBasItemCollectionListBox = new System.Windows.Forms.ListBox();
             this.TimeOutTimer = new System.Windows.Forms.Timer(this.components);
+            this.DataBaseCollectionListBox = new System.Windows.Forms.ListBox();
+            this.deleteBaseBtn = new System.Windows.Forms.Button();
+            this.addToBaseBtn = new System.Windows.Forms.Button();
             this.statusStripBar.SuspendLayout();
             this.mainTabControl.SuspendLayout();
             this.identificationTab.SuspendLayout();
@@ -201,6 +203,7 @@
             // 
             // PrintPageTab
             // 
+            this.PrintPageTab.Controls.Add(this.addToBaseBtn);
             this.PrintPageTab.Controls.Add(this.label9);
             this.PrintPageTab.Controls.Add(this.LeftOffsetNumeric);
             this.PrintPageTab.Controls.Add(this.label8);
@@ -647,7 +650,8 @@
             // 
             // DataBasePageTab
             // 
-            this.DataBasePageTab.Controls.Add(this.DataBasesCollectionTree);
+            this.DataBasePageTab.Controls.Add(this.deleteBaseBtn);
+            this.DataBasePageTab.Controls.Add(this.DataBaseCollectionListBox);
             this.DataBasePageTab.Controls.Add(this.RefreshDbBtn);
             this.DataBasePageTab.Controls.Add(this.addDabaseBtn);
             this.DataBasePageTab.Controls.Add(this.label3);
@@ -658,16 +662,6 @@
             this.DataBasePageTab.TabIndex = 2;
             this.DataBasePageTab.Text = "БазаДанных";
             this.DataBasePageTab.UseVisualStyleBackColor = true;
-            // 
-            // DataBasesCollectionTree
-            // 
-            this.DataBasesCollectionTree.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.DataBasesCollectionTree.ContextMenuStrip = this.contextMenuDataBaseTree;
-            this.DataBasesCollectionTree.Location = new System.Drawing.Point(23, 52);
-            this.DataBasesCollectionTree.Name = "DataBasesCollectionTree";
-            this.DataBasesCollectionTree.Size = new System.Drawing.Size(448, 404);
-            this.DataBasesCollectionTree.TabIndex = 4;
             // 
             // contextMenuDataBaseTree
             // 
@@ -682,7 +676,6 @@
             this.добавитьВложеннуюБДToolStripMenuItem.Name = "добавитьВложеннуюБДToolStripMenuItem";
             this.добавитьВложеннуюБДToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.добавитьВложеннуюБДToolStripMenuItem.Text = "Добавить вложенную БД";
-            this.добавитьВложеннуюБДToolStripMenuItem.Click += new System.EventHandler(this.добавитьВложеннуюБДToolStripMenuItem_Click);
             // 
             // RefreshDbBtn
             // 
@@ -697,9 +690,9 @@
             // addDabaseBtn
             // 
             this.addDabaseBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.addDabaseBtn.Location = new System.Drawing.Point(8, 462);
+            this.addDabaseBtn.Location = new System.Drawing.Point(9, 501);
             this.addDabaseBtn.Name = "addDabaseBtn";
-            this.addDabaseBtn.Size = new System.Drawing.Size(261, 23);
+            this.addDabaseBtn.Size = new System.Drawing.Size(157, 23);
             this.addDabaseBtn.TabIndex = 2;
             this.addDabaseBtn.Text = "Добавить базу";
             this.addDabaseBtn.UseVisualStyleBackColor = true;
@@ -719,15 +712,51 @@
             this.DataBasItemCollectionListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.DataBasItemCollectionListBox.FormattingEnabled = true;
-            this.DataBasItemCollectionListBox.Location = new System.Drawing.Point(477, 52);
+            this.DataBasItemCollectionListBox.Location = new System.Drawing.Point(668, 38);
             this.DataBasItemCollectionListBox.Name = "DataBasItemCollectionListBox";
-            this.DataBasItemCollectionListBox.Size = new System.Drawing.Size(179, 407);
+            this.DataBasItemCollectionListBox.Size = new System.Drawing.Size(179, 459);
             this.DataBasItemCollectionListBox.TabIndex = 0;
+            this.DataBasItemCollectionListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.DataBasItemCollectionListBox_MouseDoubleClick);
             // 
             // TimeOutTimer
             // 
             this.TimeOutTimer.Interval = 2000;
             this.TimeOutTimer.Tick += new System.EventHandler(this.TimeOutTimer_Tick);
+            // 
+            // DataBaseCollectionListBox
+            // 
+            this.DataBaseCollectionListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.DataBaseCollectionListBox.FormattingEnabled = true;
+            this.DataBaseCollectionListBox.HorizontalScrollbar = true;
+            this.DataBaseCollectionListBox.Location = new System.Drawing.Point(9, 38);
+            this.DataBaseCollectionListBox.Name = "DataBaseCollectionListBox";
+            this.DataBaseCollectionListBox.Size = new System.Drawing.Size(653, 459);
+            this.DataBaseCollectionListBox.TabIndex = 4;
+            this.DataBaseCollectionListBox.SelectedIndexChanged += new System.EventHandler(this.DataBaseCollectionListBox_SelectedIndexChanged);
+            // 
+            // deleteBaseBtn
+            // 
+            this.deleteBaseBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.deleteBaseBtn.Enabled = false;
+            this.deleteBaseBtn.Location = new System.Drawing.Point(172, 501);
+            this.deleteBaseBtn.Name = "deleteBaseBtn";
+            this.deleteBaseBtn.Size = new System.Drawing.Size(145, 23);
+            this.deleteBaseBtn.TabIndex = 5;
+            this.deleteBaseBtn.Text = "Удалить базу";
+            this.deleteBaseBtn.UseVisualStyleBackColor = true;
+            this.deleteBaseBtn.Click += new System.EventHandler(this.deleteBaseBtn_Click);
+            // 
+            // addToBaseBtn
+            // 
+            this.addToBaseBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.addToBaseBtn.Location = new System.Drawing.Point(816, 498);
+            this.addToBaseBtn.Name = "addToBaseBtn";
+            this.addToBaseBtn.Size = new System.Drawing.Size(105, 23);
+            this.addToBaseBtn.TabIndex = 25;
+            this.addToBaseBtn.Text = "Добавить в базу";
+            this.addToBaseBtn.UseVisualStyleBackColor = true;
+            this.addToBaseBtn.Click += new System.EventHandler(this.addToBaseBtn_Click);
             // 
             // MainForm
             // 
@@ -787,7 +816,6 @@
         private System.Windows.Forms.ListBox DataBasItemCollectionListBox;
         private System.Windows.Forms.Button addDabaseBtn;
         private System.Windows.Forms.Button RefreshDbBtn;
-        private System.Windows.Forms.TreeView DataBasesCollectionTree;
         private System.Windows.Forms.ContextMenuStrip contextMenuDataBaseTree;
         private System.Windows.Forms.ToolStripMenuItem добавитьВложеннуюБДToolStripMenuItem;
         private System.Windows.Forms.GroupBox printPanelBox;
@@ -827,6 +855,9 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.NumericUpDown LeftOffsetNumeric;
         private System.Windows.Forms.Timer TimeOutTimer;
+        private System.Windows.Forms.ListBox DataBaseCollectionListBox;
+        private System.Windows.Forms.Button deleteBaseBtn;
+        private System.Windows.Forms.Button addToBaseBtn;
     }
 }
 
