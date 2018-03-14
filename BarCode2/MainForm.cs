@@ -245,10 +245,34 @@ namespace BarCode2
                 this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
 
             }
+            if (e.sendInfo.message == "ADDQRITEMINBASEERR")
+            {
+                m_DbCollection = (DataBasesCollection)e.Object;
+                this.Invoke((new Action(() => MessageBox.Show("Ошибка добавления записи в базу"))));
+
+            }
             if (e.sendInfo.message == "ADDQRITEMSINBASEОК")
             {
                 m_DbCollection = (DataBasesCollection)e.Object;
                 this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
+
+            }
+            if (e.sendInfo.message == "ADDQRITEMSINBASEERR")
+            {
+                m_DbCollection = (DataBasesCollection)e.Object;
+                this.Invoke((new Action(() => MessageBox.Show("Ошибка добавления записей в базу"))));
+
+            }
+            if (e.sendInfo.message == "DELDBITEMSОК")
+            {
+                m_DbCollection = (DataBasesCollection)e.Object;
+                this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
+
+            }
+            if (e.sendInfo.message == "DELDBITEMSERR")
+            {
+                m_DbCollection = (DataBasesCollection)e.Object;
+                this.Invoke((new Action(() => MessageBox.Show("Ошибка удаления записей из базы"))));
 
             }
         }
@@ -358,9 +382,10 @@ namespace BarCode2
             {
                 QrPacket.Add(e.KeyChar);
                 string secretcode = new string(QrPacket.ToArray());
-                if(secretcode=="Factor")
+                if(secretcode.Contains("Factor"))
                 {
                     deleteBaseBtn.Enabled = !deleteBaseBtn.Enabled;
+                    DeleteDbItem.Enabled = !DeleteDbItem.Enabled;
                     QrPacket.Clear();
                 }
             }
@@ -517,6 +542,29 @@ namespace BarCode2
             else
                 SerialCopyNumericUpDown.Enabled = true;
         }
+        private void SerialPrintingRadioBtn_CheckedChanged(object sender, EventArgs e)
+        {
+            if(SerialPrintingRadioBtn.Checked)
+            {
+                if(m_CurrentPrintQrCode.ListInPackets!=null)
+                {
+                    SerialPrintingRadioBtn.Checked = false;
+                    OncePrintingRadioBtn.Checked = true;
+                }
+            }
+        }
+        private void SerialPrintingSerialRadioBtn_CheckedChanged(object sender, EventArgs e)
+        {
+
+            if (SerialPrintingSerialRadioBtn.Checked)
+            {
+                if (m_CurrentPrintQrCode.ListInPackets != null)
+                {
+                    SerialPrintingSerialRadioBtn.Checked = false;
+                    OncePrintingRadioBtn.Checked = true;
+                }
+            }
+        }
         private void поднятьВверхToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (currentQrCodeListBox.SelectedIndex != -1 && currentQrCodeListBox.SelectedIndex > 0)
@@ -586,9 +634,9 @@ namespace BarCode2
                     if (qrDialog.ShowDialog() == DialogResult.OK)
                     {
                         if (qrDialog.dateTimePicker.Enabled)
-                            qr = new QrItemDictionary(new QrItem(di.TypeId, qrDialog.dateTimePicker.Value.ToString("ddMMyy") ), di.DataDescr);
+                            qr = new QrItemDictionary(new QrItem(di.TypeId, qrDialog.dateTimePicker.Value.ToString("ddMMyy") ), di.DataDescr,di.DataLen);
                         else
-                            qr = new QrItemDictionary(new QrItem(di.TypeId, qrDialog.ValueTxb.Text), di.DataDescr);
+                            qr = new QrItemDictionary(new QrItem(di.TypeId, qrDialog.ValueTxb.Text), di.DataDescr,di.DataLen);
                         if (currentQrCodeListBox.SelectedItem != null)
                             currentQrCodeListBox.Items[currentQrCodeListBox.SelectedIndex] = qr;
                         else
@@ -772,7 +820,84 @@ namespace BarCode2
             DrawPrintQrcode(e.Graphics, (int)LeftOffsetNumeric.Value, (int)UpOffsetNumeric.Value);
         }
 
+        private void contextMenuStripQrCodeListBox_Opening(object sender, CancelEventArgs e)
+        {
+            if (currentQrCodeListBox.SelectedIndex != -1)
+            {
+                QrItemDictionary qr_tmp = ((QrItemDictionary)currentQrCodeListBox.SelectedItem);
+                notIncrementedMenuItem.Checked = qr_tmp.QrItem.NoIncrimented;
+                if (m_DbDict.IsItemIsSerial(qr_tmp.QrItem))
+                {
+                    notIncrementedMenuItem.Enabled = true;
+                    LastVaqlueFromBdToolStripMenuItem.Enabled = true;
+                   
+                }
+                else
+                {
+                    notIncrementedMenuItem.Enabled = false;
+                    LastVaqlueFromBdToolStripMenuItem.Enabled = false;
+                }
+            }
+        }
+        private void notIncrementedMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentQrCodeListBox.SelectedIndex != -1)
+            {
+                QrItemDictionary qr_tmp = ((QrItemDictionary)currentQrCodeListBox.SelectedItem);
+                if (m_DbDict.IsItemIsSerial(qr_tmp.QrItem))
+                {
+                    qr_tmp.QrItem.NoIncrimented = notIncrementedMenuItem.Checked;
+                    currentQrCodeListBox.Items[currentQrCodeListBox.SelectedIndex] = qr_tmp;
+                }
+            }
+        }
+        private void LastVaqlueFromBdToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentQrCodeListBox.SelectedIndex != -1)
+            {
+                QrItemDictionary qr_tmp = ((QrItemDictionary)currentQrCodeListBox.SelectedItem);
+                if (m_DbDict.IsItemIsSerial(qr_tmp.QrItem))
+                {
+                    string last_val = m_DbCollection.GetLastValueFromDb(m_CurrentPrintQrCode, qr_tmp.QrItem);
+                    if(last_val!=null)
+                    {
+                        string str_format = "";
+                        for (int v = 0; v < qr_tmp.DataLen; v++)
+                        {
+                            str_format += "0";
+                        }
+                        string newVal = (int.Parse(last_val) + 1).ToString(str_format);
+                        qr_tmp.QrItem.Value = newVal;
+                        currentQrCodeListBox.Items[currentQrCodeListBox.SelectedIndex] = qr_tmp;
 
+                    }
+                }
+            }
+        }
+        private void вставитьТекстИзБуффераToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+           
+            QrCodeData tmpQr = m_QrProcessor.ParseQrPacket(Clipboard.GetText().ToCharArray(), m_DbDict);
+            if (tmpQr != null)
+            {
+
+                TreeNode node = new TreeNode(tmpQr.ToString());
+                List<string> qrItemDataStrs = m_QrProcessor.IdentificateQrData(tmpQr, m_DbDict);
+                foreach (string qr in qrItemDataStrs)
+                {
+                    node.Nodes.Add(qr);
+                }
+                node.Tag = tmpQr;
+                AddInPacketTreeView.Nodes.Add(node);
+
+
+                QrPacket.Clear();
+                m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items, AddInPacketTreeView.Nodes);
+                printPanelBox.Invalidate();
+                if (SerialPrintingRadioBtn.Checked || SerialPrintingSerialRadioBtn.Checked)
+                    OncePrintingRadioBtn.Checked = true;
+            }
+        }
         #endregion
 
         #region работа с бд
@@ -828,10 +953,12 @@ namespace BarCode2
             {
                 DataBase.DataBase db = (DataBase.DataBase)DataBaseCollectionListBox.SelectedItem;
                 DataBasItemCollectionListBox.Items.Clear();
+                
                 foreach (DataBaseItem dbi in db.DataBaseItems)
                 {
                     DataBasItemCollectionListBox.Items.Add(dbi);
                 }
+               
             }
         }
 
@@ -845,25 +972,32 @@ namespace BarCode2
             }
         }
 
+        private void CopyQrToBufferToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (DataBasItemCollectionListBox.SelectedIndex != -1)
+            {
+                DataBaseItem dbi = (DataBaseItem)DataBasItemCollectionListBox.SelectedItem;
+                
+                Clipboard.SetText(dbi.QrCode);
+            }
+        }
+        private void DeleteDbItem_Click(object sender, EventArgs e)
+        {
+            if(DataBasItemCollectionListBox.SelectedIndices.Count>0)
+            {
+                if (DataBaseCollectionListBox.SelectedIndex != -1)
+                {
 
+                    List<DataBaseItem> deleteItems = new List<DataBaseItem>();
+                    foreach(DataBaseItem dbi in DataBasItemCollectionListBox.SelectedItems )
+                    {
+                        deleteItems.Add(dbi);
+                    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                    SendReqest("DELDBITEMS:" + DataBaseCollectionListBox.SelectedIndex, deleteItems);
+                }
+            }
+        }
 
 
         #endregion

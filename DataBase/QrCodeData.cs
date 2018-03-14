@@ -65,7 +65,9 @@ namespace DataBase
         }
         public void ChangeQrItemInList(int index,string type,string val)
         {
-            m_ListQrItems[index] = new QrItem(type, val);
+            QrItem qr =new QrItem(type, val);
+            qr.NoIncrimented = m_ListQrItems[index].NoIncrimented;
+            m_ListQrItems[index] = qr;
         }
         public void AddQritem(QrItem qr)
         {

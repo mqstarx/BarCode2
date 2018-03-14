@@ -173,7 +173,7 @@ namespace BarCode2
                 foreach(QrItem qritem in qr.ListQrItems)
                 {
                     QrItemDictionary qrdi = new QrItemDictionary(qritem, dict.GetTypeDescription(qritem.Type));
-
+                    qrdi.DataLen = qritem.Value.Length;
                     qrdi.ArrayItem = dict.GetValueArrayItemFromDictionary(qrdi.QrItem.Type, qrdi.QrItem.Value); 
                     listbox.Items.Add(qrdi);                    
                 }
@@ -205,7 +205,9 @@ namespace BarCode2
                     if (qrPacketStr.Length - qrPacketStr.IndexOf(d.TypeId) > d.DataLen) // если остаток пакета больше заявленной длинны
                     {
                         string pac_data = qrPacketStr.Substring(qrPacketStr.IndexOf(d.TypeId) + d.TypeLen, d.DataLen); //вычленяем данные записываем в класс
-                                                                                                                    
+                        // qrPacketStr.Substring(qrPacketStr.IndexOf(d.TypeId), d.DataLen+d.TypeLen);
+
+                        qrPacketStr = qrPacketStr.Remove(qrPacketStr.IndexOf(d.TypeId), d.DataLen + d.TypeLen);
                         _qrList.Add(new QrItem(d.TypeId, pac_data));
 
                     }
@@ -322,7 +324,9 @@ namespace BarCode2
                     {
                         if (current.ListQrItems[j].Type == di.TypeId && di.IsSerialDb)
                         {
-                            QrItemDictionary qr = new QrItemDictionary(new QrItem(current.ListQrItems[j].Type, current.ListQrItems[j].Value),di.DataLen);
+                            QrItem qrAdd = new QrItem(current.ListQrItems[j].Type, current.ListQrItems[j].Value);
+                            qrAdd.NoIncrimented = current.ListQrItems[j].NoIncrimented;
+                            QrItemDictionary qr = new QrItemDictionary(qrAdd,di.DataLen);
                             changeItems.Add(qr);
                             qrItemIndexesList.Add(j);
                         }
@@ -344,6 +348,7 @@ namespace BarCode2
                             {
                                 str_format += "0";
                             }
+                            if(!changeItems[j].QrItem.NoIncrimented)
                             qr_add.ChangeQrItemInList(qrItemIndexesList[j], changeItems[j].QrItem.Type, (int.Parse(changeItems[j].QrItem.Value) + i).ToString(str_format));
                            
                         }

@@ -115,6 +115,13 @@ namespace BarCode2Server
 
                         _tcpMod.SendData(m_DbCollection, "ADDQRITEMINBASEОК");
                     }
+                    else
+                    {
+                        TcpModule ccc = (TcpModule)sender;
+
+                        _tcpMod.SendData(m_DbCollection, "ADDQRITEMINBASEERR");
+                    }
+
                 }
             }
             //ADDQRITEMSINBASE
@@ -130,6 +137,39 @@ namespace BarCode2Server
 
                         _tcpMod.SendData(m_DbCollection, "ADDQRITEMSINBASEОК");
                     }
+                    else
+                    {
+                        TcpModule ccc = (TcpModule)sender;
+
+                        _tcpMod.SendData(m_DbCollection, "ADDQRITEMSINBASEERR");
+                    }
+                }
+            }
+
+            if (e.sendInfo.message.Contains("DELDBITEMS:"))
+            {
+                int db_index = -1;
+                try
+                {
+                    db_index = int.Parse(e.sendInfo.message.Split(':')[1]);
+                }
+                catch { }
+                if(db_index!=-1)
+                {
+                    if(m_DbCollection.DeleteItemsFromDb((List<DataBaseItem>)e.Object,db_index))
+                    {
+                        Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
+                        TcpModule ccc = (TcpModule)sender;
+
+                        _tcpMod.SendData(m_DbCollection, "DELDBITEMSОК");
+                    }
+                    else
+                    {
+                        TcpModule ccc = (TcpModule)sender;
+
+                        _tcpMod.SendData(m_DbCollection, "DELDBITEMSERR");
+                    }
+
                 }
             }
         }

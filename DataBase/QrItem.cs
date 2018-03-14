@@ -15,6 +15,7 @@ namespace DataBase
          private string m_Value;
         private string m_Type;
         private DateTime m_CreationDate;
+        private bool m_NoIncrimented;
         /// <summary>
         /// значение, занесенное пользователем(данные введенные в поле либо Key из справочника
         /// </summary>
@@ -52,6 +53,24 @@ namespace DataBase
             }
 
            
+        }
+
+        /// <summary>
+        /// Обределяет будет ли инкриментироваться значение данного объекта(в случае если он является серийным номером) при печати серии номеров.
+       ///  Также если значение true, то в случае добавления в базу данных элемент будет учитываться только если он отсутствует в базе. (Добавление только один раз)
+       /// Например: есть 2 базы одного изделия. В qr-коде есть серийник и номер партии. серийник  инкрементируется, а номер партии нет.
+        /// </summary>
+        public bool NoIncrimented
+        {
+            get
+            {
+                return m_NoIncrimented;
+            }
+
+            set
+            {
+                m_NoIncrimented = value;
+            }
         }
 
         /// <summary>
@@ -149,10 +168,21 @@ namespace DataBase
             m_QrItem = q;
             m_DataLen = len;
         }
+        public QrItemDictionary(QrItem q, string Descr, int len)
+        {
+            m_QrItem = q;
+            m_DataLen = len;
+            m_DictionaryTypeDescription = Descr;
+        }
         public override string ToString()
         {
             if (m_ArrayItem == null)
-                return m_DictionaryTypeDescription + ":" + m_QrItem.Value;
+            {
+                if (m_QrItem.NoIncrimented)
+                    return m_DictionaryTypeDescription + ":" + m_QrItem.Value + " (не инкр.)"; 
+                else
+                    return m_DictionaryTypeDescription + ":" + m_QrItem.Value;
+            }
             else
                 return m_DictionaryTypeDescription + ":" + m_ArrayItem.Value;
         }

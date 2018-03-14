@@ -93,6 +93,31 @@ namespace DataBase
                 return false;
 
         }
+        /// <summary>
+        /// возвращает последнее занесенное значение из базы соответствующей параметрам qr кода
+        /// </summary>
+        /// <param name="qrCode"></param>
+        /// <param name="qritem"></param>
+        /// <returns></returns>
+        public string GetLastValueFromDb(QrCodeData qrCode,QrItem qritem )
+        {
+            for (int i = 0; i < m_DataBasesCollection.Count; i++)
+            {
+                
+                foreach (QrItem qr in qrCode.ListQrItems)
+                {
+
+
+                    if (qr.Type == m_DataBasesCollection[i].TypeDbProdukt.Type && qr.Value == m_DataBasesCollection[i].TypeDbProdukt.Key && qritem.Type == m_DataBasesCollection[i].TypeOfDataSerial)
+                    {
+                        if (m_DataBasesCollection[i].DataBaseItems.Count > 0)
+                          return  m_DataBasesCollection[i].DataBaseItems[m_DataBasesCollection[i].DataBaseItems.Count - 1].QrItem.Value;
+                    }
+                }
+               
+            }
+            return null;
+        }
 
         //возвращает индексы баз данных в которые необходимо добавить qr-код
         private int[] DbIndexesForQrDataSave(QrCodeData qrCode)
@@ -132,6 +157,9 @@ namespace DataBase
                         {
                             if (!m_DataBasesCollection[db_indexes[i]].IsItemContain(qr))
                                 sucsess_counter++;
+                            if (m_DataBasesCollection[db_indexes[i]].IsItemContain(qr) && qr.NoIncrimented)
+                                sucsess_counter++;
+
                         }
                     }
                 }
@@ -193,6 +221,21 @@ namespace DataBase
             return false;
            
         }
+
+        public bool DeleteItemsFromDb(List<DataBaseItem> deleteitems,int dbIndex)
+        {
+            foreach(DataBaseItem dbi in deleteitems)
+            {
+               if(!m_DataBasesCollection[dbIndex].DeleteItem(dbi))
+                {
+                    return false;
+                }
+                    
+            }
+            return true;
+
+        }
+
 
     }
 
@@ -338,7 +381,18 @@ namespace DataBase
             }
             return false;
         }
-
+        public bool DeleteItem(DataBaseItem db)
+        {
+           for(int i=0;i<m_DataBaseItems.Count;i++)
+            {
+                if(m_DataBaseItems[i].QrItem.Type == db.QrItem.Type && m_DataBaseItems[i].QrItem.Value == db.QrItem.Value && m_DataBaseItems[i].QrCode == db.QrCode)
+                {
+                    m_DataBaseItems.RemoveAt(i);
+                    return true;
+                }
+            }
+            return false;
+        }
 
     }
 
