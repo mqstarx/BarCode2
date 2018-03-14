@@ -83,6 +83,8 @@ namespace BarCode2
             else
                 this.WindowState = FormWindowState.Normal;
 
+            m_ServerIP = m_AppConfig.ServerIp;
+
         }
 
         //загрузка параметров сессии
@@ -122,6 +124,7 @@ namespace BarCode2
                 m_AppConfig.MaximizedBox = true;
             else
                 m_AppConfig.MaximizedBox = false;
+            m_AppConfig.ServerIp = m_ServerIP;
             Functions.SaveConfig(m_AppConfig);
         }
 
