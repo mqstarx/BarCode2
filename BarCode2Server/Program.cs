@@ -44,28 +44,28 @@ namespace BarCode2Server
 
         private static void _tcpMod_Receive(object sender, DataBase.ReceiveEventArgs e)
         {
-
+            TcpModule tcp = (TcpModule)sender;
             if (e.sendInfo.message == "CHECKCONN")
             {
-                // TcpModule tcp = (TcpModule)sender;
+                 
+                 tcp.SendData(null, "CHECKCONNOK");
 
-
-                _tcpMod.SendData(null, "CHECKCONNOK");
+                //_tcpMod.SendData(null, "CHECKCONNOK");
             }
             if (e.sendInfo.message == "ASKDICT")
             {
                 // TcpModule tcp = (TcpModule)sender;
                 Dictionary di = new Dictionary();
                 di.ReadFromIni();
-                TcpModule ccc = (TcpModule)sender;
+             
 
-                _tcpMod.SendData(di, "ASKDICTOK");
+                tcp.SendData(di, "ASKDICTOK");
             }
             if (e.sendInfo.message == "ASKDBCOLLECTION")
             {
-                TcpModule ccc = (TcpModule)sender;
+                
 
-                _tcpMod.SendData(m_DbCollection, "ASKDBCOLLECTIONOK");
+                tcp.SendData(m_DbCollection, "ASKDBCOLLECTIONOK");
             }
             if (e.sendInfo.message == "ADDBASE")
             {
@@ -75,15 +75,15 @@ namespace BarCode2Server
                     if (m_DbCollection.AddDataBase(addDb))
                     {
                         Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
-                        TcpModule ccc = (TcpModule)sender;
+                       
 
-                        _tcpMod.SendData(m_DbCollection, "ADDBASEOK");
+                        tcp.SendData(m_DbCollection, "ADDBASEOK");
                     }
                     else
                     {
-                        TcpModule ccc = (TcpModule)sender;
+                        
 
-                        _tcpMod.SendData(m_DbCollection, "ADDBASEERR");
+                        tcp.SendData(m_DbCollection, "ADDBASEERR");
                     }
 
                 }
@@ -96,9 +96,9 @@ namespace BarCode2Server
                     if (m_DbCollection.DeleteDataBase(addDb))
                     {
                         Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
-                        TcpModule ccc = (TcpModule)sender;
 
-                        _tcpMod.SendData(m_DbCollection, "DELBASEOK");
+
+                        tcp.SendData(m_DbCollection, "DELBASEOK");
                     }
                 }
             }
@@ -111,15 +111,15 @@ namespace BarCode2Server
                     if (m_DbCollection.AddQrCodeToDataBases(qrcode))
                     {
                         Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
-                        TcpModule ccc = (TcpModule)sender;
 
-                        _tcpMod.SendData(m_DbCollection, "ADDQRITEMINBASEОК");
+
+                        tcp.SendData(m_DbCollection, "ADDQRITEMINBASEОК");
                     }
                     else
                     {
-                        TcpModule ccc = (TcpModule)sender;
 
-                        _tcpMod.SendData(m_DbCollection, "ADDQRITEMINBASEERR");
+
+                        tcp.SendData(m_DbCollection, "ADDQRITEMINBASEERR");
                     }
 
                 }
@@ -133,15 +133,15 @@ namespace BarCode2Server
                     if (m_DbCollection.AddQrCodeSerialToDataBases(qrcode))
                     {
                         Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
-                        TcpModule ccc = (TcpModule)sender;
 
-                        _tcpMod.SendData(m_DbCollection, "ADDQRITEMSINBASEОК");
+
+                        tcp.SendData(m_DbCollection, "ADDQRITEMSINBASEОК");
                     }
                     else
                     {
-                        TcpModule ccc = (TcpModule)sender;
 
-                        _tcpMod.SendData(m_DbCollection, "ADDQRITEMSINBASEERR");
+
+                        tcp.SendData(m_DbCollection, "ADDQRITEMSINBASEERR");
                     }
                 }
             }
@@ -159,15 +159,15 @@ namespace BarCode2Server
                     if(m_DbCollection.DeleteItemsFromDb((List<DataBaseItem>)e.Object,db_index))
                     {
                         Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
-                        TcpModule ccc = (TcpModule)sender;
 
-                        _tcpMod.SendData(m_DbCollection, "DELDBITEMSОК");
+
+                        tcp.SendData(m_DbCollection, "DELDBITEMSОК");
                     }
                     else
                     {
-                        TcpModule ccc = (TcpModule)sender;
 
-                        _tcpMod.SendData(m_DbCollection, "DELDBITEMSERR");
+
+                        tcp.SendData(m_DbCollection, "DELDBITEMSERR");
                     }
 
                 }
