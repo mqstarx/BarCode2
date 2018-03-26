@@ -186,12 +186,12 @@ namespace BarCode2
         {
             if (!m_IsConnectedToServer)
             {
-                m_tcpModule = new DataBase.TcpModule();
+                m_tcpModule = new DataBase.TcpModule(false);
                 m_tcpModule.Connected += Tcp_Connected;
                 m_tcpModule.Receive += Tcp_Receive;
                 m_tcpModule.Disconnected += M_tcpModule_Disconnected;
                 m_tcpModule.Accept += M_tcpModule_Accept;
-                m_tcpModule.ConnectClient(m_ServerIP);
+                m_tcpModule.ConnectClient(m_ServerIP,15000);
             }
         }
 
@@ -202,79 +202,80 @@ namespace BarCode2
         }
         private void Tcp_Receive(object sender, ReceiveEventArgs e)
         {
-            if (e.sendInfo.message == "CHECKCONNOK")
+            if (e.SendInfo.ProtocolMsg ==  ProtocolOfExchange.CheckConnectionOK)
             {
                 m_IsConnectedToServer = true;
                 this.Invoke((new Action(() => connectionStatusLabel.BackColor = Color.Green)));
                 TimeOutTimer.Stop();
-                 SendReqest("ASKDICT",null);
 
-                 SendReqest("ASKDBCOLLECTION", null);
+                 SendReqest(ProtocolOfExchange.AskDictionary,null,(TcpModule)sender);
+                Thread.Sleep(10);
+                 SendReqest(ProtocolOfExchange.AskDbCollection, null, (TcpModule)sender);
             }
-            if (e.sendInfo.message == "ASKDICTOK")
+            if (e.SendInfo.ProtocolMsg ==  ProtocolOfExchange.AskDictionaryOk)
             {
-                m_DbDict = (Dictionary)e.Object;
+                m_DbDict = (Dictionary)e.NetDataObj.Dictionary;
                 this.Invoke((new Action(() => RefreshDictionaryTree())));
             }
-            if (e.sendInfo.message == "ASKDBCOLLECTIONOK")
+            if (e.SendInfo.ProtocolMsg == ProtocolOfExchange.AskDbCollectionOk )
             {
-                m_DbCollection = (DataBasesCollection)e.Object;
+                m_DbCollection = (DataBasesCollection)e.NetDataObj.DataBaseCollection;
                 this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
                
             }
-            if (e.sendInfo.message == "ADDBASEOK")
+            if (e.SendInfo.ProtocolMsg ==  ProtocolOfExchange.AddBaseOk)
             {
-                m_DbCollection = (DataBasesCollection)e.Object;
+                m_DbCollection = (DataBasesCollection)e.NetDataObj.DataBaseCollection;
                 this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
             }
-            if (e.sendInfo.message == "DELBASEOK")
+            if (e.SendInfo.ProtocolMsg ==  ProtocolOfExchange.DelBaseOk)
             {
-                m_DbCollection = (DataBasesCollection)e.Object;
+                m_DbCollection = (DataBasesCollection)e.NetDataObj.DataBaseCollection;
                 this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
             }
-            if (e.sendInfo.message == "ADDBASEERR")
+            if (e.SendInfo.ProtocolMsg == ProtocolOfExchange.AddBaseFail)
             {
                 this.Invoke((new Action(() => MessageBox.Show("База с такими параметрами уже существует"))));
             }
-            if (e.sendInfo.message == "ADDINBASEOK")
+            if (e.SendInfo.ProtocolMsg == ProtocolOfExchange.AddBaseOk )
             {
-                m_DbCollection = (DataBasesCollection)e.Object;
+                m_DbCollection = (DataBasesCollection)e.NetDataObj.DataBaseCollection;
                 this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
 
             }
-            if (e.sendInfo.message == "ADDQRITEMINBASEОК")
+            if (e.SendInfo.ProtocolMsg ==  ProtocolOfExchange.AddQrItemInBaseOk )
             {
-                m_DbCollection = (DataBasesCollection)e.Object;
+                m_DbCollection = (DataBasesCollection)e.NetDataObj.DataBaseCollection;
                 this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
 
             }
-            if (e.sendInfo.message == "ADDQRITEMINBASEERR")
+            if (e.SendInfo.ProtocolMsg ==  ProtocolOfExchange.AddQrItemInBaseFail)
             {
-                m_DbCollection = (DataBasesCollection)e.Object;
+                //m_DbCollection = (DataBasesCollection)e.Object;
                 this.Invoke((new Action(() => MessageBox.Show("Ошибка добавления записи в базу"))));
 
             }
-            if (e.sendInfo.message == "ADDQRITEMSINBASEОК")
+            if (e.SendInfo.ProtocolMsg == ProtocolOfExchange.AddQrItemSInBaseOk )
             {
-                m_DbCollection = (DataBasesCollection)e.Object;
+                m_DbCollection = (DataBasesCollection)e.NetDataObj.DataBaseCollection;
                 this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
 
             }
-            if (e.sendInfo.message == "ADDQRITEMSINBASEERR")
+            if (e.SendInfo.ProtocolMsg ==  ProtocolOfExchange.AddQrItemSInBaseFail)
             {
-                m_DbCollection = (DataBasesCollection)e.Object;
+                //m_DbCollection = (DataBasesCollection)e.Object;
                 this.Invoke((new Action(() => MessageBox.Show("Ошибка добавления записей в базу"))));
 
             }
-            if (e.sendInfo.message == "DELDBITEMSОК")
+            if (e.SendInfo.ProtocolMsg == ProtocolOfExchange.DelDbItemOK)
             {
-                m_DbCollection = (DataBasesCollection)e.Object;
+                m_DbCollection = (DataBasesCollection)e.NetDataObj.DataBaseCollection;
                 this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
 
             }
-            if (e.sendInfo.message == "DELDBITEMSERR")
+            if (e.SendInfo.ProtocolMsg ==  ProtocolOfExchange.DelDbItemsFail)
             {
-                m_DbCollection = (DataBasesCollection)e.Object;
+                //m_DbCollection = (DataBasesCollection)e
                 this.Invoke((new Action(() => MessageBox.Show("Ошибка удаления записей из базы"))));
 
             }
@@ -285,7 +286,7 @@ namespace BarCode2
             if (result == "OK")
             {
                               
-                SendReqest("CHECKCONN", null);
+                SendReqest(ProtocolOfExchange.CheckConnection, null,m_tcpModule);
                 TimeOutTimer.Start();
            
             }
@@ -306,12 +307,12 @@ namespace BarCode2
 
         }
 
-        private void SendReqest(string req,object obj)
+        private void SendReqest(ProtocolOfExchange req,NetworkTransferObjects obj,TcpModule tcp)
         {
-            if (m_IsConnectedToServer|| req== "CHECKCONN")
+            if (m_IsConnectedToServer|| req ==  ProtocolOfExchange.CheckConnection)
             {
                // m_tcpModule.Receive += Tcp_Receive;
-                m_tcpModule.SendData(obj, req);
+                tcp.SendData(obj, req);
             }
         }
 
@@ -402,7 +403,7 @@ namespace BarCode2
             //запрос из сети
             if (m_IsConnectedToServer)
             {
-                m_tcpModule.SendData(null, "ASKDICT");
+                m_tcpModule.SendData(null, ProtocolOfExchange.AskDictionary);
                
             }
         }
@@ -688,11 +689,15 @@ namespace BarCode2
                 {
                     if (OncePrintingRadioBtn.Checked || CopyOfPagesRadioBtn.Checked)
                     {
-                        SendReqest("ADDQRITEMINBASE", m_CurrentPrintQrCode);
+                        NetworkTransferObjects obj = new NetworkTransferObjects();
+                        obj.QrCodeData = m_CurrentPrintQrCode;
+                        SendReqest(ProtocolOfExchange.AddQrItemInBase, obj,m_tcpModule);
                     }
                     else
                     {
-                        SendReqest("ADDQRITEMSINBASE", m_QrProcessor.GenerateQrDataArrayForSerialPrint(m_CurrentPrintQrCode,m_DbDict, (int)SerialCopyNumericUpDown.Value));
+                        NetworkTransferObjects obj = new NetworkTransferObjects();
+                        obj.QrCodeDataArray =  m_QrProcessor.GenerateQrDataArrayForSerialPrint(m_CurrentPrintQrCode, m_DbDict, (int)SerialCopyNumericUpDown.Value);
+                        SendReqest(ProtocolOfExchange.AddQrItemSInBase,obj,m_tcpModule);
                     }
                 }
             }
@@ -910,7 +915,9 @@ namespace BarCode2
             add.DictDb = m_DbDict;
             if(add.ShowDialog()== DialogResult.OK)
             {
-                SendReqest("ADDBASE", new DataBase.DataBase(((DictionaryItem)add.typeDataCmbx.SelectedItem).TypeId, ((DictionaryItem)add.typeDataCmbx.SelectedItem).DataDescr, ((DictionaryItem)add.ProduktTypeCmb.SelectedItem).DataDescr,(ArrayItem)add.ProduktValueCmb.SelectedItem));
+                NetworkTransferObjects obj = new NetworkTransferObjects();
+                obj.DataBase = new DataBase.DataBase(((DictionaryItem)add.typeDataCmbx.SelectedItem).TypeId, ((DictionaryItem)add.typeDataCmbx.SelectedItem).DataDescr, ((DictionaryItem)add.ProduktTypeCmb.SelectedItem).DataDescr, (ArrayItem)add.ProduktValueCmb.SelectedItem);
+                SendReqest( ProtocolOfExchange.AddBase,obj,m_tcpModule );
              
 
             }
@@ -922,13 +929,18 @@ namespace BarCode2
             if (MessageBox.Show("Действительно удалить базу??", "Предупреждение", MessageBoxButtons.OKCancel) == DialogResult.OK)
             {
                 if (DataBaseCollectionListBox.SelectedIndex != -1)
-                    SendReqest("DELBASE", DataBaseCollectionListBox.SelectedItem);
+                {
+
+                    NetworkTransferObjects obj = new NetworkTransferObjects();
+                    obj.DataBase = (DataBase.DataBase)DataBaseCollectionListBox.SelectedItem;
+                    SendReqest(ProtocolOfExchange.DelBase, obj,m_tcpModule);
+                }
             }
         }
 
         private void RefreshDbBtn_Click(object sender, EventArgs e)
         {
-            SendReqest("ASKDBCOLLECTION",null);
+            SendReqest(ProtocolOfExchange.AskDbCollection,null,m_tcpModule);
 
         }
 
@@ -996,8 +1008,10 @@ namespace BarCode2
                     {
                         deleteItems.Add(dbi);
                     }
-
-                    SendReqest("DELDBITEMS:" + DataBaseCollectionListBox.SelectedIndex, deleteItems);
+                    NetworkTransferObjects obj = new NetworkTransferObjects();
+                    obj.DataBaseItemsList = deleteItems;
+                    obj.DbIndex = DataBaseCollectionListBox.SelectedIndex;
+                    SendReqest(ProtocolOfExchange.DelDbItems, obj,m_tcpModule);
                 }
             }
         }

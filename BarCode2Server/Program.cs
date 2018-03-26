@@ -13,12 +13,12 @@ namespace BarCode2Server
         static DataBasesCollection m_DbCollection;
         static void Main(string[] args)
         {
-             _tcpMod = new DataBase.TcpModule();
+             _tcpMod = new DataBase.TcpModule(true);
             _tcpMod.Receive += _tcpMod_Receive;
             _tcpMod.Accept += _tcpMod_Accept;
             _tcpMod.Connected += _tcpMod_Connected;
             _tcpMod.Disconnected += _tcpMod_Disconnected;
-            _tcpMod.StartServer();
+            _tcpMod.StartServer(15000);
             m_DbCollection = (DataBasesCollection)Functions.LoadConfig("DataBase.qrdb");
             if (m_DbCollection == null)
                 m_DbCollection = new DataBasesCollection();
@@ -44,130 +44,124 @@ namespace BarCode2Server
 
         private static void _tcpMod_Receive(object sender, DataBase.ReceiveEventArgs e)
         {
-
-            if (e.sendInfo.message == "CHECKCONN")
+            TcpModule tcp = (TcpModule)sender;
+            if (e.SendInfo.ProtocolMsg == ProtocolOfExchange.CheckConnection )
             {
-                // TcpModule tcp = (TcpModule)sender;
-
-
-                _tcpMod.SendData(null, "CHECKCONNOK");
+                tcp.SendData(null, ProtocolOfExchange.CheckConnectionOK);
             }
-            if (e.sendInfo.message == "ASKDICT")
+            if (e.SendInfo.ProtocolMsg == ProtocolOfExchange.AskDictionary)
             {
-                // TcpModule tcp = (TcpModule)sender;
+             
                 Dictionary di = new Dictionary();
                 di.ReadFromIni();
-                TcpModule ccc = (TcpModule)sender;
-
-                _tcpMod.SendData(di, "ASKDICTOK");
+                NetworkTransferObjects obj = new NetworkTransferObjects();
+                obj.Dictionary = di;
+                tcp.SendData(obj, ProtocolOfExchange.AskDictionaryOk);
             }
-            if (e.sendInfo.message == "ASKDBCOLLECTION")
+            if (e.SendInfo.ProtocolMsg ==  ProtocolOfExchange.AskDbCollection)
             {
-                TcpModule ccc = (TcpModule)sender;
 
-                _tcpMod.SendData(m_DbCollection, "ASKDBCOLLECTIONOK");
+                NetworkTransferObjects obj = new NetworkTransferObjects();
+                obj.DataBaseCollection = m_DbCollection;
+                tcp.SendData(obj, ProtocolOfExchange.AskDbCollectionOk);
             }
-            if (e.sendInfo.message == "ADDBASE")
+            if (e.SendInfo.ProtocolMsg == ProtocolOfExchange.AddBase )
             {
-                DataBase.DataBase addDb = (DataBase.DataBase)e.Object;
+                NetworkTransferObjects obj = new NetworkTransferObjects();
+                DataBase.DataBase addDb = (DataBase.DataBase)e.NetDataObj.DataBase;
                 if (addDb != null)
                 {
                     if (m_DbCollection.AddDataBase(addDb))
                     {
                         Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
-                        TcpModule ccc = (TcpModule)sender;
 
-                        _tcpMod.SendData(m_DbCollection, "ADDBASEOK");
+                        obj.DataBaseCollection = m_DbCollection;
+                        tcp.SendData(obj,  ProtocolOfExchange.AddBaseOk);
                     }
                     else
-                    {
-                        TcpModule ccc = (TcpModule)sender;
-
-                        _tcpMod.SendData(m_DbCollection, "ADDBASEERR");
+                    {                      
+                        tcp.SendData(null, ProtocolOfExchange.AddBaseFail );
                     }
 
                 }
             }
-            if (e.sendInfo.message == "DELBASE")
+            if (e.SendInfo.ProtocolMsg ==  ProtocolOfExchange.DelBase)
             {
-                DataBase.DataBase addDb = (DataBase.DataBase)e.Object;
+                DataBase.DataBase addDb = (DataBase.DataBase)e.NetDataObj.DataBase;
                 if (addDb != null)
                 {
+
                     if (m_DbCollection.DeleteDataBase(addDb))
                     {
-                        Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
-                        TcpModule ccc = (TcpModule)sender;
-
-                        _tcpMod.SendData(m_DbCollection, "DELBASEOK");
+                        NetworkTransferObjects obj = new NetworkTransferObjects();
+                        obj.DataBaseCollection = m_DbCollection;
+                        Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");                       
+                        _tcpMod.SendData(obj,ProtocolOfExchange.DelBaseOk);
                     }
                 }
             }
             //ADDQRITEMINBASE
-            if (e.sendInfo.message == "ADDQRITEMINBASE")
+            if (e.SendInfo.ProtocolMsg ==  ProtocolOfExchange.AddQrItemInBase )
             {
-                QrCodeData qrcode = (QrCodeData)e.Object;
+                QrCodeData qrcode = (QrCodeData)e.NetDataObj.QrCodeData;
                 if (qrcode != null)
                 {
                     if (m_DbCollection.AddQrCodeToDataBases(qrcode))
                     {
                         Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
-                        TcpModule ccc = (TcpModule)sender;
+                        NetworkTransferObjects obj = new NetworkTransferObjects();
+                        obj.DataBaseCollection = m_DbCollection;
 
-                        _tcpMod.SendData(m_DbCollection, "ADDQRITEMINBASEОК");
+                        _tcpMod.SendData(obj, ProtocolOfExchange.AddQrItemInBaseOk);
                     }
                     else
-                    {
-                        TcpModule ccc = (TcpModule)sender;
-
-                        _tcpMod.SendData(m_DbCollection, "ADDQRITEMINBASEERR");
+                    {                      
+                        tcp.SendData(null,  ProtocolOfExchange.AddQrItemInBaseFail);
                     }
 
                 }
             }
             //ADDQRITEMSINBASE
-            if (e.sendInfo.message == "ADDQRITEMSINBASE")
+            if (e.SendInfo.ProtocolMsg ==  ProtocolOfExchange.AddQrItemSInBase)
             {
-                QrCodeData[] qrcode = (QrCodeData[])e.Object;
+                QrCodeData[] qrcode = (QrCodeData[])e.NetDataObj.QrCodeDataArray;
                 if (qrcode != null)
                 {
                     if (m_DbCollection.AddQrCodeSerialToDataBases(qrcode))
                     {
                         Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
-                        TcpModule ccc = (TcpModule)sender;
-
-                        _tcpMod.SendData(m_DbCollection, "ADDQRITEMSINBASEОК");
+                        NetworkTransferObjects obj = new NetworkTransferObjects();
+                        obj.DataBaseCollection = m_DbCollection;
+                        tcp.SendData(obj,  ProtocolOfExchange.AddQrItemSInBaseOk);
                     }
                     else
                     {
-                        TcpModule ccc = (TcpModule)sender;
-
-                        _tcpMod.SendData(m_DbCollection, "ADDQRITEMSINBASEERR");
+                      
+                        tcp.SendData(null, ProtocolOfExchange.AddQrItemSInBaseFail);
                     }
                 }
             }
 
-            if (e.sendInfo.message.Contains("DELDBITEMS:"))
+            if (e.SendInfo.ProtocolMsg == ProtocolOfExchange.DelDbItems)
             {
-                int db_index = -1;
-                try
-                {
-                    db_index = int.Parse(e.sendInfo.message.Split(':')[1]);
-                }
-                catch { }
+
+
+                int db_index = e.NetDataObj.DbIndex;             
                 if(db_index!=-1)
                 {
-                    if(m_DbCollection.DeleteItemsFromDb((List<DataBaseItem>)e.Object,db_index))
+                    if(m_DbCollection.DeleteItemsFromDb((List<DataBaseItem>)e.NetDataObj.DataBaseItemsList,db_index))
                     {
                         Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
-                        TcpModule ccc = (TcpModule)sender;
+                        NetworkTransferObjects obj = new NetworkTransferObjects();
+                        obj.DataBaseCollection = m_DbCollection;
 
-                        _tcpMod.SendData(m_DbCollection, "DELDBITEMSОК");
+                        tcp.SendData(obj, ProtocolOfExchange.DelDbItemsOK);
                     }
                     else
                     {
-                        TcpModule ccc = (TcpModule)sender;
+                       
 
-                        _tcpMod.SendData(m_DbCollection, "DELDBITEMSERR");
+                        _tcpMod.SendData(null, ProtocolOfExchange.DelDbItemsFail);
                     }
 
                 }

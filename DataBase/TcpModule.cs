@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace DataBase
 {
@@ -17,18 +18,18 @@ namespace DataBase
     public class ReceiveEventArgs : EventArgs
     {
         private SendInfo _sendinfo;
-        private object _object;
-        public ReceiveEventArgs(SendInfo sendinfo,object obj)
+        private NetworkTransferObjects _object;
+        public ReceiveEventArgs(SendInfo sendinfo, NetworkTransferObjects obj)
         {
             _sendinfo = sendinfo;
             _object = obj;
         }
-       
-        public object Object
+
+        public NetworkTransferObjects NetDataObj
         {
             get { return _object; }
         }
-        public SendInfo sendInfo
+        public SendInfo SendInfo
         {
             get { return _sendinfo; }
         }
@@ -64,13 +65,17 @@ namespace DataBase
         public event ReceiveEventHandler Receive;
 
         #endregion
-
+        private bool m_ErrorOutputConsose;
+        public TcpModule(bool err_output_console)
+        {
+            m_ErrorOutputConsose = err_output_console;
+        }
 
         #region Объявления членов класса
 
         // Родительская форма необходима для визуальной информации 
         // о внутреннем состоянии и событиях работы сетвого модуля.
-      //  public Form1 Parent;
+        //  public Form1 Parent;
 
         // Прослушивающий сокет для работы модуля в режиме сервера TCP
         private TcpListener _tcpListener;
@@ -97,13 +102,13 @@ namespace DataBase
         /// Запускает сервер, прослушивающий все IP адреса, и одновременно
         /// метод асинхронного принятия (акцептирования) клиентов.
         /// </summary>
-        public void StartServer()
+        public void StartServer(int port)
         {
             if (modeNetwork == Mode.indeterminately)
             {
                 try
                 {
-                    _tcpListener = new TcpListener(IPAddress.Any, 15000);
+                    _tcpListener = new TcpListener(IPAddress.Any, port);
                     _tcpListener.Start();
                     _tcpListener.BeginAcceptTcpClient(AcceptCallback, _tcpListener);
                     modeNetwork = Mode.Server;
@@ -113,12 +118,12 @@ namespace DataBase
                 catch (Exception e)
                 {
                     _tcpListener = null;
-                  //  Parent.ShowReceiveMessage(e.Message);
+                    //  Parent.ShowReceiveMessage(e.Message);
                 }
             }
             else
             {
-                SoundError();
+                SoundError("error start server");
             }
         }
 
@@ -138,7 +143,7 @@ namespace DataBase
                 DeleteClient(_tcpClient);
 
 
-              //  Parent.ChangeBackColor(Color.FromKnownColor(KnownColor.Control));
+                //  Parent.ChangeBackColor(Color.FromKnownColor(KnownColor.Control));
             }
         }
 
@@ -147,19 +152,19 @@ namespace DataBase
         /// Попытка асинхронного подключения клиента к серверу
         /// </summary>
         /// <param name="ipserver">IP адрес сервера</param>
-        public void ConnectClient(string ipserver)
+        public void ConnectClient(string ipserver, int port)
         {
             if (modeNetwork == Mode.indeterminately)
             {
                 _tcpClient = new TcpClientData();
-                _tcpClient.tcpClient.BeginConnect(IPAddress.Parse(ipserver), 15000, new AsyncCallback(ConnectCallback), _tcpClient);
+                _tcpClient.tcpClient.BeginConnect(IPAddress.Parse(ipserver), port, new AsyncCallback(ConnectCallback), _tcpClient);
 
                 modeNetwork = Mode.Client;
             }
             else
             {
-               // SoundError();
-           }
+                // SoundError();
+            }
         }
 
 
@@ -216,72 +221,78 @@ namespace DataBase
 
 
         //public string SendFileName = null;
-        public void SendData(object obj,string message)
+        public void SendData(NetworkTransferObjects obj, ProtocolOfExchange protokolMsg)
         {
             // Состав отсылаемого универсального сообщения
             // 1. Заголовок о следующим объектом класса подробной информации дальнейших байтов
             // 2. Объект класса подробной информации о следующих байтах
             // 3. Байты непосредственно готовых к записи в файл или для чего-то иного.
-
-            SendInfo si = new SendInfo();
-            si.message = message;
-
-
-            //  Если нет сообщения и отсылаемого файла продолжать процедуру отправки нет смысла.
-            if (String.IsNullOrEmpty(si.message) == true && obj==null) return;
-
-            byte[] _obj_arr;// = new byte[10];
-            if (obj != null)
+            try
             {
-                BinaryFormatter _bf = new BinaryFormatter();
-                MemoryStream _ms = new MemoryStream();
-                _bf.Serialize(_ms, obj);
-                si.datasize = (int)_ms.Length;
-                _obj_arr = _ms.ToArray();
-                _ms.Close();
-                
-           }
-            else
-            {
-                si.datasize = 0;
-                _obj_arr = null;
+                SendInfo si = new SendInfo();
+                si.ProtocolMsg = protokolMsg;
 
+
+                //  Если нет сообщения и отсылаемого файла продолжать процедуру отправки нет смысла.
+                //if (si.message == null && obj==null) return;
+
+                byte[] _obj_arr;// = new byte[10];
+                if (obj != null)
+                {
+                    BinaryFormatter _bf = new BinaryFormatter();
+                    MemoryStream _ms = new MemoryStream();
+                    _bf.Serialize(_ms, obj);
+                    si.datasize = (int)_ms.Length;
+                    _obj_arr = _ms.ToArray();
+                    _ms.Close();
+
+                }
+                else
+                {
+                    si.datasize = 0;
+                    _obj_arr = null;
+
+                }
+
+                BinaryFormatter bf = new BinaryFormatter();
+                MemoryStream ms = new MemoryStream();
+                bf.Serialize(ms, si);
+                ms.Position = 0;
+                byte[] infobuffer = new byte[ms.Length];
+                int r = ms.Read(infobuffer, 0, infobuffer.Length);
+                ms.Close();
+
+                byte[] header = GetHeader(infobuffer.Length);
+                byte[] total = new byte[header.Length + infobuffer.Length + si.datasize];
+
+                Buffer.BlockCopy(header, 0, total, 0, header.Length);
+                Buffer.BlockCopy(infobuffer, 0, total, header.Length, infobuffer.Length);
+
+                // Если путь файла указан, добавим его содержимое в отправляемый массив байтов
+                if (si.datasize > 0 && _obj_arr != null)
+                    Buffer.BlockCopy(_obj_arr, 0, total, header.Length + infobuffer.Length, si.datasize);
+
+                // Отправим данные подключенным клиентам
+                NetworkStream ns = _tcpClient.tcpClient.GetStream();
+                // Так как данный метод вызывается в отдельном потоке рациональней использовать синхронный метод отправки
+                ns.Write(total, 0, total.Length);
+
+
+                // Обнулим все ссылки на многобайтные объекты и попробуем очистить память
+                header = null;
+                infobuffer = null;
+                total = null;
+
+                //Parent.labelFileName.Text = "";
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
-
-            BinaryFormatter bf = new BinaryFormatter();
-            MemoryStream ms = new MemoryStream();
-            bf.Serialize(ms, si);
-            ms.Position = 0;
-            byte[] infobuffer = new byte[ms.Length];
-            int r = ms.Read(infobuffer, 0, infobuffer.Length);
-            ms.Close();
-
-            byte[] header = GetHeader(infobuffer.Length);
-            byte[] total = new byte[header.Length + infobuffer.Length+si.datasize];
-
-            Buffer.BlockCopy(header, 0, total, 0, header.Length);
-            Buffer.BlockCopy(infobuffer, 0, total, header.Length, infobuffer.Length);
-
-            // Если путь файла указан, добавим его содержимое в отправляемый массив байтов
-            if(si.datasize>0 && _obj_arr!=null)
-            Buffer.BlockCopy(_obj_arr,0,total, header.Length + infobuffer.Length, si.datasize);
-
-            // Отправим данные подключенным клиентам
-            NetworkStream ns = _tcpClient.tcpClient.GetStream();
-            // Так как данный метод вызывается в отдельном потоке рациональней использовать синхронный метод отправки
-            ns.Write(total, 0, total.Length);
-
-            // Обнулим все ссылки на многобайтные объекты и попробуем очистить память
-            header = null;
-            infobuffer = null;
-            total = null;
-           
-            //Parent.labelFileName.Text = "";
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
+            catch (Exception e)
+            {
+                SoundError(e.Message);
+            }
             // Подтверждение успешной отправки
-          //  Parent.ShowReceiveMessage("Данные успешно отправлены!");
+            //  Parent.ShowReceiveMessage("Данные успешно отправлены!");
         }
 
 
@@ -298,14 +309,23 @@ namespace DataBase
         /// <summary>
         /// Звуковое сопровождение ошибок.
         /// </summary>
-        private void SoundError()
+        private void SoundError(string err)
         {
             Console.Beep(3000, 30);
             Console.Beep(1000, 30);
+            if (!m_ErrorOutputConsose)
+                MessageBox.Show(err);
+            else
+                Console.WriteLine(err);
         }
 
         #endregion
 
+        public override string ToString()
+        {
+            IPEndPoint ip = (IPEndPoint)_tcpClient.tcpClient.Client.RemoteEndPoint;
+            return ip.Address.ToString();
+        }
 
         #region Асинхронные методы сетевой работы TCP модуля
 
@@ -340,10 +360,10 @@ namespace DataBase
                     Accept.BeginInvoke(this, null, null);
                 }
             }
-            catch
+            catch (Exception e)
             {
                 // Обработка исключительных ошибок возникших при акцептирования клиента.
-                SoundError();
+                SoundError(e.Message);
             }
         }
 
@@ -364,7 +384,7 @@ namespace DataBase
                 // Запускаем асинхронный метод чтения сетевых данных для подключенного TCP клиента
                 myTcpClient.buffer = new byte[global.LENGTHHEADER];
                 ns.BeginRead(myTcpClient.buffer, 0, myTcpClient.buffer.Length, new AsyncCallback(ReadCallback), myTcpClient);
-              //  Parent.ChangeBackColor(Color.Goldenrod);
+                //  Parent.ChangeBackColor(Color.Goldenrod);
 
             }
             catch (Exception e)
@@ -373,7 +393,7 @@ namespace DataBase
                 // Обработка ошибок подключения
                 DisconnectClient();
                 result = "ERR";
-               // SoundError();
+                // SoundError();
             }
 
             // Активация события успешного или неуспешного подключения к серверу,
@@ -434,9 +454,9 @@ namespace DataBase
                             if (_ms.Length == sc.datasize)
                             {
                                 _ms.Position = 0;
-                               obj =  _bf.Deserialize(_ms);
+                                obj = _bf.Deserialize(_ms);
                                 _ms.Close();
-                                
+
                                 break;
                             }
                         }
@@ -452,9 +472,9 @@ namespace DataBase
 
                     if (Receive != null)
                     {
-                        
-                        Receive(this, new ReceiveEventArgs(sc,obj));
-                       
+
+                        Receive(this, new ReceiveEventArgs(sc, (NetworkTransferObjects)obj));
+
 
                     }
 
@@ -481,7 +501,7 @@ namespace DataBase
                 if (Disconnected != null)
                     Disconnected.BeginInvoke(this, "Клиент отключился аварийно!", null, null);
 
-                SoundError();
+                SoundError(e.Message);
 
             }
 
@@ -524,10 +544,10 @@ namespace DataBase
     [Serializable]
     public class SendInfo
     {
-        public string message;
+
         public int datasize;
-       
-       // public object obj;
+        public ProtocolOfExchange ProtocolMsg;
+
     }
 
     ///////////////////////////////////////////////////////////////////////////

@@ -39,6 +39,7 @@
             this.CheckQrManualTxb = new System.Windows.Forms.TextBox();
             this.qr_dataList = new System.Windows.Forms.ListBox();
             this.PrintPageTab = new System.Windows.Forms.TabPage();
+            this.addToBaseBtn = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.LeftOffsetNumeric = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
@@ -61,6 +62,8 @@
             this.AddInPacketTreeView = new System.Windows.Forms.TreeView();
             this.contextMenuStripAddInTree = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.удалитьToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.вставитьТекстИзБуффераToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.QrSizeLbl = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.QrSizetrackBar = new System.Windows.Forms.TrackBar();
@@ -75,27 +78,25 @@
             this.удалитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.удалитьВсеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.снятьВыделениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.notIncrementedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.LastVaqlueFromBdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.RefreshDictionary = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.dictionaryTreeOnPrintTab = new System.Windows.Forms.TreeView();
             this.DataBasePageTab = new System.Windows.Forms.TabPage();
-            this.contextMenuDataitemListBox = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.CopyQrToBufferToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteBaseBtn = new System.Windows.Forms.Button();
+            this.DataBaseCollectionListBox = new System.Windows.Forms.ListBox();
             this.RefreshDbBtn = new System.Windows.Forms.Button();
             this.addDabaseBtn = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.DataBasItemCollectionListBox = new System.Windows.Forms.ListBox();
-            this.TimeOutTimer = new System.Windows.Forms.Timer(this.components);
-            this.DataBaseCollectionListBox = new System.Windows.Forms.ListBox();
-            this.deleteBaseBtn = new System.Windows.Forms.Button();
-            this.addToBaseBtn = new System.Windows.Forms.Button();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.notIncrementedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.LastVaqlueFromBdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.вставитьТекстИзБуффераToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.DeleteDbItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuDataitemListBox = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.CopyQrToBufferToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.DeleteDbItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TimeOutTimer = new System.Windows.Forms.Timer(this.components);
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.statusStripBar.SuspendLayout();
             this.mainTabControl.SuspendLayout();
             this.identificationTab.SuspendLayout();
@@ -210,6 +211,7 @@
             // 
             // PrintPageTab
             // 
+            this.PrintPageTab.Controls.Add(this.groupBox2);
             this.PrintPageTab.Controls.Add(this.addToBaseBtn);
             this.PrintPageTab.Controls.Add(this.label9);
             this.PrintPageTab.Controls.Add(this.LeftOffsetNumeric);
@@ -241,6 +243,17 @@
             this.PrintPageTab.TabIndex = 1;
             this.PrintPageTab.Text = "Печать этикеток";
             this.PrintPageTab.UseVisualStyleBackColor = true;
+            // 
+            // addToBaseBtn
+            // 
+            this.addToBaseBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.addToBaseBtn.Location = new System.Drawing.Point(816, 498);
+            this.addToBaseBtn.Name = "addToBaseBtn";
+            this.addToBaseBtn.Size = new System.Drawing.Size(105, 23);
+            this.addToBaseBtn.TabIndex = 25;
+            this.addToBaseBtn.Text = "Добавить в базу";
+            this.addToBaseBtn.UseVisualStyleBackColor = true;
+            this.addToBaseBtn.Click += new System.EventHandler(this.addToBaseBtn_Click);
             // 
             // label9
             // 
@@ -481,9 +494,9 @@
             // 
             this.AddInPacketTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.AddInPacketTreeView.ContextMenuStrip = this.contextMenuStripAddInTree;
-            this.AddInPacketTreeView.Location = new System.Drawing.Point(275, 319);
+            this.AddInPacketTreeView.Location = new System.Drawing.Point(275, 301);
             this.AddInPacketTreeView.Name = "AddInPacketTreeView";
-            this.AddInPacketTreeView.Size = new System.Drawing.Size(242, 199);
+            this.AddInPacketTreeView.Size = new System.Drawing.Size(242, 217);
             this.AddInPacketTreeView.TabIndex = 9;
             // 
             // contextMenuStripAddInTree
@@ -502,6 +515,18 @@
             this.удалитьToolStripMenuItem1.Size = new System.Drawing.Size(221, 22);
             this.удалитьToolStripMenuItem1.Text = "Удалить";
             this.удалитьToolStripMenuItem1.Click += new System.EventHandler(this.удалитьToolStripMenuItem1_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(218, 6);
+            // 
+            // вставитьТекстИзБуффераToolStripMenuItem
+            // 
+            this.вставитьТекстИзБуффераToolStripMenuItem.Name = "вставитьТекстИзБуффераToolStripMenuItem";
+            this.вставитьТекстИзБуффераToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.вставитьТекстИзБуффераToolStripMenuItem.Text = "Вставить текст из буффера";
+            this.вставитьТекстИзБуффераToolStripMenuItem.Click += new System.EventHandler(this.вставитьТекстИзБуффераToolStripMenuItem_Click);
             // 
             // QrSizeLbl
             // 
@@ -634,6 +659,28 @@
             this.снятьВыделениеToolStripMenuItem.Text = "Снять выделение";
             this.снятьВыделениеToolStripMenuItem.Click += new System.EventHandler(this.снятьВыделениеToolStripMenuItem_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(247, 6);
+            // 
+            // notIncrementedMenuItem
+            // 
+            this.notIncrementedMenuItem.CheckOnClick = true;
+            this.notIncrementedMenuItem.Enabled = false;
+            this.notIncrementedMenuItem.Name = "notIncrementedMenuItem";
+            this.notIncrementedMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.notIncrementedMenuItem.Text = "Не инкриментировать";
+            this.notIncrementedMenuItem.Click += new System.EventHandler(this.notIncrementedMenuItem_Click);
+            // 
+            // LastVaqlueFromBdToolStripMenuItem
+            // 
+            this.LastVaqlueFromBdToolStripMenuItem.Enabled = false;
+            this.LastVaqlueFromBdToolStripMenuItem.Name = "LastVaqlueFromBdToolStripMenuItem";
+            this.LastVaqlueFromBdToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.LastVaqlueFromBdToolStripMenuItem.Text = "Последнее значение из базы +1";
+            this.LastVaqlueFromBdToolStripMenuItem.Click += new System.EventHandler(this.LastVaqlueFromBdToolStripMenuItem_Click);
+            // 
             // RefreshDictionary
             // 
             this.RefreshDictionary.Location = new System.Drawing.Point(174, 7);
@@ -659,7 +706,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.dictionaryTreeOnPrintTab.Location = new System.Drawing.Point(8, 36);
             this.dictionaryTreeOnPrintTab.Name = "dictionaryTreeOnPrintTab";
-            this.dictionaryTreeOnPrintTab.Size = new System.Drawing.Size(261, 482);
+            this.dictionaryTreeOnPrintTab.Size = new System.Drawing.Size(261, 251);
             this.dictionaryTreeOnPrintTab.TabIndex = 0;
             this.dictionaryTreeOnPrintTab.DoubleClick += new System.EventHandler(this.dictionaryTreeOnPrintTab_DoubleClick);
             // 
@@ -678,22 +725,29 @@
             this.DataBasePageTab.Text = "БазаДанных";
             this.DataBasePageTab.UseVisualStyleBackColor = true;
             // 
-            // contextMenuDataitemListBox
+            // deleteBaseBtn
             // 
-            this.contextMenuDataitemListBox.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.contextMenuDataitemListBox.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.CopyQrToBufferToolStripMenuItem,
-            this.toolStripSeparator3,
-            this.DeleteDbItem});
-            this.contextMenuDataitemListBox.Name = "contextMenuDataBaseTree";
-            this.contextMenuDataitemListBox.Size = new System.Drawing.Size(196, 76);
+            this.deleteBaseBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.deleteBaseBtn.Enabled = false;
+            this.deleteBaseBtn.Location = new System.Drawing.Point(172, 501);
+            this.deleteBaseBtn.Name = "deleteBaseBtn";
+            this.deleteBaseBtn.Size = new System.Drawing.Size(145, 23);
+            this.deleteBaseBtn.TabIndex = 5;
+            this.deleteBaseBtn.Text = "Удалить базу";
+            this.deleteBaseBtn.UseVisualStyleBackColor = true;
+            this.deleteBaseBtn.Click += new System.EventHandler(this.deleteBaseBtn_Click);
             // 
-            // CopyQrToBufferToolStripMenuItem
+            // DataBaseCollectionListBox
             // 
-            this.CopyQrToBufferToolStripMenuItem.Name = "CopyQrToBufferToolStripMenuItem";
-            this.CopyQrToBufferToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.CopyQrToBufferToolStripMenuItem.Text = "Копировать в буффер";
-            this.CopyQrToBufferToolStripMenuItem.Click += new System.EventHandler(this.CopyQrToBufferToolStripMenuItem_Click);
+            this.DataBaseCollectionListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.DataBaseCollectionListBox.FormattingEnabled = true;
+            this.DataBaseCollectionListBox.HorizontalScrollbar = true;
+            this.DataBaseCollectionListBox.Location = new System.Drawing.Point(9, 38);
+            this.DataBaseCollectionListBox.Name = "DataBaseCollectionListBox";
+            this.DataBaseCollectionListBox.Size = new System.Drawing.Size(653, 459);
+            this.DataBaseCollectionListBox.TabIndex = 4;
+            this.DataBaseCollectionListBox.SelectedIndexChanged += new System.EventHandler(this.DataBaseCollectionListBox_SelectedIndexChanged);
             // 
             // RefreshDbBtn
             // 
@@ -738,79 +792,27 @@
             this.DataBasItemCollectionListBox.TabIndex = 0;
             this.DataBasItemCollectionListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.DataBasItemCollectionListBox_MouseDoubleClick);
             // 
-            // TimeOutTimer
+            // contextMenuDataitemListBox
             // 
-            this.TimeOutTimer.Interval = 2000;
-            this.TimeOutTimer.Tick += new System.EventHandler(this.TimeOutTimer_Tick);
+            this.contextMenuDataitemListBox.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.contextMenuDataitemListBox.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.CopyQrToBufferToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.DeleteDbItem});
+            this.contextMenuDataitemListBox.Name = "contextMenuDataBaseTree";
+            this.contextMenuDataitemListBox.Size = new System.Drawing.Size(196, 54);
             // 
-            // DataBaseCollectionListBox
+            // CopyQrToBufferToolStripMenuItem
             // 
-            this.DataBaseCollectionListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.DataBaseCollectionListBox.FormattingEnabled = true;
-            this.DataBaseCollectionListBox.HorizontalScrollbar = true;
-            this.DataBaseCollectionListBox.Location = new System.Drawing.Point(9, 38);
-            this.DataBaseCollectionListBox.Name = "DataBaseCollectionListBox";
-            this.DataBaseCollectionListBox.Size = new System.Drawing.Size(653, 459);
-            this.DataBaseCollectionListBox.TabIndex = 4;
-            this.DataBaseCollectionListBox.SelectedIndexChanged += new System.EventHandler(this.DataBaseCollectionListBox_SelectedIndexChanged);
+            this.CopyQrToBufferToolStripMenuItem.Name = "CopyQrToBufferToolStripMenuItem";
+            this.CopyQrToBufferToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.CopyQrToBufferToolStripMenuItem.Text = "Копировать в буффер";
+            this.CopyQrToBufferToolStripMenuItem.Click += new System.EventHandler(this.CopyQrToBufferToolStripMenuItem_Click);
             // 
-            // deleteBaseBtn
+            // toolStripSeparator3
             // 
-            this.deleteBaseBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.deleteBaseBtn.Enabled = false;
-            this.deleteBaseBtn.Location = new System.Drawing.Point(172, 501);
-            this.deleteBaseBtn.Name = "deleteBaseBtn";
-            this.deleteBaseBtn.Size = new System.Drawing.Size(145, 23);
-            this.deleteBaseBtn.TabIndex = 5;
-            this.deleteBaseBtn.Text = "Удалить базу";
-            this.deleteBaseBtn.UseVisualStyleBackColor = true;
-            this.deleteBaseBtn.Click += new System.EventHandler(this.deleteBaseBtn_Click);
-            // 
-            // addToBaseBtn
-            // 
-            this.addToBaseBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.addToBaseBtn.Location = new System.Drawing.Point(816, 498);
-            this.addToBaseBtn.Name = "addToBaseBtn";
-            this.addToBaseBtn.Size = new System.Drawing.Size(105, 23);
-            this.addToBaseBtn.TabIndex = 25;
-            this.addToBaseBtn.Text = "Добавить в базу";
-            this.addToBaseBtn.UseVisualStyleBackColor = true;
-            this.addToBaseBtn.Click += new System.EventHandler(this.addToBaseBtn_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(247, 6);
-            // 
-            // notIncrementedMenuItem
-            // 
-            this.notIncrementedMenuItem.CheckOnClick = true;
-            this.notIncrementedMenuItem.Enabled = false;
-            this.notIncrementedMenuItem.Name = "notIncrementedMenuItem";
-            this.notIncrementedMenuItem.Size = new System.Drawing.Size(250, 22);
-            this.notIncrementedMenuItem.Text = "Не инкриментировать";
-            this.notIncrementedMenuItem.Click += new System.EventHandler(this.notIncrementedMenuItem_Click);
-            // 
-            // LastVaqlueFromBdToolStripMenuItem
-            // 
-            this.LastVaqlueFromBdToolStripMenuItem.Enabled = false;
-            this.LastVaqlueFromBdToolStripMenuItem.Name = "LastVaqlueFromBdToolStripMenuItem";
-            this.LastVaqlueFromBdToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
-            this.LastVaqlueFromBdToolStripMenuItem.Text = "Последнее значение из базы +1";
-            this.LastVaqlueFromBdToolStripMenuItem.Click += new System.EventHandler(this.LastVaqlueFromBdToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(218, 6);
-            // 
-            // вставитьТекстИзБуффераToolStripMenuItem
-            // 
-            this.вставитьТекстИзБуффераToolStripMenuItem.Name = "вставитьТекстИзБуффераToolStripMenuItem";
-            this.вставитьТекстИзБуффераToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
-            this.вставитьТекстИзБуффераToolStripMenuItem.Text = "Вставить текст из буффера";
-            this.вставитьТекстИзБуффераToolStripMenuItem.Click += new System.EventHandler(this.вставитьТекстИзБуффераToolStripMenuItem_Click);
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(192, 6);
             // 
             // DeleteDbItem
             // 
@@ -820,10 +822,19 @@
             this.DeleteDbItem.Text = "Удалить";
             this.DeleteDbItem.Click += new System.EventHandler(this.DeleteDbItem_Click);
             // 
-            // toolStripSeparator3
+            // TimeOutTimer
             // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(192, 6);
+            this.TimeOutTimer.Interval = 2000;
+            this.TimeOutTimer.Tick += new System.EventHandler(this.TimeOutTimer_Tick);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Location = new System.Drawing.Point(8, 301);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(261, 217);
+            this.groupBox2.TabIndex = 26;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Автоматический режим";
             // 
             // MainForm
             // 
@@ -932,6 +943,7 @@
         private System.Windows.Forms.ToolStripMenuItem вставитьТекстИзБуффераToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem DeleteDbItem;
+        private System.Windows.Forms.GroupBox groupBox2;
     }
 }
 
