@@ -28,6 +28,9 @@ namespace BarCode2
         PrintSession m_PrintSession;
         private int cur_page_packet_counter;
         private bool m_IsConnectedToServer;
+
+        private bool[] m_AutoOperationFlags;
+
        // Thread m_FirstStartConnectionWait;
        // Thread m_ConnectionTimer;
 
@@ -39,7 +42,7 @@ namespace BarCode2
             QrPacket = new List<char>();
             m_DbCollection = new DataBasesCollection();
             m_QrProcessor = new QrProcessor();
-           
+            m_AutoOperationFlags = new bool[3]; //[0] -необходима дальнейшая  проверка и запуск следующего шага автооперации;[1] - если первый шаг завершился удачно
             m_DbDict = new Dictionary();
             m_DbDict.ReadFromIni();
             InitConfiguration();
@@ -156,6 +159,7 @@ namespace BarCode2
         {
             SaveFormParametrs();
             SavePrintSession();
+            m_tcpModule.CloseSocket();
            // m_FirstStartConnectionWait.Abort();
           //  m_ConnectionTimer.Abort();
         }
@@ -247,6 +251,11 @@ namespace BarCode2
             {
                 m_DbCollection = (DataBasesCollection)e.NetDataObj.DataBaseCollection;
                 this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));
+                if(autoModeCxb.Checked && m_AutoOperationFlags[0])
+                {
+                    m_AutoOperationFlags[1] = true;
+                    this.Invoke((new Action(() =>AutoOperationStep2())));
+                }
 
             }
             if (e.SendInfo.ProtocolMsg ==  ProtocolOfExchange.AddQrItemInBaseFail)
@@ -379,6 +388,7 @@ namespace BarCode2
                     QrPacket.Clear();
                     m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items, AddInPacketTreeView.Nodes);
                     printPanelBox.Invalidate();
+                    AutoOperationBegin();
                 }
             }
             //DataBasePageTab
@@ -394,7 +404,15 @@ namespace BarCode2
                 }
             }
         }
+        private void copyQrInBuffer_Click(object sender, EventArgs e)
+        {
+            if (m_CurrentIdentificationQrCode!=null )
+            {
 
+
+                Clipboard.SetText(m_CurrentIdentificationQrCode.GenerateQrCode(false));
+            }
+        }
         #endregion
 
         #region Работа с вкладкой "печать этикеток" 
@@ -443,7 +461,7 @@ namespace BarCode2
                 float dx = x * (float)3.779527559055;
                 for (int i = 0; i < QrPrintColumsTrack.Value; i++)
                 {
-                    m_QrProcessor.DrawQrCode(m_CurrentPrintQrCode.GenerateQrCode(false), g, QrSizetrackBar.Value, new PointF(dx+(i*(h+z)), dy), QRCoder.QRCodeGenerator.ECCLevel.H);
+                    m_QrProcessor.DrawQrCode(m_CurrentPrintQrCode.GenerateQrCode(false), g, QrSizetrackBar.Value, new PointF(dx+(i*(h+z)), dy), QRCoder.QRCodeGenerator.ECCLevel.L);
                 }
             }
         }
@@ -904,11 +922,114 @@ namespace BarCode2
                 printPanelBox.Invalidate();
                 if (SerialPrintingRadioBtn.Checked || SerialPrintingSerialRadioBtn.Checked)
                     OncePrintingRadioBtn.Checked = true;
+
+                AutoOperationBegin();
+            }
+        }
+        private void вставитьИзБуффераToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            QrCodeData tmpQr = m_QrProcessor.ParseQrPacket(Clipboard.GetText().ToCharArray(), m_DbDict);
+            foreach(QrItem qr in tmpQr.ListQrItems)
+            {
+                currentQrCodeListBox.Items.Add(new QrItemDictionary(qr, m_DbDict.GetTypeDescription(qr.Type), qr.Value.Length));
+                m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items, AddInPacketTreeView.Nodes);
+                printPanelBox.Invalidate();
+            }
+        }
+
+        private void ResetAutooperationFlags()
+        {
+            m_AutoOperationFlags[0] = false;
+            m_AutoOperationFlags[1] = false;
+            m_AutoOperationFlags[2] = false;
+        }
+        /// <summary>
+        /// Первый шаг автооперации
+        /// </summary>
+        private void AutoOperationBegin()
+        {
+            if(autoModeCxb.Checked)
+            {
+                if (AddInPacketTreeView.Nodes.Count == autoModeQrInPacketCount.Value)
+                {
+                    auto_operation_statusPanel.BackColor = Color.Red;
+                    // 1 - добавляем данные в базу
+                    NetworkTransferObjects obj = new NetworkTransferObjects();
+                    obj.QrCodeData = m_CurrentPrintQrCode;
+                    m_AutoOperationFlags[0] = true;
+                    SendReqest(ProtocolOfExchange.AddQrItemInBase, obj, m_tcpModule);
+                   
+                                
+                }
+            }
+        }
+        /// <summary>
+        /// //инкрементируем серийный номер,печатаем этикетку
+        /// </summary>
+        private void AutoOperationStep2()
+        {
+            if(m_AutoOperationFlags[1])
+            {
+               for (int i=0;i<currentQrCodeListBox.Items.Count;i++)
+                {
+                    QrItemDictionary qr_tmp = (QrItemDictionary)currentQrCodeListBox.Items[i];
+                    if (m_DbDict.IsItemIsSerial(qr_tmp.QrItem))
+                    {
+
+                        // печатаем этикетку
+                        PrintDocument printDocument = new PrintDocument();
+                        float h = ((float)(QrSizetrackBar.Value + UpOffsetNumeric.Value) * (float)3.779527559055);
+                        float w = (((QrPrintColumsTrack.Value * QrSizetrackBar.Value) + ((QrPrintColumsTrack.Value - 1) * SizeBeetweenQrTrack.Value)) * (float)3.779527559055);
+                        printDocument.PrintPage += PrintDocument_PrintPage;
+                        cur_page_packet_counter = 0;
+                        printDocument.Print();
+                        //
+
+
+                        //инкрементируем номер
+                        string last_val = m_DbCollection.GetLastValueFromDb(m_CurrentPrintQrCode, qr_tmp.QrItem);
+                        if (last_val != null)
+                        {
+                            string str_format = "";
+                            for (int v = 0; v < qr_tmp.DataLen; v++)
+                            {
+                                str_format += "0";
+                            }
+                            string newVal = (int.Parse(last_val) + 1).ToString(str_format);
+                            qr_tmp.QrItem.Value = newVal;
+                            currentQrCodeListBox.Items[i] = qr_tmp;
+                            m_AutoOperationFlags[2] = true;
+
+                        
+
+                            AutoOperationStep3();
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// удаляем элементы из базы, сбрасываем флаги
+        /// </summary>
+        private void AutoOperationStep3()
+        {
+            if (m_AutoOperationFlags[2])
+            {
+                AddInPacketTreeView.Nodes.Clear();
+                m_CurrentPrintQrCode = m_QrProcessor.CreateQrCodeFromList(currentQrCodeListBox.Items, AddInPacketTreeView.Nodes);
+                printPanelBox.Invalidate();
+                auto_operation_statusPanel.BackColor = Color.Green;
+                ResetAutooperationFlags();
+            }
+            else
+            {
+                auto_operation_statusPanel.BackColor = Color.Red;
             }
         }
         #endregion
 
-        #region работа с бд
+            #region работа с бд
         private void addDabaseBtn_Click(object sender, EventArgs e)
         {
             AddEditDataBase add = new AddEditDataBase();
@@ -1017,8 +1138,10 @@ namespace BarCode2
         }
 
 
+
+
         #endregion
 
-
+       
     }
 }

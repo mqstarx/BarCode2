@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataBase;
+using System.Threading;
 
 namespace BarCode2Server
 {
@@ -47,6 +48,7 @@ namespace BarCode2Server
             TcpModule tcp = (TcpModule)sender;
             if (e.SendInfo.ProtocolMsg == ProtocolOfExchange.CheckConnection )
             {
+                Thread.Sleep(10);
                 tcp.SendData(null, ProtocolOfExchange.CheckConnectionOK);
             }
             if (e.SendInfo.ProtocolMsg == ProtocolOfExchange.AskDictionary)
@@ -56,6 +58,7 @@ namespace BarCode2Server
                 di.ReadFromIni();
                 NetworkTransferObjects obj = new NetworkTransferObjects();
                 obj.Dictionary = di;
+                Thread.Sleep(10);
                 tcp.SendData(obj, ProtocolOfExchange.AskDictionaryOk);
             }
             if (e.SendInfo.ProtocolMsg ==  ProtocolOfExchange.AskDbCollection)
@@ -63,6 +66,7 @@ namespace BarCode2Server
 
                 NetworkTransferObjects obj = new NetworkTransferObjects();
                 obj.DataBaseCollection = m_DbCollection;
+                Thread.Sleep(10);
                 tcp.SendData(obj, ProtocolOfExchange.AskDbCollectionOk);
             }
             if (e.SendInfo.ProtocolMsg == ProtocolOfExchange.AddBase )
@@ -76,10 +80,12 @@ namespace BarCode2Server
                         Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
 
                         obj.DataBaseCollection = m_DbCollection;
+                        Thread.Sleep(10);
                         tcp.SendData(obj,  ProtocolOfExchange.AddBaseOk);
                     }
                     else
-                    {                      
+                    {
+                        Thread.Sleep(10);
                         tcp.SendData(null, ProtocolOfExchange.AddBaseFail );
                     }
 
@@ -95,8 +101,9 @@ namespace BarCode2Server
                     {
                         NetworkTransferObjects obj = new NetworkTransferObjects();
                         obj.DataBaseCollection = m_DbCollection;
-                        Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");                       
-                        _tcpMod.SendData(obj,ProtocolOfExchange.DelBaseOk);
+                        Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
+                        Thread.Sleep(10);
+                        tcp.SendData(obj,ProtocolOfExchange.DelBaseOk);
                     }
                 }
             }
@@ -111,11 +118,12 @@ namespace BarCode2Server
                         Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
                         NetworkTransferObjects obj = new NetworkTransferObjects();
                         obj.DataBaseCollection = m_DbCollection;
-
-                        _tcpMod.SendData(obj, ProtocolOfExchange.AddQrItemInBaseOk);
+                        Thread.Sleep(10);
+                        tcp.SendData(obj, ProtocolOfExchange.AddQrItemInBaseOk);
                     }
                     else
-                    {                      
+                    {
+                        Thread.Sleep(10);
                         tcp.SendData(null,  ProtocolOfExchange.AddQrItemInBaseFail);
                     }
 
@@ -132,11 +140,12 @@ namespace BarCode2Server
                         Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
                         NetworkTransferObjects obj = new NetworkTransferObjects();
                         obj.DataBaseCollection = m_DbCollection;
+                        Thread.Sleep(10);
                         tcp.SendData(obj,  ProtocolOfExchange.AddQrItemSInBaseOk);
                     }
                     else
                     {
-                      
+                        Thread.Sleep(10);
                         tcp.SendData(null, ProtocolOfExchange.AddQrItemSInBaseFail);
                     }
                 }
@@ -154,14 +163,14 @@ namespace BarCode2Server
                         Functions.SaveConfig(m_DbCollection, "DataBase.qrdb");
                         NetworkTransferObjects obj = new NetworkTransferObjects();
                         obj.DataBaseCollection = m_DbCollection;
-
+                        Thread.Sleep(10);
                         tcp.SendData(obj, ProtocolOfExchange.DelDbItemsOK);
                     }
                     else
                     {
-                       
 
-                        _tcpMod.SendData(null, ProtocolOfExchange.DelDbItemsFail);
+                        Thread.Sleep(10);
+                        tcp.SendData(null, ProtocolOfExchange.DelDbItemsFail);
                     }
 
                 }
