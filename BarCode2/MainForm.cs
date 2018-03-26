@@ -276,7 +276,7 @@ namespace BarCode2
                 this.Invoke((new Action(() => MessageBox.Show("Ошибка добавления записей в базу"))));
 
             }
-            if (e.SendInfo.ProtocolMsg == ProtocolOfExchange.DelDbItemOK)
+            if (e.SendInfo.ProtocolMsg == ProtocolOfExchange.DelDbItemOK || e.SendInfo.ProtocolMsg == ProtocolOfExchange.DelDbItemsOK)
             {
                 m_DbCollection = (DataBasesCollection)e.NetDataObj.DataBaseCollection;
                 this.Invoke((new Action(() => RefreshDataBaseCollectionTree())));

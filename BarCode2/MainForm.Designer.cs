@@ -34,12 +34,20 @@
             this.connectionStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.identificationTab = new System.Windows.Forms.TabPage();
+            this.copyQrInBuffer = new System.Windows.Forms.Button();
             this.CheckQrManualBtm = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.CheckQrManualTxb = new System.Windows.Forms.TextBox();
             this.qr_dataList = new System.Windows.Forms.ListBox();
             this.PrintPageTab = new System.Windows.Forms.TabPage();
+            this.label10 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.auto_operation_statusPanel = new System.Windows.Forms.Panel();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.autoModeQrInPacketCount = new System.Windows.Forms.NumericUpDown();
+            this.autoModeCxb = new System.Windows.Forms.CheckBox();
             this.addToBaseBtn = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.LeftOffsetNumeric = new System.Windows.Forms.NumericUpDown();
@@ -82,6 +90,8 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.notIncrementedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.LastVaqlueFromBdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.вставитьИзБуффераToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.RefreshDictionary = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.dictionaryTreeOnPrintTab = new System.Windows.Forms.TreeView();
@@ -97,21 +107,12 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.DeleteDbItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TimeOutTimer = new System.Windows.Forms.Timer(this.components);
-            this.copyQrInBuffer = new System.Windows.Forms.Button();
-            this.вставитьИзБуффераToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.autoModeCxb = new System.Windows.Forms.CheckBox();
-            this.autoModeQrInPacketCount = new System.Windows.Forms.NumericUpDown();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.auto_operation_statusPanel = new System.Windows.Forms.Panel();
-            this.label13 = new System.Windows.Forms.Label();
             this.statusStripBar.SuspendLayout();
             this.mainTabControl.SuspendLayout();
             this.identificationTab.SuspendLayout();
             this.PrintPageTab.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.autoModeQrInPacketCount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LeftOffsetNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.UpOffsetNumeric)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -124,7 +125,6 @@
             this.contextMenuStripQrCodeListBox.SuspendLayout();
             this.DataBasePageTab.SuspendLayout();
             this.contextMenuDataitemListBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.autoModeQrInPacketCount)).BeginInit();
             this.SuspendLayout();
             // 
             // statusStripBar
@@ -179,6 +179,16 @@
             this.identificationTab.Text = "Идентификация";
             this.identificationTab.UseVisualStyleBackColor = true;
             this.identificationTab.Paint += new System.Windows.Forms.PaintEventHandler(this.identificationTab_Paint);
+            // 
+            // copyQrInBuffer
+            // 
+            this.copyQrInBuffer.Location = new System.Drawing.Point(6, 187);
+            this.copyQrInBuffer.Name = "copyQrInBuffer";
+            this.copyQrInBuffer.Size = new System.Drawing.Size(172, 23);
+            this.copyQrInBuffer.TabIndex = 4;
+            this.copyQrInBuffer.Text = "Копировать в буффер";
+            this.copyQrInBuffer.UseVisualStyleBackColor = true;
+            this.copyQrInBuffer.Click += new System.EventHandler(this.copyQrInBuffer_Click);
             // 
             // CheckQrManualBtm
             // 
@@ -260,6 +270,16 @@
             this.PrintPageTab.Text = "Печать этикеток";
             this.PrintPageTab.UseVisualStyleBackColor = true;
             // 
+            // label10
+            // 
+            this.label10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(276, 301);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(112, 13);
+            this.label10.TabIndex = 27;
+            this.label10.Text = "Входящие Qr-пакеты";
+            // 
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -275,6 +295,69 @@
             this.groupBox2.TabIndex = 26;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Автоматический режим";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 110);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(227, 13);
+            this.label13.TabIndex = 31;
+            this.label13.Text = "Статус выполнение предыдущей операции:";
+            // 
+            // auto_operation_statusPanel
+            // 
+            this.auto_operation_statusPanel.BackColor = System.Drawing.Color.Red;
+            this.auto_operation_statusPanel.Location = new System.Drawing.Point(239, 106);
+            this.auto_operation_statusPanel.Name = "auto_operation_statusPanel";
+            this.auto_operation_statusPanel.Size = new System.Drawing.Size(15, 21);
+            this.auto_operation_statusPanel.TabIndex = 30;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(175, 53);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(79, 26);
+            this.label12.TabIndex = 29;
+            this.label12.Text = "сканирования\r\nQr-пакета";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 53);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(113, 26);
+            this.label11.TabIndex = 28;
+            this.label11.Text = "Совершать действие\r\nпосле";
+            // 
+            // autoModeQrInPacketCount
+            // 
+            this.autoModeQrInPacketCount.Location = new System.Drawing.Point(124, 59);
+            this.autoModeQrInPacketCount.Margin = new System.Windows.Forms.Padding(2);
+            this.autoModeQrInPacketCount.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.autoModeQrInPacketCount.Name = "autoModeQrInPacketCount";
+            this.autoModeQrInPacketCount.Size = new System.Drawing.Size(46, 20);
+            this.autoModeQrInPacketCount.TabIndex = 27;
+            this.autoModeQrInPacketCount.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // autoModeCxb
+            // 
+            this.autoModeCxb.AutoSize = true;
+            this.autoModeCxb.Location = new System.Drawing.Point(6, 19);
+            this.autoModeCxb.Name = "autoModeCxb";
+            this.autoModeCxb.Size = new System.Drawing.Size(75, 17);
+            this.autoModeCxb.TabIndex = 0;
+            this.autoModeCxb.Text = "Включить";
+            this.autoModeCxb.UseVisualStyleBackColor = true;
             // 
             // addToBaseBtn
             // 
@@ -715,6 +798,18 @@
             this.LastVaqlueFromBdToolStripMenuItem.Text = "Последнее значение из базы +1";
             this.LastVaqlueFromBdToolStripMenuItem.Click += new System.EventHandler(this.LastVaqlueFromBdToolStripMenuItem_Click);
             // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(247, 6);
+            // 
+            // вставитьИзБуффераToolStripMenuItem
+            // 
+            this.вставитьИзБуффераToolStripMenuItem.Name = "вставитьИзБуффераToolStripMenuItem";
+            this.вставитьИзБуффераToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.вставитьИзБуффераToolStripMenuItem.Text = "Вставить из буфера";
+            this.вставитьИзБуффераToolStripMenuItem.Click += new System.EventHandler(this.вставитьИзБуффераToolStripMenuItem_Click);
+            // 
             // RefreshDictionary
             // 
             this.RefreshDictionary.Location = new System.Drawing.Point(174, 7);
@@ -834,7 +929,7 @@
             this.toolStripSeparator3,
             this.DeleteDbItem});
             this.contextMenuDataitemListBox.Name = "contextMenuDataBaseTree";
-            this.contextMenuDataitemListBox.Size = new System.Drawing.Size(196, 54);
+            this.contextMenuDataitemListBox.Size = new System.Drawing.Size(196, 76);
             // 
             // CopyQrToBufferToolStripMenuItem
             // 
@@ -861,101 +956,6 @@
             this.TimeOutTimer.Interval = 2000;
             this.TimeOutTimer.Tick += new System.EventHandler(this.TimeOutTimer_Tick);
             // 
-            // copyQrInBuffer
-            // 
-            this.copyQrInBuffer.Location = new System.Drawing.Point(6, 187);
-            this.copyQrInBuffer.Name = "copyQrInBuffer";
-            this.copyQrInBuffer.Size = new System.Drawing.Size(172, 23);
-            this.copyQrInBuffer.TabIndex = 4;
-            this.copyQrInBuffer.Text = "Копировать в буффер";
-            this.copyQrInBuffer.UseVisualStyleBackColor = true;
-            this.copyQrInBuffer.Click += new System.EventHandler(this.copyQrInBuffer_Click);
-            // 
-            // вставитьИзБуффераToolStripMenuItem
-            // 
-            this.вставитьИзБуффераToolStripMenuItem.Name = "вставитьИзБуффераToolStripMenuItem";
-            this.вставитьИзБуффераToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
-            this.вставитьИзБуффераToolStripMenuItem.Text = "Вставить из буфера";
-            this.вставитьИзБуффераToolStripMenuItem.Click += new System.EventHandler(this.вставитьИзБуффераToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(247, 6);
-            // 
-            // autoModeCxb
-            // 
-            this.autoModeCxb.AutoSize = true;
-            this.autoModeCxb.Location = new System.Drawing.Point(6, 19);
-            this.autoModeCxb.Name = "autoModeCxb";
-            this.autoModeCxb.Size = new System.Drawing.Size(75, 17);
-            this.autoModeCxb.TabIndex = 0;
-            this.autoModeCxb.Text = "Включить";
-            this.autoModeCxb.UseVisualStyleBackColor = true;
-            // 
-            // autoModeQrInPacketCount
-            // 
-            this.autoModeQrInPacketCount.Location = new System.Drawing.Point(124, 59);
-            this.autoModeQrInPacketCount.Margin = new System.Windows.Forms.Padding(2);
-            this.autoModeQrInPacketCount.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.autoModeQrInPacketCount.Name = "autoModeQrInPacketCount";
-            this.autoModeQrInPacketCount.Size = new System.Drawing.Size(46, 20);
-            this.autoModeQrInPacketCount.TabIndex = 27;
-            this.autoModeQrInPacketCount.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // label10
-            // 
-            this.label10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(276, 301);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(112, 13);
-            this.label10.TabIndex = 27;
-            this.label10.Text = "Входящие Qr-пакеты";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 53);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(113, 26);
-            this.label11.TabIndex = 28;
-            this.label11.Text = "Совершать действие\r\nпосле";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(175, 53);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(79, 26);
-            this.label12.TabIndex = 29;
-            this.label12.Text = "сканирования\r\nQr-пакета";
-            // 
-            // auto_operation_statusPanel
-            // 
-            this.auto_operation_statusPanel.BackColor = System.Drawing.Color.Red;
-            this.auto_operation_statusPanel.Location = new System.Drawing.Point(239, 106);
-            this.auto_operation_statusPanel.Name = "auto_operation_statusPanel";
-            this.auto_operation_statusPanel.Size = new System.Drawing.Size(15, 21);
-            this.auto_operation_statusPanel.TabIndex = 30;
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 110);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(227, 13);
-            this.label13.TabIndex = 31;
-            this.label13.Text = "Статус выполнение предыдущей операции:";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -978,6 +978,7 @@
             this.PrintPageTab.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.autoModeQrInPacketCount)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.LeftOffsetNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.UpOffsetNumeric)).EndInit();
             this.groupBox1.ResumeLayout(false);
@@ -992,7 +993,6 @@
             this.DataBasePageTab.ResumeLayout(false);
             this.DataBasePageTab.PerformLayout();
             this.contextMenuDataitemListBox.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.autoModeQrInPacketCount)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
