@@ -57,7 +57,7 @@ namespace DataBase
                         string[] arrayvalues = ini.ReadINI(datatypesarray[i], "array").Split(';');
                         for (int j = 0; j < arrayvalues.Length; j++)
                         {
-                            di.KeyValues.Add(new ArrayItem(arrayvalues[j].Split(':')[0], arrayvalues[j].Split(':')[1], di.TypeId));
+                            di.KeyValues.Add(new ArrayItem(arrayvalues[j], ini.ReadINI(datatypesarray[i], arrayvalues[j]), di.TypeId));
                         }
                     }
                     m_DictionaryDataBase.Add(di);
