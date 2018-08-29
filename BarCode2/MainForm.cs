@@ -31,12 +31,12 @@ namespace BarCode2
 
         private bool[] m_AutoOperationFlags;
 
-       // Thread m_FirstStartConnectionWait;
-       // Thread m_ConnectionTimer;
-
+        // Thread m_FirstStartConnectionWait;
+        // Thread m_ConnectionTimer;
+       // protected override bool ScaleChildren => false;
         public MainForm()
         {
-           
+            
             InitializeComponent();
            
             QrPacket = new List<char>();
