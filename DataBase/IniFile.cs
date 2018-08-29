@@ -169,6 +169,31 @@ namespace DataBase
 
 
         }
+        public static bool SaveConfigPath(object obj, string path)
+        {
+            FileStream fs = null;
+            try
+            {
+                fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Write);
+                BinaryFormatter bf = new BinaryFormatter();
+                bf.Serialize(fs, obj);
+                fs.Close();
+                return true;
+            }
+            catch (Exception e)
+            {
+                if (fs != null)
+                    fs.Close();
+                return false;
+            }
+            finally
+            {
+                if (fs != null)
+                    fs.Close();
+            }
+
+
+        }
         public static object LoadConfig()
         {
             FileStream fs = null;
@@ -219,6 +244,33 @@ namespace DataBase
 
 
         }
+
+        public static object LoadConfigPath(string path)
+        {
+            FileStream fs = null;
+            try
+            {
+                fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+                BinaryFormatter bf = new BinaryFormatter();
+                object res = bf.Deserialize(fs);
+                fs.Close();
+                return res;
+            }
+            catch (Exception e)
+            {
+                if (fs != null)
+                    fs.Close();
+                return null;
+            }
+            finally
+            {
+                if (fs != null)
+                    fs.Close();
+            }
+
+
+        }
+
 
     }
 

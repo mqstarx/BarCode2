@@ -93,7 +93,7 @@ namespace BarCode2
         //загрузка параметров сессии
         private void LoadPrintSession()
         {
-            m_CurrentPrintQrCode = m_PrintSession.CurrentQrCode;
+            m_CurrentPrintQrCode = new QrCodeData();
             QrPrintColumsTrack.Value = m_PrintSession.CollumnsCount;
             QrSizetrackBar.Value = m_PrintSession.QrCodeSize;
             SizeBeetweenQrTrack.Value = m_PrintSession.SizeBeetweenCollumns;
@@ -136,7 +136,7 @@ namespace BarCode2
         {
             m_PrintSession = new PrintSession();
 
-            m_PrintSession.CurrentQrCode = m_CurrentPrintQrCode;
+           // m_PrintSession.CurrentQrCode = m_CurrentPrintQrCode;
             m_PrintSession.CollumnsCount = QrPrintColumsTrack.Value;
             m_PrintSession.QrCodeSize = QrSizetrackBar.Value;
             m_PrintSession.SizeBeetweenCollumns = SizeBeetweenQrTrack.Value;
@@ -533,6 +533,34 @@ namespace BarCode2
                 if (m_CurrentPrintQrCode != null)
                 {
                     m_QrProcessor.SaveQrCode(m_CurrentPrintQrCode.GenerateQrCode(false), sf.FileName, QRCoder.QRCodeGenerator.ECCLevel.L);
+                }
+            }
+        }
+
+        private void saveQrMenuItem_Click(object sender, EventArgs e)
+        {
+
+            SaveFileDialog sf = new SaveFileDialog();
+            sf.Filter = "Файл Qr-Кода (*.cqr)|*.cqr";
+            if (sf.ShowDialog() == DialogResult.OK)
+            {
+                if (m_CurrentPrintQrCode != null)
+                {
+                    Functions.SaveConfigPath(m_CurrentPrintQrCode, sf.FileName);
+                }
+            }
+        }
+        private void openQrSession_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog of = new OpenFileDialog();
+            of.Filter = "Файл Qr-Кода (*.cqr)|*.cqr";
+            if (of.ShowDialog() == DialogResult.OK)
+            {
+                m_CurrentPrintQrCode = (QrCodeData)Functions.LoadConfigPath(of.FileName);
+                if(m_CurrentPrintQrCode!=null)
+                {
+                    m_QrProcessor.ListFillFromQrObject(currentQrCodeListBox, AddInPacketTreeView, m_CurrentPrintQrCode, m_DbDict);
+                    printPanelBox.Invalidate();
                 }
             }
         }
@@ -1140,8 +1168,10 @@ namespace BarCode2
 
 
 
+
+
         #endregion
 
-       
+        
     }
 }

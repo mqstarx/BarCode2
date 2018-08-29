@@ -20,7 +20,7 @@ namespace BarCode2
         private int m_DY;
         private int m_SerialCopy;
         private int m_CheckedBox;
-        private DataBase.QrCodeData m_CurrentQrCode;
+       // private DataBase.QrCodeData m_CurrentQrCode;
 
         public int QrCodeSize
         {
@@ -113,18 +113,7 @@ namespace BarCode2
             }
         }
 
-        public QrCodeData CurrentQrCode
-        {
-            get
-            {
-                return m_CurrentQrCode;
-            }
-
-            set
-            {
-                m_CurrentQrCode = value;
-            }
-        }
+       
 
         public PrintSession() { }
     }
